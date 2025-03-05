@@ -1,0 +1,17 @@
+services:
+  website_db:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${WEBSITE_DB_DATABASE}
+      MYSQL_USER: ${WEBSITE_DB_USERNAME}
+      MYSQL_PASSWORD: ${WEBSITE_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${WEBSITE_DB_ROOT_PASSWORD}
+    ports:
+      - "${WEBSITE_DB_PORT}:3306"
+    volumes:
+      - ./website.sql:/docker-entrypoint-initdb.d/website.sql
+      - website_db_volume:/var/lib/mysql
+
+volumes:
+  website_db_volume:
