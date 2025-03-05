@@ -2,7 +2,7 @@ package server
 
 import (
 	"net/http"
-	controller "website/internal/controller"
+	controller "website/src/internal/controller"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
