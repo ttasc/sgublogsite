@@ -10,7 +10,7 @@ services:
     ports:
       - "${WEBSITE_DB_PORT}:3306"
     volumes:
-      - ./website.sql:/docker-entrypoint-initdb.d/website.sql
+      - ./assets/website.sql:/docker-entrypoint-initdb.d/website.sql
       - website_db_volume:/var/lib/mysql
 
 volumes:

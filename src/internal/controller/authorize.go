@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"website/src/internal/database"
+	"website/src/internal/model"
 	"website/src/internal/utils"
 )
 
@@ -40,17 +40,17 @@ func Register(c echo.Context) error {
         c.String(http.StatusBadRequest, "Invalid email or password")
         return errors.New("Invalid email or password")
     }
-    if database.UserExists(email) {
+    if model.UserExists(email) {
         c.String(http.StatusConflict, "User already exists")
         return errors.New("User already exists")
     }
     hashedPassword, _ := utils.HashPassword(password)
-    user := &database.User{
+    user := &model.User{
         FullName: fullname,
         Password: hashedPassword,
         Email:    email,
     }
-    database.AddUser(user)
+    model.AddUser(user)
 
     c.String(http.StatusCreated, "User created successfully")
 
@@ -64,7 +64,7 @@ func Login(c echo.Context) error {
     }
     email := c.FormValue("email")
     password := c.FormValue("password")
-    user, err := database.GetUserByEmail(email)
+    user, err := model.GetUserByEmail(email)
     if err != nil || !utils.CheckPasswordHash(password, user.Password) {
         c.String(http.StatusBadRequest, "Invalid email or password")
         return errors.New("Invalid email or password")
@@ -124,9 +124,9 @@ func Logout(c echo.Context) error {
         HttpOnly: false,
     })
 
-    // Clear the tokens from the database
+    // Clear the tokens from the model
     email := c.FormValue("email")
-    user, err := database.GetUserByEmail(email)
+    user, err := model.GetUserByEmail(email)
     if err != nil {
         return err
     }
@@ -141,7 +141,7 @@ func Logout(c echo.Context) error {
 
 func authorize(c echo.Context) error {
     authError := errors.New("Unauthorized")
-    user, err := database.GetUserByEmail(c.FormValue("email"))
+    user, err := model.GetUserByEmail(c.FormValue("email"))
     if err != nil {
         return authError
     }

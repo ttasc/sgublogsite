@@ -2,17 +2,23 @@ package server
 
 import (
 	"net/http"
-	controller "website/src/internal/controller"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	controller "website/src/internal/controller"
 )
 
-func registerRoutes() http.Handler {
+func registerHandlers() http.Handler {
     e := echo.New()
+    useMiddleware(e)
+    registerRoutes(e)
+    return e
+}
+
+func useMiddleware(e *echo.Echo) {
     e.Use(middleware.Logger())
     e.Use(middleware.Recover())
-
     e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
         AllowOrigins:     []string{"https://*", "http://*"},
         AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
@@ -20,7 +26,11 @@ func registerRoutes() http.Handler {
         AllowCredentials: true,
         MaxAge:           300,
     }))
+}
 
+func registerRoutes(e *echo.Echo) http.Handler {
+
+    // Authorization
     e.POST("/register"   , controller.Register)
     e.POST("/login"      , controller.Login)
     e.POST("/logout"     , controller.Logout)
@@ -28,4 +38,3 @@ func registerRoutes() http.Handler {
 
     return e
 }
-
