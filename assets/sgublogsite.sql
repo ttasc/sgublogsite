@@ -28,6 +28,7 @@ CREATE TABLE posts (
     user_id         INT NOT NULL, -- Foreign key to the user who authored the post
     title           VARCHAR(255) NOT NULL,
     slug            VARCHAR(255) NOT NULL UNIQUE, -- SEO-friendly URL identifier
+    preview_pic_id  INT,
     body            TEXT NOT NULL,
     status          ENUM('draft', 'published') DEFAULT 'draft', -- For content moderation
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,16 +38,7 @@ CREATE TABLE posts (
     UNIQUE INDEX uq_posts_slug (slug ASC),
     INDEX idx_posts_user_id (user_id ASC),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-DROP TABLE IF EXISTS post_images;
-CREATE TABLE post_images (
-    post_id         INT NOT NULL,
-    image_id        INT NOT NULL,
-
-    PRIMARY KEY(post_id, image_id),
-    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-    FOREIGN KEY (image_id) REFERENCES images(image_id) ON DELETE CASCADE
+    FOREIGN KEY (preview_pic_id) REFERENCES images(image_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 DROP TABLE IF EXISTS comments;
