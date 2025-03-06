@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	controller "website/src/internal/controller"
+	controller "sgublogsite/src/internal/controller"
 )
 
 func registerHandlers() http.Handler {

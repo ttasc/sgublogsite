@@ -1,4 +1,4 @@
-module website
+module sgublogsite
 
 go 1.23.4
 

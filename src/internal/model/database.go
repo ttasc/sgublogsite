@@ -15,11 +15,11 @@ type database struct {
 }
 
 var (
-    dbname     = os.Getenv("WEBSITE_DB_DATABASE")
-    password   = os.Getenv("WEBSITE_DB_PASSWORD")
-    username   = os.Getenv("WEBSITE_DB_USERNAME")
-    port       = os.Getenv("WEBSITE_DB_PORT")
-    host       = os.Getenv("WEBSITE_DB_HOST")
+    dbname     = os.Getenv("SGUBLOGSITE_DB_DATABASE")
+    password   = os.Getenv("SGUBLOGSITE_DB_PASSWORD")
+    username   = os.Getenv("SGUBLOGSITE_DB_USERNAME")
+    port       = os.Getenv("SGUBLOGSITE_DB_PORT")
+    host       = os.Getenv("SGUBLOGSITE_DB_HOST")
     dbInstance *database
 )
 

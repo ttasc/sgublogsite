@@ -7,8 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"website/src/internal/model"
-	"website/src/internal/utils"
+	"sgublogsite/src/internal/model"
+	"sgublogsite/src/internal/utils"
 )
 
 func Protected(c echo.Context) error {

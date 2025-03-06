@@ -1,17 +1,17 @@
 services:
-  website_db:
+  sgublogsite_db:
     image: mysql:latest
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${WEBSITE_DB_DATABASE}
-      MYSQL_USER: ${WEBSITE_DB_USERNAME}
-      MYSQL_PASSWORD: ${WEBSITE_DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${WEBSITE_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${SGUBLOGSITE_DB_DATABASE}
+      MYSQL_USER: ${SGUBLOGSITE_DB_USERNAME}
+      MYSQL_PASSWORD: ${SGUBLOGSITE_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${SGUBLOGSITE_DB_ROOT_PASSWORD}
     ports:
-      - "${WEBSITE_DB_PORT}:3306"
+      - "${SGUBLOGSITE_DB_PORT}:3306"
     volumes:
-      - ./assets/website.sql:/docker-entrypoint-initdb.d/website.sql
-      - website_db_volume:/var/lib/mysql
+      - ./assets/sgublogsite.sql:/docker-entrypoint-initdb.d/sgublogsite.sql
+      - sgublogsite_db_volume:/var/lib/mysql
 
 volumes:
-  website_db_volume:
+  sgublogsite_db_volume:
