@@ -41,22 +41,6 @@ CREATE TABLE posts (
     FOREIGN KEY (preview_pic_id) REFERENCES images(image_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
-DROP TABLE IF EXISTS comments;
-CREATE TABLE comments (
-    comment_id        INT AUTO_INCREMENT PRIMARY KEY,
-    post_id           INT NOT NULL, -- The post being commented on
-    user_id           INT NULL , -- The user making the comment (can be null if anonymous commenting is allowed)
-    parent_comment_id INT NULL, -- For threaded comments/replies
-    comment_body      TEXT NOT NULL,
-    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    INDEX idx_comments_post_id (post_id ASC),
-    INDEX idx_parent_comment_id (parent_comment_id ASC),
-    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (parent_comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
 DROP TABLE IF EXISTS categories;
 CREATE TABLE categories (
     category_id         INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,16 +81,5 @@ CREATE TABLE post_tags (
     PRIMARY KEY(post_id, tag_id),
     FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-DROP TABLE IF EXISTS post_views;
-CREATE TABLE post_views (
-    post_view_id    INT AUTO_INCREMENT PRIMARY KEY,
-    post_id         INT,
-    view_count      INT DEFAULT 0,
-    like_count      INT DEFAULT 0,
-
-    INDEX idx_pv_post_id (post_id ASC),
-    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 

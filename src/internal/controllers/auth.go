@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	"errors"
@@ -7,19 +7,17 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"sgublogsite/src/internal/model"
+	"sgublogsite/src/internal/models"
 	"sgublogsite/src/internal/utils"
 )
 
 func Protected(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
-        c.String(http.StatusMethodNotAllowed, "Invalid request method")
-        return errors.New("Invalid request method")
+        return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
 
     if err := authorize(c); err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
-        return errors.New("Unauthorized")
+        return utils.Rdie(c, http.StatusUnauthorized, "Unauthorized")
     }
 
     email := c.FormValue("email")
@@ -30,27 +28,24 @@ func Protected(c echo.Context) error {
 
 func Register(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
-        c.String(http.StatusMethodNotAllowed, "Method not allowed")
-        return errors.New("Method not allowed")
+        return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
     email := c.FormValue("email")
     fullname := c.FormValue("fullname")
     password := c.FormValue("password")
     if len(email)==0 || len(password)<8 {
-        c.String(http.StatusBadRequest, "Invalid email or password")
-        return errors.New("Invalid email or password")
+        return utils.Rdie(c, http.StatusBadRequest, "Invalid email or password")
     }
-    if model.UserExists(email) {
-        c.String(http.StatusConflict, "User already exists")
-        return errors.New("User already exists")
+    if models.UserExists(email) {
+        return utils.Rdie(c, http.StatusBadRequest, "User already exists")
     }
     hashedPassword, _ := utils.HashPassword(password)
-    user := &model.User{
+    user := &models.User{
         FullName: fullname,
         Password: hashedPassword,
         Email:    email,
     }
-    model.AddUser(user)
+    models.AddUser(user)
 
     c.String(http.StatusCreated, "User created successfully")
 
@@ -59,15 +54,13 @@ func Register(c echo.Context) error {
 
 func Login(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
-        c.String(http.StatusMethodNotAllowed, "Method not allowed")
-        return errors.New("Method not allowed")
+        return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
     email := c.FormValue("email")
     password := c.FormValue("password")
-    user, err := model.GetUserByEmail(email)
+    user, err := models.GetUserByEmail(email)
     if err != nil || !utils.CheckPasswordHash(password, user.Password) {
-        c.String(http.StatusBadRequest, "Invalid email or password")
-        return errors.New("Invalid email or password")
+        return utils.Rdie(c, http.StatusBadRequest, "Invalid email or password")
     }
 
     sessionToken := utils.GenerateToken(32)
@@ -90,8 +83,7 @@ func Login(c echo.Context) error {
     })
 
     if err = user.UpdateSessionData(sessionToken, csrfToken); err != nil {
-        c.String(http.StatusInternalServerError, "Failed to add session data")
-        return errors.New("Failed to add session data")
+        return utils.Rdie(c, http.StatusInternalServerError, "Failed to update session data")
     }
 
     c.String(http.StatusOK, "Login successfully")
@@ -101,12 +93,10 @@ func Login(c echo.Context) error {
 
 func Logout(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
-        c.String(http.StatusMethodNotAllowed, "Invalid request method")
-        return errors.New("Invalid request method")
+        return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
     if err := authorize(c); err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
-        return errors.New("Unauthorized")
+        return utils.Rdie(c, http.StatusUnauthorized, "Unauthorized")
     }
 
     // Clear cookie
@@ -124,9 +114,9 @@ func Logout(c echo.Context) error {
         HttpOnly: false,
     })
 
-    // Clear the tokens from the model
+    // Clear the tokens from the models
     email := c.FormValue("email")
-    user, err := model.GetUserByEmail(email)
+    user, err := models.GetUserByEmail(email)
     if err != nil {
         return err
     }
@@ -141,7 +131,7 @@ func Logout(c echo.Context) error {
 
 func authorize(c echo.Context) error {
     authError := errors.New("Unauthorized")
-    user, err := model.GetUserByEmail(c.FormValue("email"))
+    user, err := models.GetUserByEmail(c.FormValue("email"))
     if err != nil {
         return authError
     }
@@ -165,3 +155,4 @@ func authorize(c echo.Context) error {
 
     return nil
 }
+

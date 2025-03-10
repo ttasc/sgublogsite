@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	controller "sgublogsite/src/internal/controller"
+	"sgublogsite/src/internal/controllers"
 )
 
 func registerHandlers() http.Handler {
@@ -31,10 +31,10 @@ func useMiddleware(e *echo.Echo) {
 func registerRoutes(e *echo.Echo) http.Handler {
 
     // Authorization
-    e.POST("/register"   , controller.Register)
-    e.POST("/login"      , controller.Login)
-    e.POST("/logout"     , controller.Logout)
-    e.POST("/protected"  , controller.Protected)
+    e.POST("/register"   , controllers.Register)
+    e.POST("/login"      , controllers.Login)
+    e.POST("/logout"     , controllers.Logout)
+    e.POST("/protected"  , controllers.Protected)
 
     return e
 }
