@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"sgublogsite/src/internal/models"
+	"sgublogsite/src/internal/model/services"
 	"sgublogsite/src/internal/utils"
 )
 

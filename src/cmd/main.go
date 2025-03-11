@@ -9,7 +9,7 @@ import (
     "syscall"
     "time"
 
-    "sgublogsite/src/internal/routes"
+    "sgublogsite/src/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {

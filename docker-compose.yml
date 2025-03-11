@@ -10,7 +10,7 @@ services:
     ports:
       - "${SGUBLOGSITE_DB_PORT}:3306"
     volumes:
-      - ./assets/sgublogsite.sql:/docker-entrypoint-initdb.d/sgublogsite.sql
+      - ./assets/schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - sgublogsite_db_volume:/var/lib/mysql
 
 volumes:

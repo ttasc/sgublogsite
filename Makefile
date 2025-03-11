@@ -6,13 +6,13 @@ all: build test
 build:
 	@echo "Building..."
 
-	@go build -o bin/main src/cmd/api/main.go
+	@go build -o bin/main src/cmd/main.go
 
 # Run the application
 run:
 	@echo "Running..."
 
-	@go run src/cmd/api/main.go
+	@go run src/cmd/main.go
 
 # Create DB container
 docker-run:

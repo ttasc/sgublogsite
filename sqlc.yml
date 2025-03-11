@@ -1,0 +1,16 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    schema: "./assets/schema.sql"
+    queries: "./src/queries/"
+    gen:
+      go:
+        emit_json_tags: true
+        emit_prepared_queries: true
+        package: "repos"
+        out: "./src/internal/model/repos/"
+        overrides:
+          - db_type: "timestamp"
+            go_type:
+              import: "time"
+              type: "Time"
