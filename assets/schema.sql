@@ -16,8 +16,8 @@ CREATE TABLE users (
     password        VARCHAR(255) NOT NULL, -- Assuming hashed
     profile_pic_id  INT,
     role            ENUM('admin', 'author', 'subscriber') DEFAULT 'subscriber', -- Basic role management
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     INDEX idx_users_id (user_id ASC),
     INDEX idx_users_fullname (firstname ASC, lastname ASC),
@@ -33,17 +33,18 @@ CREATE TABLE posts (
     user_id         INT, -- Foreign key to the user who authored the post
     title           VARCHAR(255) NOT NULL,
     slug            VARCHAR(255) NOT NULL UNIQUE, -- SEO-friendly URL identifier
-    preview_pic_id  INT,
+    thumbnail_id    INT,
     body            TEXT NOT NULL,
     status          ENUM('draft', 'published') NOT NULL DEFAULT 'draft', -- For content moderation
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    private         BOOLEAN NOT NULL DEFAULT 0,
+    created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FULLTEXT(title, body),
     UNIQUE INDEX uq_posts_slug (slug ASC),
     INDEX idx_posts_user_id (user_id ASC),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE NO ACTION,
-    FOREIGN KEY (preview_pic_id) REFERENCES images(image_id) ON DELETE SET NULL
+    FOREIGN KEY (thumbnail_id) REFERENCES images(image_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 DROP TABLE IF EXISTS categories;

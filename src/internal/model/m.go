@@ -1,4 +1,4 @@
-package services
+package model
 
 import (
     "context"
@@ -7,23 +7,21 @@ import (
     "sgublogsite/src/internal/utils"
 )
 
-type services struct {
+type Model struct {
     ctx   context.Context
     db    *sql.DB
     query *repos.Queries
 }
 
-func new() *services {
+func New() *Model {
     var (
         ctx     = context.Background()
         db      = utils.NewDB()
         query   = repos.New(db)
     )
-    return &services{
+    return &Model{
         ctx:   ctx,
         db:    db,
         query: query,
     }
 }
-
-var s = new()

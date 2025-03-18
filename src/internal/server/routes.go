@@ -11,6 +11,7 @@ import (
 
 func registerHandlers() http.Handler {
     e := echo.New()
+    e.Renderer = t
     useMiddleware(e)
     registerRoutes(e)
     return e
@@ -30,11 +31,18 @@ func useMiddleware(e *echo.Echo) {
 
 func registerRoutes(e *echo.Echo) http.Handler {
 
-    // Authorization
-    e.POST("/register"   , controllers.Register)
-    e.POST("/login"      , controllers.Login)
-    e.POST("/logout"     , controllers.Logout)
-    e.POST("/protected"  , controllers.Protected)
+    // Public routes
+    e.POST("/register"   , controller.Register)
+    e.POST("/login"      , controller.Login)
+    e.POST("/logout"     , controller.Logout)
+
+    g := e.Group("")
+    g.Use(configureJWT())
+    g.Use(userMiddleware)
+    {
+        // g.GET("/admin"  , controller.AdminDashboard)
+        // g.GET("/author" , controller.AuthorDashboard)
+    }
 
     return e
 }

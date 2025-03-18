@@ -1,158 +1,128 @@
-package controllers
+package controller
 
 import (
-	"errors"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	_ "github.com/joho/godotenv/autoload"
 
-	"sgublogsite/src/internal/model/services"
+	"sgublogsite/src/internal/model/repos"
+	"sgublogsite/src/internal/model"
 	"sgublogsite/src/internal/utils"
 )
 
-func Protected(c echo.Context) error {
-    if c.Request().Method != http.MethodPost {
-        return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
-    }
-
-    if err := authorize(c); err != nil {
-        return utils.Rdie(c, http.StatusUnauthorized, "Unauthorized")
-    }
-
-    email := c.FormValue("email")
-    c.String(http.StatusOK, "Protected route for "+email)
-
-    return nil
+type JWTClaims struct {
+    UserID string
+    Roles []string `json:"role"`
+    jwt.RegisteredClaims
 }
+
+type User struct {
+    IsAuthenticated bool
+    ID              string
+    Roles           []string
+}
+
+var (
+    JWTKey = []byte(os.Getenv("SGUBLOGSITE_JWT_KEY"))
+    JWTCookieName  = "jwt_token"
+)
 
 func Register(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
         return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
-    email := c.FormValue("email")
-    fullname := c.FormValue("fullname")
-    password := c.FormValue("password")
-    if len(email)==0 || len(password)<8 {
-        return utils.Rdie(c, http.StatusBadRequest, "Invalid email or password")
-    }
-    if models.UserExists(email) {
-        return utils.Rdie(c, http.StatusBadRequest, "User already exists")
-    }
+
+    var (
+        firstname   = c.FormValue("firstname")
+        lastname    = c.FormValue("lastname")
+        mobile      = c.FormValue("mobile")
+        email       = c.FormValue("email")
+        role        = c.FormValue("role")
+        password    = c.FormValue("password")
+    )
+    m := model.New()
+
     hashedPassword, _ := utils.HashPassword(password)
-    user := &models.User{
-        FullName: fullname,
-        Password: hashedPassword,
-        Email:    email,
-    }
-    models.AddUser(user)
 
-    c.String(http.StatusCreated, "User created successfully")
+    m.AddUser(repos.User{
+        Firstname:   firstname,
+        Lastname:    lastname,
+        Mobile:      mobile,
+        Email:       email,
+        Password:    hashedPassword,
+        Role:        repos.NullUsersRole{ UsersRole: repos.UsersRole(role), Valid: true },
+    })
 
-    return nil
+    return c.String(http.StatusCreated, "User created successfully")
 }
 
 func Login(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
         return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
-    email := c.FormValue("email")
+
+    emailormobile := c.FormValue("emailormobile")
     password := c.FormValue("password")
-    user, err := models.GetUserByEmail(email)
+
+    m := model.New()
+
+    user, err := m.GetUserByEmailOrMobile(emailormobile)
+
     if err != nil || !utils.CheckPasswordHash(password, user.Password) {
         return utils.Rdie(c, http.StatusBadRequest, "Invalid email or password")
     }
 
-    sessionToken := utils.GenerateToken(32)
-    csrfToken := utils.GenerateToken(32)
+    expirationTime := time.Now().Add(time.Hour * 24)
 
-    // Set session cookie
-    c.SetCookie(&http.Cookie{
-        Name:     "session_token",
-        Value:    sessionToken,
-        Expires:  time.Now().Add(time.Hour * 24), // Set session expiration time
-        HttpOnly: true,
-    })
-
-    // Set CSRF token cookie
-    c.SetCookie(&http.Cookie{
-        Name:     "csrf_token",
-        Value:    csrfToken,
-        Expires:  time.Now().Add(time.Hour * 24), // Set session expiration time
-        HttpOnly: false, // Need to be accessible to the client-side
-    })
-
-    if err = user.UpdateSessionData(sessionToken, csrfToken); err != nil {
-        return utils.Rdie(c, http.StatusInternalServerError, "Failed to update session data")
+    // Set custom claims
+    claims := &JWTClaims{
+        UserID: string(user.UserID),
+        Roles: []string{ string(user.Role.UsersRole) },
+        RegisteredClaims: jwt.RegisteredClaims{
+            ExpiresAt: jwt.NewNumericDate(expirationTime),
+        },
     }
 
-    c.String(http.StatusOK, "Login successfully")
+    // Create token with claims
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-    return nil
+    // Generate encoded token and send it as response.
+    t, err := token.SignedString(JWTKey)
+    if err != nil {
+        return err
+    }
+
+    // Set cookie
+    c.SetCookie(&http.Cookie{
+        Name:     JWTCookieName,
+        Value:    t,
+        Expires:  expirationTime,
+        HttpOnly: true,
+        Secure:   false,
+        Path:     "/",
+    })
+
+    return c.String(http.StatusOK, "Login successfully")
 }
 
 func Logout(c echo.Context) error {
     if c.Request().Method != http.MethodPost {
         return utils.Rdie(c, http.StatusMethodNotAllowed, "Method not allowed")
     }
-    if err := authorize(c); err != nil {
-        return utils.Rdie(c, http.StatusUnauthorized, "Unauthorized")
-    }
 
     // Clear cookie
     c.SetCookie(&http.Cookie{
-        Name:     "session_token",
+        Name:     "token",
         Value:    "",
         Expires:  time.Now().Add(-time.Hour),
         HttpOnly: true,
+        Secure:   false,
+        Path:     "/",
     })
 
-    c.SetCookie(&http.Cookie{
-        Name:     "csrf_token",
-        Value:    "",
-        Expires:  time.Now().Add(-time.Hour),
-        HttpOnly: false,
-    })
-
-    // Clear the tokens from the models
-    email := c.FormValue("email")
-    user, err := models.GetUserByEmail(email)
-    if err != nil {
-        return err
-    }
-    if err := user.UpdateSessionData("", ""); err != nil {
-        return err
-    }
-
-    c.String(http.StatusOK, "Logout successfully")
-
-    return nil
+    return c.String(http.StatusOK, "Logout successfully")
 }
-
-func authorize(c echo.Context) error {
-    authError := errors.New("Unauthorized")
-    user, err := models.GetUserByEmail(c.FormValue("email"))
-    if err != nil {
-        return authError
-    }
-
-    sessionTokenData, csrfTokenData, err := user.GetSessionData()
-    if err != nil {
-        return authError
-    }
-
-    // Get session token from cookie
-    sessionToken, err := c.Cookie("session_token")
-    if err != nil || sessionToken.Value == "" || sessionToken.Value != sessionTokenData {
-        return authError
-    }
-
-    // Get CSRF token from cookie
-    csrfToken := c.Request().Header.Get("X-CSRF-Token")
-    if csrfToken == "" || csrfToken != csrfTokenData {
-        return authError
-    }
-
-    return nil
-}
-

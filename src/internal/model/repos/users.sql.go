@@ -10,36 +10,33 @@ import (
 	"database/sql"
 )
 
-const createUser = `-- name: CreateUser :execresult
+const addUser = `-- name: AddUser :execresult
 INSERT INTO users (
     firstname,
     lastname,
     mobile,
     email,
     password,
-    profile_pic_id,
     role
-) VALUES (?, ?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?)
 `
 
-type CreateUserParams struct {
-	Firstname    string        `json:"firstname"`
-	Lastname     string        `json:"lastname"`
-	Mobile       string        `json:"mobile"`
-	Email        string        `json:"email"`
-	Password     string        `json:"password"`
-	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`
-	Role         NullUsersRole `json:"role"`
+type AddUserParams struct {
+	Firstname string        `json:"firstname"`
+	Lastname  string        `json:"lastname"`
+	Mobile    string        `json:"mobile"`
+	Email     string        `json:"email"`
+	Password  string        `json:"password"`
+	Role      NullUsersRole `json:"role"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {
-	return q.exec(ctx, q.createUserStmt, createUser,
+func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (sql.Result, error) {
+	return q.exec(ctx, q.addUserStmt, addUser,
 		arg.Firstname,
 		arg.Lastname,
 		arg.Mobile,
 		arg.Email,
 		arg.Password,
-		arg.ProfilePicID,
 		arg.Role,
 	)
 }
@@ -133,6 +130,35 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUserByEmailOrMobile = `-- name: GetUserByEmailOrMobile :one
+SELECT user_id, firstname, lastname, mobile, email, password, profile_pic_id, role, created_at, updated_at
+FROM users
+WHERE email = ? OR mobile = ?
+`
+
+type GetUserByEmailOrMobileParams struct {
+	Email  string `json:"email"`
+	Mobile string `json:"mobile"`
+}
+
+func (q *Queries) GetUserByEmailOrMobile(ctx context.Context, arg GetUserByEmailOrMobileParams) (User, error) {
+	row := q.queryRow(ctx, q.getUserByEmailOrMobileStmt, getUserByEmailOrMobile, arg.Email, arg.Mobile)
+	var i User
+	err := row.Scan(
+		&i.UserID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Mobile,
+		&i.Email,
+		&i.Password,
+		&i.ProfilePicID,
+		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one

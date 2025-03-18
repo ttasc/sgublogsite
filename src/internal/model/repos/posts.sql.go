@@ -48,17 +48,17 @@ INSERT INTO posts (
     user_id,
     title,
     slug,
-    preview_pic_id,
+    thumbnail_id,
     body
 ) VALUES (?, ?, ?, ?, ?)
 `
 
 type CreatePostParams struct {
-	UserID       sql.NullInt32 `json:"user_id"`
-	Title        string        `json:"title"`
-	Slug         string        `json:"slug"`
-	PreviewPicID sql.NullInt32 `json:"preview_pic_id"`
-	Body         string        `json:"body"`
+	UserID      sql.NullInt32 `json:"user_id"`
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	ThumbnailID sql.NullInt32 `json:"thumbnail_id"`
+	Body        string        `json:"body"`
 }
 
 // WHERE MATCH(title, body)) AGAINST (sqlc.arg(text));
@@ -67,7 +67,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (sql.Res
 		arg.UserID,
 		arg.Title,
 		arg.Slug,
-		arg.PreviewPicID,
+		arg.ThumbnailID,
 		arg.Body,
 	)
 }
@@ -82,7 +82,7 @@ func (q *Queries) DeletePost(ctx context.Context, postID int32) (sql.Result, err
 }
 
 const findPosts = `-- name: FindPosts :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE lower(concat(title, ' ', body)) LIKE lower(?)
 `
@@ -101,9 +101,10 @@ func (q *Queries) FindPosts(ctx context.Context, text string) ([]Post, error) {
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -121,7 +122,9 @@ func (q *Queries) FindPosts(ctx context.Context, text string) ([]Post, error) {
 }
 
 const getAllPosts = `-- name: GetAllPosts :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at FROM posts
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
+FROM posts
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
@@ -138,9 +141,10 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -158,13 +162,14 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
 }
 
 const getPostsByCategoryID = `-- name: GetPostsByCategoryID :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE post_id IN (
     SELECT post_id
     FROM post_categories
     WHERE category_id = ?
 )
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPostsByCategoryID(ctx context.Context, categoryID int32) ([]Post, error) {
@@ -181,9 +186,10 @@ func (q *Queries) GetPostsByCategoryID(ctx context.Context, categoryID int32) ([
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -201,7 +207,7 @@ func (q *Queries) GetPostsByCategoryID(ctx context.Context, categoryID int32) ([
 }
 
 const getPostsByCategoryName = `-- name: GetPostsByCategoryName :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE post_id IN (
     SELECT post_id
@@ -212,6 +218,7 @@ WHERE post_id IN (
         WHERE name = ?
     )
 )
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPostsByCategoryName(ctx context.Context, name string) ([]Post, error) {
@@ -228,9 +235,10 @@ func (q *Queries) GetPostsByCategoryName(ctx context.Context, name string) ([]Po
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -248,9 +256,10 @@ func (q *Queries) GetPostsByCategoryName(ctx context.Context, name string) ([]Po
 }
 
 const getPostsByStatus = `-- name: GetPostsByStatus :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE status = ?
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPostsByStatus(ctx context.Context, status PostsStatus) ([]Post, error) {
@@ -267,9 +276,10 @@ func (q *Queries) GetPostsByStatus(ctx context.Context, status PostsStatus) ([]P
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -287,13 +297,14 @@ func (q *Queries) GetPostsByStatus(ctx context.Context, status PostsStatus) ([]P
 }
 
 const getPostsByTagID = `-- name: GetPostsByTagID :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE post_id IN (
     SELECT post_id
     FROM post_tags
     WHERE tag_id = ?
 )
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPostsByTagID(ctx context.Context, tagID int32) ([]Post, error) {
@@ -310,9 +321,10 @@ func (q *Queries) GetPostsByTagID(ctx context.Context, tagID int32) ([]Post, err
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -330,7 +342,7 @@ func (q *Queries) GetPostsByTagID(ctx context.Context, tagID int32) ([]Post, err
 }
 
 const getPostsByTagName = `-- name: GetPostsByTagName :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE post_id IN (
     SELECT post_id
@@ -341,6 +353,7 @@ WHERE post_id IN (
         WHERE name = ?
     )
 )
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPostsByTagName(ctx context.Context, name string) ([]Post, error) {
@@ -357,9 +370,10 @@ func (q *Queries) GetPostsByTagName(ctx context.Context, name string) ([]Post, e
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -377,9 +391,10 @@ func (q *Queries) GetPostsByTagName(ctx context.Context, name string) ([]Post, e
 }
 
 const getPostsByUserID = `-- name: GetPostsByUserID :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE user_id = ?
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPostsByUserID(ctx context.Context, userID sql.NullInt32) ([]Post, error) {
@@ -396,9 +411,10 @@ func (q *Queries) GetPostsByUserID(ctx context.Context, userID sql.NullInt32) ([
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -416,12 +432,13 @@ func (q *Queries) GetPostsByUserID(ctx context.Context, userID sql.NullInt32) ([
 }
 
 const getUncategorizedPosts = `-- name: GetUncategorizedPosts :many
-SELECT post_id, user_id, title, slug, preview_pic_id, body, status, created_at, updated_at
+SELECT post_id, user_id, title, slug, thumbnail_id, body, status, private, created_at, updated_at
 FROM posts
 WHERE post_id NOT IN (
     SELECT post_id
     FROM post_categories
 )
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetUncategorizedPosts(ctx context.Context) ([]Post, error) {
@@ -438,9 +455,10 @@ func (q *Queries) GetUncategorizedPosts(ctx context.Context) ([]Post, error) {
 			&i.UserID,
 			&i.Title,
 			&i.Slug,
-			&i.PreviewPicID,
+			&i.ThumbnailID,
 			&i.Body,
 			&i.Status,
+			&i.Private,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -477,24 +495,39 @@ UPDATE posts
 SET
     title = ?,
     slug = ?,
-    preview_pic_id = ?
+    thumbnail_id = ?
 WHERE post_id = ?
 `
 
 type UpdatePostMetadataParams struct {
-	Title        string        `json:"title"`
-	Slug         string        `json:"slug"`
-	PreviewPicID sql.NullInt32 `json:"preview_pic_id"`
-	PostID       int32         `json:"post_id"`
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	ThumbnailID sql.NullInt32 `json:"thumbnail_id"`
+	PostID      int32         `json:"post_id"`
 }
 
 func (q *Queries) UpdatePostMetadata(ctx context.Context, arg UpdatePostMetadataParams) (sql.Result, error) {
 	return q.exec(ctx, q.updatePostMetadataStmt, updatePostMetadata,
 		arg.Title,
 		arg.Slug,
-		arg.PreviewPicID,
+		arg.ThumbnailID,
 		arg.PostID,
 	)
+}
+
+const updatePostPrivate = `-- name: UpdatePostPrivate :execresult
+UPDATE posts
+SET private = ?
+WHERE post_id = ?
+`
+
+type UpdatePostPrivateParams struct {
+	Private bool  `json:"private"`
+	PostID  int32 `json:"post_id"`
+}
+
+func (q *Queries) UpdatePostPrivate(ctx context.Context, arg UpdatePostPrivateParams) (sql.Result, error) {
+	return q.exec(ctx, q.updatePostPrivateStmt, updatePostPrivate, arg.Private, arg.PostID)
 }
 
 const updatePostStatus = `-- name: UpdatePostStatus :execresult

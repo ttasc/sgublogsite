@@ -1,6 +1,6 @@
+uploads/
 tmp/
 bin/
-src/queries/
 .env
 
 *.exe

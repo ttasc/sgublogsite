@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"time"
 )
 
 type PostsStatus string
@@ -109,15 +110,16 @@ type Image struct {
 }
 
 type Post struct {
-	PostID       int32         `json:"post_id"`
-	UserID       sql.NullInt32 `json:"user_id"`
-	Title        string        `json:"title"`
-	Slug         string        `json:"slug"`
-	PreviewPicID sql.NullInt32 `json:"preview_pic_id"`
-	Body         string        `json:"body"`
-	Status       PostsStatus   `json:"status"`
-	CreatedAt    sql.NullTime  `json:"created_at"`
-	UpdatedAt    sql.NullTime  `json:"updated_at"`
+	PostID      int32         `json:"post_id"`
+	UserID      sql.NullInt32 `json:"user_id"`
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	ThumbnailID sql.NullInt32 `json:"thumbnail_id"`
+	Body        string        `json:"body"`
+	Status      PostsStatus   `json:"status"`
+	Private     bool          `json:"private"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 type PostCategory struct {
@@ -145,6 +147,6 @@ type User struct {
 	Password     string        `json:"password"`
 	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`
 	Role         NullUsersRole `json:"role"`
-	CreatedAt    sql.NullTime  `json:"created_at"`
-	UpdatedAt    sql.NullTime  `json:"updated_at"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
 }

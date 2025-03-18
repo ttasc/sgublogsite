@@ -39,11 +39,11 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.addTagToPostStmt, err = db.PrepareContext(ctx, addTagToPost); err != nil {
 		return nil, fmt.Errorf("error preparing query AddTagToPost: %w", err)
 	}
+	if q.addUserStmt, err = db.PrepareContext(ctx, addUser); err != nil {
+		return nil, fmt.Errorf("error preparing query AddUser: %w", err)
+	}
 	if q.createPostStmt, err = db.PrepareContext(ctx, createPost); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePost: %w", err)
-	}
-	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
 	if q.deleteCategoryStmt, err = db.PrepareContext(ctx, deleteCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteCategory: %w", err)
@@ -117,6 +117,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUncategorizedPostsStmt, err = db.PrepareContext(ctx, getUncategorizedPosts); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUncategorizedPosts: %w", err)
 	}
+	if q.getUserByEmailOrMobileStmt, err = db.PrepareContext(ctx, getUserByEmailOrMobile); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserByEmailOrMobile: %w", err)
+	}
 	if q.getUserByIDStmt, err = db.PrepareContext(ctx, getUserByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByID: %w", err)
 	}
@@ -128,6 +131,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updatePostMetadataStmt, err = db.PrepareContext(ctx, updatePostMetadata); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePostMetadata: %w", err)
+	}
+	if q.updatePostPrivateStmt, err = db.PrepareContext(ctx, updatePostPrivate); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdatePostPrivate: %w", err)
 	}
 	if q.updatePostStatusStmt, err = db.PrepareContext(ctx, updatePostStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePostStatus: %w", err)
@@ -171,14 +177,14 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing addTagToPostStmt: %w", cerr)
 		}
 	}
+	if q.addUserStmt != nil {
+		if cerr := q.addUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addUserStmt: %w", cerr)
+		}
+	}
 	if q.createPostStmt != nil {
 		if cerr := q.createPostStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPostStmt: %w", cerr)
-		}
-	}
-	if q.createUserStmt != nil {
-		if cerr := q.createUserStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
 	if q.deleteCategoryStmt != nil {
@@ -301,6 +307,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUncategorizedPostsStmt: %w", cerr)
 		}
 	}
+	if q.getUserByEmailOrMobileStmt != nil {
+		if cerr := q.getUserByEmailOrMobileStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByEmailOrMobileStmt: %w", cerr)
+		}
+	}
 	if q.getUserByIDStmt != nil {
 		if cerr := q.getUserByIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserByIDStmt: %w", cerr)
@@ -319,6 +330,11 @@ func (q *Queries) Close() error {
 	if q.updatePostMetadataStmt != nil {
 		if cerr := q.updatePostMetadataStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePostMetadataStmt: %w", cerr)
+		}
+	}
+	if q.updatePostPrivateStmt != nil {
+		if cerr := q.updatePostPrivateStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updatePostPrivateStmt: %w", cerr)
 		}
 	}
 	if q.updatePostStatusStmt != nil {
@@ -385,8 +401,8 @@ type Queries struct {
 	addPostToCategoryStmt      *sql.Stmt
 	addTagStmt                 *sql.Stmt
 	addTagToPostStmt           *sql.Stmt
+	addUserStmt                *sql.Stmt
 	createPostStmt             *sql.Stmt
-	createUserStmt             *sql.Stmt
 	deleteCategoryStmt         *sql.Stmt
 	deleteImageStmt            *sql.Stmt
 	deletePostStmt             *sql.Stmt
@@ -411,10 +427,12 @@ type Queries struct {
 	getRootCategoriesStmt      *sql.Stmt
 	getTagByIDStmt             *sql.Stmt
 	getUncategorizedPostsStmt  *sql.Stmt
+	getUserByEmailOrMobileStmt *sql.Stmt
 	getUserByIDStmt            *sql.Stmt
 	updateCategoryStmt         *sql.Stmt
 	updatePostBodyStmt         *sql.Stmt
 	updatePostMetadataStmt     *sql.Stmt
+	updatePostPrivateStmt      *sql.Stmt
 	updatePostStatusStmt       *sql.Stmt
 	updateUserInfoStmt         *sql.Stmt
 	updateUserPasswordStmt     *sql.Stmt
@@ -430,8 +448,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		addPostToCategoryStmt:      q.addPostToCategoryStmt,
 		addTagStmt:                 q.addTagStmt,
 		addTagToPostStmt:           q.addTagToPostStmt,
+		addUserStmt:                q.addUserStmt,
 		createPostStmt:             q.createPostStmt,
-		createUserStmt:             q.createUserStmt,
 		deleteCategoryStmt:         q.deleteCategoryStmt,
 		deleteImageStmt:            q.deleteImageStmt,
 		deletePostStmt:             q.deletePostStmt,
@@ -456,10 +474,12 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getRootCategoriesStmt:      q.getRootCategoriesStmt,
 		getTagByIDStmt:             q.getTagByIDStmt,
 		getUncategorizedPostsStmt:  q.getUncategorizedPostsStmt,
+		getUserByEmailOrMobileStmt: q.getUserByEmailOrMobileStmt,
 		getUserByIDStmt:            q.getUserByIDStmt,
 		updateCategoryStmt:         q.updateCategoryStmt,
 		updatePostBodyStmt:         q.updatePostBodyStmt,
 		updatePostMetadataStmt:     q.updatePostMetadataStmt,
+		updatePostPrivateStmt:      q.updatePostPrivateStmt,
 		updatePostStatusStmt:       q.updatePostStatusStmt,
 		updateUserInfoStmt:         q.updateUserInfoStmt,
 		updateUserPasswordStmt:     q.updateUserPasswordStmt,
