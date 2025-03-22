@@ -1,0 +1,40 @@
+<!--
+  vim: filetype=html
+-->
+{{template "base" .}}
+{{define "content"}}
+<div class="search-results">
+  <h2 class="search-title">Kết quả tìm kiếm cho: <em>{{.SearchQuery}}</em></h2>
+
+  <ul class="result-list">
+    {{range .Posts}}
+    <li class="result-item">
+      <a href="/post/{{.PostID}}" class="result-link">
+        {{.Title}}
+        <span class="post-date">{{.CreatedAt.Format "02/01/2006"}}</span>
+      </a>
+    </li>
+    {{else}}
+    <p class="no-results">Không tìm thấy kết quả nào.</p>
+    {{end}}
+  </ul>
+
+  {{if .Pagination}}
+  <div class="pagination-container">
+    <div class="pagination">
+      {{range .Pagination}}
+      <a href="{{.URL}}"
+         class="page-item {{if .Active}}active{{end}}"
+         hx-get="{{.URL}}"
+         hx-target="#main-content"
+         hx-push-url="true"
+         hx-params="*"
+         hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>
+        {{if .Label}}{{.Label}}{{else}}{{.Number}}{{end}}
+      </a>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+</div>
+{{end}}

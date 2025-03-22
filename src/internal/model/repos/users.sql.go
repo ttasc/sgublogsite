@@ -8,13 +8,14 @@ package repos
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const addUser = `-- name: AddUser :execresult
 INSERT INTO users (
     firstname,
     lastname,
-    mobile,
+    phone,
     email,
     password,
     role
@@ -24,7 +25,7 @@ INSERT INTO users (
 type AddUserParams struct {
 	Firstname string        `json:"firstname"`
 	Lastname  string        `json:"lastname"`
-	Mobile    string        `json:"mobile"`
+	Phone     string        `json:"phone"`
 	Email     string        `json:"email"`
 	Password  string        `json:"password"`
 	Role      NullUsersRole `json:"role"`
@@ -34,7 +35,7 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (sql.Result, e
 	return q.exec(ctx, q.addUserStmt, addUser,
 		arg.Firstname,
 		arg.Lastname,
-		arg.Mobile,
+		arg.Phone,
 		arg.Email,
 		arg.Password,
 		arg.Role,
@@ -51,31 +52,46 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int32) (sql.Result, err
 }
 
 const findUsers = `-- name: FindUsers :many
-SELECT user_id, firstname, lastname, mobile, email, password, profile_pic_id, role, created_at, updated_at
-FROM users
-WHERE lower(concat(firstname, ' ', lastname, ' ', mobile, ' ', email)) LIKE lower(?)
+SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.profile_pic_id, users.role, users.created_at, users.updated_at, images.url AS profile_pic
+FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
+WHERE lower(concat(firstname, ' ', lastname, ' ', phone, ' ', email)) LIKE lower(?)
 `
 
-func (q *Queries) FindUsers(ctx context.Context, text string) ([]User, error) {
+type FindUsersRow struct {
+	UserID       int32          `json:"user_id"`
+	Firstname    string         `json:"firstname"`
+	Lastname     string         `json:"lastname"`
+	Phone        string         `json:"phone"`
+	Email        string         `json:"email"`
+	Password     string         `json:"password"`
+	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
+	Role         NullUsersRole  `json:"role"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	ProfilePic   sql.NullString `json:"profile_pic"`
+}
+
+func (q *Queries) FindUsers(ctx context.Context, text string) ([]FindUsersRow, error) {
 	rows, err := q.query(ctx, q.findUsersStmt, findUsers, text)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	var items []FindUsersRow
 	for rows.Next() {
-		var i User
+		var i FindUsersRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.Firstname,
 			&i.Lastname,
-			&i.Mobile,
+			&i.Phone,
 			&i.Email,
 			&i.Password,
 			&i.ProfilePicID,
 			&i.Role,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ProfilePic,
 		); err != nil {
 			return nil, err
 		}
@@ -92,32 +108,47 @@ func (q *Queries) FindUsers(ctx context.Context, text string) ([]User, error) {
 
 const getAllUsers = `-- name: GetAllUsers :many
 
-SELECT user_id, firstname, lastname, mobile, email, password, profile_pic_id, role, created_at, updated_at
-FROM users
+SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.profile_pic_id, users.role, users.created_at, users.updated_at, images.url AS profile_pic
+FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
 ORDER BY lastname
 `
 
-// WHERE MATCH(firstname, lastname, mobile, email)) AGAINST (sqlc.arg(text));
-func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
+type GetAllUsersRow struct {
+	UserID       int32          `json:"user_id"`
+	Firstname    string         `json:"firstname"`
+	Lastname     string         `json:"lastname"`
+	Phone        string         `json:"phone"`
+	Email        string         `json:"email"`
+	Password     string         `json:"password"`
+	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
+	Role         NullUsersRole  `json:"role"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	ProfilePic   sql.NullString `json:"profile_pic"`
+}
+
+// WHERE MATCH(firstname, lastname, phone, email)) AGAINST (sqlc.arg(text));
+func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 	rows, err := q.query(ctx, q.getAllUsersStmt, getAllUsers)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	var items []GetAllUsersRow
 	for rows.Next() {
-		var i User
+		var i GetAllUsersRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.Firstname,
 			&i.Lastname,
-			&i.Mobile,
+			&i.Phone,
 			&i.Email,
 			&i.Password,
 			&i.ProfilePicID,
 			&i.Role,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ProfilePic,
 		); err != nil {
 			return nil, err
 		}
@@ -132,55 +163,85 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const getUserByEmailOrMobile = `-- name: GetUserByEmailOrMobile :one
-SELECT user_id, firstname, lastname, mobile, email, password, profile_pic_id, role, created_at, updated_at
-FROM users
-WHERE email = ? OR mobile = ?
+const getUserByEmailOrPhone = `-- name: GetUserByEmailOrPhone :one
+SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.profile_pic_id, users.role, users.created_at, users.updated_at, images.url AS profile_pic
+FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
+WHERE email = ? OR phone = ?
 `
 
-type GetUserByEmailOrMobileParams struct {
-	Email  string `json:"email"`
-	Mobile string `json:"mobile"`
+type GetUserByEmailOrPhoneParams struct {
+	Email string `json:"email"`
+	Phone string `json:"phone"`
 }
 
-func (q *Queries) GetUserByEmailOrMobile(ctx context.Context, arg GetUserByEmailOrMobileParams) (User, error) {
-	row := q.queryRow(ctx, q.getUserByEmailOrMobileStmt, getUserByEmailOrMobile, arg.Email, arg.Mobile)
-	var i User
+type GetUserByEmailOrPhoneRow struct {
+	UserID       int32          `json:"user_id"`
+	Firstname    string         `json:"firstname"`
+	Lastname     string         `json:"lastname"`
+	Phone        string         `json:"phone"`
+	Email        string         `json:"email"`
+	Password     string         `json:"password"`
+	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
+	Role         NullUsersRole  `json:"role"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	ProfilePic   sql.NullString `json:"profile_pic"`
+}
+
+func (q *Queries) GetUserByEmailOrPhone(ctx context.Context, arg GetUserByEmailOrPhoneParams) (GetUserByEmailOrPhoneRow, error) {
+	row := q.queryRow(ctx, q.getUserByEmailOrPhoneStmt, getUserByEmailOrPhone, arg.Email, arg.Phone)
+	var i GetUserByEmailOrPhoneRow
 	err := row.Scan(
 		&i.UserID,
 		&i.Firstname,
 		&i.Lastname,
-		&i.Mobile,
+		&i.Phone,
 		&i.Email,
 		&i.Password,
 		&i.ProfilePicID,
 		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ProfilePic,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT user_id, firstname, lastname, mobile, email, password, profile_pic_id, role, created_at, updated_at
-FROM users
+SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.profile_pic_id, users.role, users.created_at, users.updated_at, images.url AS profile_pic
+FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
 WHERE user_id = ?
 `
 
-func (q *Queries) GetUserByID(ctx context.Context, userID int32) (User, error) {
+type GetUserByIDRow struct {
+	UserID       int32          `json:"user_id"`
+	Firstname    string         `json:"firstname"`
+	Lastname     string         `json:"lastname"`
+	Phone        string         `json:"phone"`
+	Email        string         `json:"email"`
+	Password     string         `json:"password"`
+	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
+	Role         NullUsersRole  `json:"role"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	ProfilePic   sql.NullString `json:"profile_pic"`
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow, error) {
 	row := q.queryRow(ctx, q.getUserByIDStmt, getUserByID, userID)
-	var i User
+	var i GetUserByIDRow
 	err := row.Scan(
 		&i.UserID,
 		&i.Firstname,
 		&i.Lastname,
-		&i.Mobile,
+		&i.Phone,
 		&i.Email,
 		&i.Password,
 		&i.ProfilePicID,
 		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ProfilePic,
 	)
 	return i, err
 }
@@ -190,7 +251,7 @@ UPDATE users
 SET
     firstname = ?,
     lastname = ?,
-    mobile = ?,
+    phone = ?,
     email = ?,
     profile_pic_id = ?
 WHERE user_id = ?
@@ -199,7 +260,7 @@ WHERE user_id = ?
 type UpdateUserInfoParams struct {
 	Firstname    string        `json:"firstname"`
 	Lastname     string        `json:"lastname"`
-	Mobile       string        `json:"mobile"`
+	Phone        string        `json:"phone"`
 	Email        string        `json:"email"`
 	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`
 	UserID       int32         `json:"user_id"`
@@ -209,7 +270,7 @@ func (q *Queries) UpdateUserInfo(ctx context.Context, arg UpdateUserInfoParams) 
 	return q.exec(ctx, q.updateUserInfoStmt, updateUserInfo,
 		arg.Firstname,
 		arg.Lastname,
-		arg.Mobile,
+		arg.Phone,
 		arg.Email,
 		arg.ProfilePicID,
 		arg.UserID,

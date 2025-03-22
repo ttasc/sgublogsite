@@ -6,6 +6,9 @@ WHERE tag_id = ?;
 -- name: GetAllTags :many
 SELECT * FROM tags;
 
+-- name: GetAllTagNames :many
+SELECT name FROM tags;
+
 -- name: AddTag :execresult
 INSERT INTO tags (
     name,

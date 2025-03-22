@@ -3,46 +3,54 @@ package server
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/go-chi/jwtauth/v5"
 
 	"sgublogsite/src/internal/controller"
 )
 
 func registerHandlers() http.Handler {
-    e := echo.New()
-    e.Renderer = t
-    useMiddleware(e)
-    registerRoutes(e)
-    return e
+    r := chi.NewRouter()
+    useMiddleware(r)
+    registerRoutes(r)
+    return r
 }
 
-func useMiddleware(e *echo.Echo) {
-    e.Use(middleware.Logger())
-    e.Use(middleware.Recover())
-    e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-        AllowOrigins:     []string{"https://*", "http://*"},
-        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-        AllowHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+func useMiddleware(r *chi.Mux) {
+    r.Use(middleware.Logger)
+    r.Use(middleware.Recoverer)
+    r.Use(cors.Handler(cors.Options{
+        AllowedOrigins:   []string{"https://*", "http://*"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+        AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
         AllowCredentials: true,
         MaxAge:           300,
     }))
+
+    r.Use(jwtauth.Verifier(controller.TokenAuth))
 }
 
-func registerRoutes(e *echo.Echo) http.Handler {
+func registerRoutes(r *chi.Mux) http.Handler {
+    r.Handle("/assets/*",  http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
-    // Public routes
-    e.POST("/register"   , controller.Register)
-    e.POST("/login"      , controller.Login)
-    e.POST("/logout"     , controller.Logout)
+    r.Get("/"               , controller.Home)
+    r.Get("/about"          , controller.About)
+    r.Get("/contact"        , controller.Contact)
 
-    g := e.Group("")
-    g.Use(configureJWT())
-    g.Use(userMiddleware)
-    {
-        // g.GET("/admin"  , controller.AdminDashboard)
-        // g.GET("/author" , controller.AuthorDashboard)
-    }
+    r.Get("/news"           , controller.News)
+    r.Get("/announcements"  , controller.Announcements)
+    r.Get("/categories"     , controller.Categories)
+    r.Get("/category/{id}"  , controller.CategoryPosts)
+    r.Get("/search"         , controller.Search)
 
-    return e
+    r.Get("/profile"        , controller.Profile)
+    r.Get("/login"          , controller.LoginPage)
+
+    r.Post("/register"      , controller.Register)
+    r.Post("/login"         , controller.Login)
+    r.Post("/logout"        , controller.Logout)
+
+    return r
 }

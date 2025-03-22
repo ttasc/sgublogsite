@@ -1,0 +1,128 @@
+<!--
+  vim: filetype=html
+-->
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGU</title>
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="/assets/logo.png" rel="shortcut icon" type="image/x-icon" />
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-container">
+        <img src="/assets/logo.png" alt="Blog Logo" class="logo">
+        <h1>SGU - Trường Đại học Sài Gòn</h1>
+      </div>
+      <div class="auth-section">
+        {{if .IsAuthenticated}}
+        <a href="/profile" class="profile-btn">
+          <i class="fas fa-user-circle"></i>
+          <span>Profile</span>
+        </a>
+        {{else}}
+        <button class="login-btn" onclick="window.location.href='/login'">
+          <i class="fas fa-sign-in-alt"></i> Đăng nhập
+        </button>
+        {{end}}
+      </div>
+    </header>
+
+    <nav class="navbar">
+      <button class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li>
+          <a href="/"
+             hx-get="/"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>Trang chủ</a>
+        </li>
+        <li>
+          <a href="/about"
+             hx-get="/about"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>Giới thiệu</a>
+        </li>
+        <li>
+          <a href="/news"
+             hx-get="/news"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>Tin tức</a>
+        </li>
+        <li>
+          <a href="/announcements"
+             hx-get="/announcements"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>Thông báo</a>
+        </li>
+        <li>
+          <a href="/categories"
+             hx-get="/categories"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>Danh mục</a>
+        </li>
+        <li>
+          <a href="/contact"
+             hx-get="/contact"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>Liên hệ</a>
+        </li>
+      </ul>
+
+      <div class="search-box">
+        <form action="/search"
+              method="GET"
+              hx-get="/search"
+              hx-target="#main-content"
+              hx-push-url="true"
+              hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>
+          <input type="text" class="search-input" name="q" placeholder="Tìm kiếm...">
+          <button type="submit" class="search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+    </nav>
+
+    <main id="main-content" class="main-content">
+      {{block "content" .}}{{end}}
+    </main>
+
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+      <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; SGU 2025 - Bản quyền thuộc về ttasc</p>
+    </footer>
+
+    <script>
+      function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+      }
+
+      document.addEventListener('click', function(e) {
+        const navLinks = document.querySelector('.nav-links');
+        if (!e.target.closest('.navbar')) {
+          navLinks.classList.remove('active');
+        }
+      });
+    </script>
+  </body>
+</html>
+{{end}}

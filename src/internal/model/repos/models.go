@@ -132,6 +132,18 @@ type PostTag struct {
 	TagID  int32 `json:"tag_id"`
 }
 
+type Siteinfo struct {
+	SiteID         bool           `json:"site_id"`
+	SiteTitle      sql.NullString `json:"site_title"`
+	SiteName       sql.NullString `json:"site_name"`
+	SiteLogoID     sql.NullInt32  `json:"site_logo_id"`
+	SiteAbout      sql.NullString `json:"site_about"`
+	SiteCopyright  sql.NullString `json:"site_copyright"`
+	ContactAddress sql.NullString `json:"contact_address"`
+	ContactEmail   sql.NullString `json:"contact_email"`
+	ContactPhone   sql.NullString `json:"contact_phone"`
+}
+
 type Tag struct {
 	TagID int32  `json:"tag_id"`
 	Name  string `json:"name"`
@@ -142,7 +154,7 @@ type User struct {
 	UserID       int32         `json:"user_id"`
 	Firstname    string        `json:"firstname"`
 	Lastname     string        `json:"lastname"`
-	Mobile       string        `json:"mobile"`
+	Phone        string        `json:"phone"`
 	Email        string        `json:"email"`
 	Password     string        `json:"password"`
 	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`

@@ -3,10 +3,8 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"log"
 
-	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -27,9 +25,4 @@ func GenerateToken(length int) string {
         return ""
     }
     return base64.URLEncoding.EncodeToString(bytes)
-}
-
-func Rdie(c echo.Context, statusCode int, message string) error {
-    c.String(statusCode, message)
-    return errors.New(message)
 }

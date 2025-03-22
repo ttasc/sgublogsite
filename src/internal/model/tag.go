@@ -10,6 +10,10 @@ func (m *Model) GetTags() ([]repos.Tag, error) {
     return m.query.GetAllTags(m.ctx)
 }
 
+func (m *Model) GetTagNames() ([]string, error) {
+    return m.query.GetAllTagNames(m.ctx)
+}
+
 func (m *Model) AddTag(tag repos.Tag) error {
     tx, err := m.db.Begin()
     if err != nil {

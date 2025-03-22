@@ -5,41 +5,89 @@ import (
 	"sgublogsite/src/internal/model/repos"
 )
 
-func (m *Model) GetPosts() ([]repos.Post, error) {
-    return m.query.GetAllPosts(m.ctx)
+func (m *Model) GetPosts(limit, offset int32, status string) ([]repos.GetAllPostsRow, error) {
+    return m.query.GetAllPosts(m.ctx, repos.GetAllPostsParams{
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+    })
 }
 
-func (m *Model) GetPostsByUserID(id int32) ([]repos.Post, error) {
-    return m.query.GetPostsByUserID(m.ctx, sql.NullInt32{Int32: id, Valid: true})
+func (m *Model) GetPostsByUserID(id, limit, offset int32, status string) ([]repos.GetPostsByUserIDRow, error) {
+    return m.query.GetPostsByUserID(m.ctx, repos.GetPostsByUserIDParams{
+        UserID:         sql.NullInt32{Int32: id, Valid: true},
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+    })
 }
 
-func (m *Model) GetPostsByCategoryID(id int32) ([]repos.Post, error) {
-    return m.query.GetPostsByCategoryID(m.ctx, id)
+func (m *Model) GetPostsByCategoryID(id, limit, offset int32, status string, getPrivate bool) ([]repos.GetPostsByCategoryIDRow, error) {
+    return m.query.GetPostsByCategoryID(m.ctx, repos.GetPostsByCategoryIDParams{
+        CategoryID:     id,
+        Limit:          limit,
+        Offset:         offset,
+        Private:        getPrivate,
+        Status:         repos.PostsStatus(status),
+    })
 }
 
-func (m *Model) GetUncategorizedPosts() ([]repos.Post, error) {
-    return m.query.GetUncategorizedPosts(m.ctx)
+func (m *Model) GetUncategorizedPosts(limit, offset int32, status string, getPrivate bool) ([]repos.GetUncategorizedPostsRow, error) {
+    return m.query.GetUncategorizedPosts(m.ctx, repos.GetUncategorizedPostsParams{
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+        Private:        getPrivate,
+    })
 }
 
-func (m *Model) GetPostsByCategoryName(name string) ([]repos.Post, error) {
-    return m.query.GetPostsByCategoryName(m.ctx, name)
+func (m *Model) GetPostsByCategorySlug(slug string, limit, offset int32, status string, getPrivate bool) ([]repos.GetPostsByCategorySlugRow, error) {
+    return m.query.GetPostsByCategorySlug(m.ctx, repos.GetPostsByCategorySlugParams{
+        Slug:           slug,
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+        Private:        getPrivate,
+    })
 }
 
-func (m *Model) GetPostsByTagID(id int32) ([]repos.Post, error) {
-    return m.query.GetPostsByTagID(m.ctx, id)
+func (m *Model) GetPostsByTagID(id, limit, offset int32, status string, getPrivate bool) ([]repos.GetPostsByTagIDRow, error) {
+    return m.query.GetPostsByTagID(m.ctx, repos.GetPostsByTagIDParams{
+        TagID:          id,
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+        Private:        getPrivate,
+    })
 }
 
-func (m *Model) GetPostsByTagName(name string) ([]repos.Post, error) {
-    return m.query.GetPostsByTagName(m.ctx, name)
+func (m *Model) GetPostsByTagSlug(slug string, limit, offset int32, status string, getPrivate bool) ([]repos.GetPostsByTagSlugRow, error) {
+    return m.query.GetPostsByTagSlug(m.ctx, repos.GetPostsByTagSlugParams{
+        Slug:           slug,
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+        Private:        getPrivate,
+    })
 }
 
-func (m *Model) GetPostsByStatus(status string) ([]repos.Post, error) {
-    return m.query.GetPostsByStatus(m.ctx, repos.PostsStatus(status))
+func (m *Model) GetPostsByStatus(status string, limit, offset int32) ([]repos.GetPostsByStatusRow, error) {
+    return m.query.GetPostsByStatus(m.ctx, repos.GetPostsByStatusParams{
+        Status:         repos.PostsStatus(status),
+        Limit:          limit,
+        Offset:         offset,
+    })
 }
 
-func (m *Model) SearchPosts(text string) ([]repos.Post, error) {
+func (m *Model) SearchPosts(text string, limit, offset int32, status string, getPrivate bool) ([]repos.FindPostsRow, error) {
     wildcard := "%" + text + "%"
-    return m.query.FindPosts(m.ctx, wildcard)
+    return m.query.FindPosts(m.ctx, repos.FindPostsParams{
+        Text:           wildcard,
+        Limit:          limit,
+        Offset:         offset,
+        Status:         repos.PostsStatus(status),
+        Private:        getPrivate,
+    })
 }
 
 func (m *Model) CreatePost(post repos.Post) error {

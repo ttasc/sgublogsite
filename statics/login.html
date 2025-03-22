@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - SGU</title>
+    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="/assets/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-header">
+            <img src="/assets/logo.png" alt="Logo" class="login-logo">
+            <h1>Đăng nhập tài khoản</h1>
+        </div>
+
+        <form class="login-form" action="/login" method="POST">
+            <div class="form-group">
+                <label for="emailorphone">Email/Số điện thoại</label>
+                <input type="text"
+                       id="emailorphone"
+                       name="emailorphone"
+                       required
+                       placeholder="Nhập email hoặc số điện thoại">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       required
+                       placeholder="Nhập mật khẩu">
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </button>
+
+            <a href="/" class="home-btn">
+                <i class="fas fa-home"></i> Quay về trang chủ
+            </a>
+        </form>
+    </div>
+</body>
+</html>

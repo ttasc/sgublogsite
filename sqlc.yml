@@ -1,8 +1,8 @@
 version: "2"
 sql:
   - engine: "mysql"
-    schema: "./assets/schema.sql"
-    queries: "./src/queries/"
+    schema: "./schema.sql"
+    queries: "./queries/"
     gen:
       go:
         emit_json_tags: true

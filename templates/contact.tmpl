@@ -1,0 +1,12 @@
+<!--
+  vim: filetype=html
+-->
+{{template "base" .}}
+{{define "content"}}
+<div class="contact-info">
+  <h2>Thông tin liên hệ</h2>
+  <p><i class="fas fa-map-marker-alt"></i> {{.Address}}</p>
+  <p><i class="fas fa-phone"></i> {{.Phone}}</p>
+  <p><i class="fas fa-envelope"></i> {{.Email}}</p>
+</div>
+{{end}}

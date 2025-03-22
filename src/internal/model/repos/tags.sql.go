@@ -35,6 +35,33 @@ func (q *Queries) DeleteTag(ctx context.Context, tagID int32) (sql.Result, error
 	return q.exec(ctx, q.deleteTagStmt, deleteTag, tagID)
 }
 
+const getAllTagNames = `-- name: GetAllTagNames :many
+SELECT name FROM tags
+`
+
+func (q *Queries) GetAllTagNames(ctx context.Context) ([]string, error) {
+	rows, err := q.query(ctx, q.getAllTagNamesStmt, getAllTagNames)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllTags = `-- name: GetAllTags :many
 SELECT tag_id, name, slug FROM tags
 `

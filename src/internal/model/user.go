@@ -2,25 +2,25 @@ package model
 
 import "sgublogsite/src/internal/model/repos"
 
-func (m *Model) GetUserByID(id int32) (repos.User, error) {
+func (m *Model) GetUserByID(id int32) (repos.GetUserByIDRow, error) {
     return m.query.GetUserByID(m.ctx, id)
 }
 
-func (m *Model) GetUserByEmailOrMobile(emailormobile string) (repos.User, error) {
-    return m.query.GetUserByEmailOrMobile(
+func (m *Model) GetUserByEmailOrPhone(emailorphone string) (repos.GetUserByEmailOrPhoneRow, error) {
+    return m.query.GetUserByEmailOrPhone(
         m.ctx,
-        repos.GetUserByEmailOrMobileParams{
-            Email: emailormobile,
-            Mobile: emailormobile,
+        repos.GetUserByEmailOrPhoneParams{
+            Email: emailorphone,
+            Phone: emailorphone,
         })
 }
 
-func (m *Model) SearchUsers(text string) ([]repos.User, error) {
+func (m *Model) SearchUsers(text string) ([]repos.FindUsersRow, error) {
     wildcard := "%" + text + "%"
     return m.query.FindUsers(m.ctx, wildcard)
 }
 
-func (m *Model) GetUsers() ([]repos.User, error) {
+func (m *Model) GetUsers() ([]repos.GetAllUsersRow, error) {
     return m.query.GetAllUsers(m.ctx)
 }
 
@@ -36,7 +36,7 @@ func (m *Model) AddUser(user repos.User) error {
     _, err = qtx.AddUser(m.ctx, repos.AddUserParams{
         Firstname:      user.Firstname,
         Lastname:       user.Lastname,
-        Mobile:         user.Mobile,
+        Phone:         user.Phone,
         Email:          user.Email,
         Password:       user.Password,
         Role:           user.Role,
@@ -62,7 +62,7 @@ func (m *Model) UpdateUserInfo(user repos.User) error {
         UserID:         user.UserID,
         Firstname:      user.Firstname,
         Lastname:       user.Lastname,
-        Mobile:         user.Mobile,
+        Phone:         user.Phone,
         Email:          user.Email,
         ProfilePicID:   user.ProfilePicID,
     })
