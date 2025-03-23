@@ -37,6 +37,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
         isAuthenticated,
     )
     data := struct {
+        IsAuthenticated bool
         SearchQuery string
         Posts       []repos.FindPostsRow
         Pagination  []paginationItem
@@ -49,6 +50,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
+        data.IsAuthenticated = isAuthenticated
         tmpl.Execute(w, data)
     }
 }

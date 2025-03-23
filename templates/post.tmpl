@@ -4,19 +4,19 @@
 {{template "base" .}}
 {{define "content"}}
 <article class="post-detail">
-    <div class="post-header">
-        <h1 class="post-title">{{.Title}}</h1>
-        <div class="post-meta">
-            <span class="post-date">
-                <i class="far fa-calendar-alt"></i>
-                {{.CreatedAt.Format "02/01/2006 15:04"}}
-            </span>
-        </div>
+  <div class="post-header">
+    <h1 class="post-title">{{.Post.Title}}</h1>
+    <div class="post-meta">
+      <span class="post-date">
+        <i class="far fa-calendar-alt"></i>
+        {{.Post.CreatedAt.Format "02/01/2006 15:04"}}
+      </span>
     </div>
+  </div>
 
-    <div class="post-content">
-        <!-- Render HTML raw từ database -->
-        {{.Content | safeHTML}}
-    </div>
+  <div class="post-content">
+    <!-- Render HTML raw từ database -->
+    {{.Post.Body | safeHTML}}
+  </div>
 </article>
 {{end}}

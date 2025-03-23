@@ -5,6 +5,10 @@ import (
 	"sgublogsite/src/internal/model/repos"
 )
 
+func (m *Model) GetPostByID(id int32) (repos.GetPostByIDRow, error) {
+    return m.query.GetPostByID(m.ctx, id)
+}
+
 func (m *Model) GetPosts(limit, offset int32, status string) ([]repos.GetAllPostsRow, error) {
     return m.query.GetAllPosts(m.ctx, repos.GetAllPostsParams{
         Limit:          limit,

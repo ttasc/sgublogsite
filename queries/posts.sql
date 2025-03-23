@@ -1,3 +1,8 @@
+-- name: GetPostByID :one
+SELECT posts.*, images.url AS thumbnail
+FROM posts LEFT JOIN images ON posts.thumbnail_id = images.image_id
+WHERE post_id = ?;
+
 -- name: GetAllPosts :many
 SELECT posts.*, images.url AS thumbnail
 FROM posts LEFT JOIN images ON posts.thumbnail_id = images.image_id

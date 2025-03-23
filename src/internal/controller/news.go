@@ -31,6 +31,7 @@ func News(w http.ResponseWriter, r *http.Request) {
         isAuthenticated,
     )
     data := struct {
+        IsAuthenticated bool
         Posts       []repos.GetPostsByCategorySlugRow
         Pagination  []paginationItem
     }{
@@ -42,6 +43,7 @@ func News(w http.ResponseWriter, r *http.Request) {
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
+        data.IsAuthenticated = isAuthenticated
         tmpl.Execute(w, data)
     }
 }

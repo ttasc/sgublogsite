@@ -25,6 +25,7 @@ func Categories(w http.ResponseWriter, r *http.Request) {
     tags, _       := m.GetTagNames()
 
     data := struct {
+        IsAuthenticated bool
         Categories []category
         Tags       []string
     }{
@@ -36,6 +37,8 @@ func Categories(w http.ResponseWriter, r *http.Request) {
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
+        _, claims, err := jwtauth.FromContext(r.Context())
+        data.IsAuthenticated = (claims != nil && err == nil)
         tmpl.Execute(w, data)
     }
 }
@@ -80,6 +83,7 @@ func CategoryPosts(w http.ResponseWriter, r *http.Request) {
         isAuthenticated,
     )
     data := struct {
+        isAuthenticated bool
         Posts       []repos.GetPostsByCategoryIDRow
         Pagination  []paginationItem
     }{
@@ -91,6 +95,7 @@ func CategoryPosts(w http.ResponseWriter, r *http.Request) {
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
+        data.isAuthenticated = isAuthenticated
         tmpl.Execute(w, data)
     }
 }

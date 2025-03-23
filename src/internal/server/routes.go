@@ -45,6 +45,8 @@ func registerRoutes(r *chi.Mux) http.Handler {
     r.Get("/category/{id}"  , controller.CategoryPosts)
     r.Get("/search"         , controller.Search)
 
+    r.Get("/post/{id}"      , controller.Post)
+
     r.Get("/profile"        , controller.Profile)
     r.Get("/login"          , controller.LoginPage)
 

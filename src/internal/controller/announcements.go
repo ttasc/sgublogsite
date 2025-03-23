@@ -37,6 +37,7 @@ func Announcements(w http.ResponseWriter, r *http.Request) {
         isAuthenticated,
     )
     data := struct {
+        IsAuthenticated      bool
         GroupedAnnouncements []monthGroup
         Pagination           []paginationItem
     }{
@@ -48,6 +49,7 @@ func Announcements(w http.ResponseWriter, r *http.Request) {
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
+        data.IsAuthenticated = (claims != nil && err == nil)
         tmpl.Execute(w, data)
     }
 }

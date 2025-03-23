@@ -4,11 +4,14 @@ import (
 	"html/template"
 	"net/http"
 	"sgublogsite/src/internal/model"
+
+	"github.com/go-chi/jwtauth/v5"
 )
 
 func About(w http.ResponseWriter, r *http.Request) {
     about, _ := model.New().GetSiteAbout()
     data := struct {
+        IsAuthenticated bool
         About string
     }{
         About: about,
@@ -21,6 +24,8 @@ func About(w http.ResponseWriter, r *http.Request) {
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
+        _, claims, err := jwtauth.FromContext(r.Context())
+        data.IsAuthenticated = (claims != nil && err == nil)
         tmpl.Execute(w, data)
     }
 }
