@@ -15,7 +15,7 @@ func (m *Model) GetTagNames() ([]string, error) {
 }
 
 func (m *Model) AddTag(tag repos.Tag) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -36,7 +36,7 @@ func (m *Model) AddTag(tag repos.Tag) error {
 }
 
 func (m *Model) DeleteTag(id int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }

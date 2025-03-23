@@ -1,16 +1,16 @@
 package utils
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "log"
-    "os"
-    "strconv"
-    "time"
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"time"
 
-    _ "github.com/go-sql-driver/mysql"
-    _ "github.com/joho/godotenv/autoload"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
@@ -44,7 +44,7 @@ func NewDB() *sql.DB {
     return dbInstance
 }
 
-func Health(db *sql.DB) map[string]string {
+func DBhealth(db *sql.DB) map[string]string {
     ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
     defer cancel()
 

@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Controller) Contact(w http.ResponseWriter, r *http.Request) {
-    contactInfo, _ := c.model.GetContactInfo()
+    contactInfo, _ := c.Model.GetContactInfo()
     data := struct {
         IsAuthenticated bool
         Address string

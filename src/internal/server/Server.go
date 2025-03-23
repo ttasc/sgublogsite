@@ -25,6 +25,12 @@ func NewServer() *http.Server {
         ctrlr:   controller.New(model.New(utils.NewDB())),
     }
 
+    fmt.Println("################ DB health ################")
+    for key, value := range utils.DBhealth(NewServer.ctrlr.Model.DB) {
+        fmt.Printf("\t%s: %s\n", key, value)
+    }
+    fmt.Println("###########################################")
+
     // Declare Server config
     server := &http.Server{
         Addr:         fmt.Sprintf(":%d", NewServer.port),

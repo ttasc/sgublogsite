@@ -8,15 +8,15 @@ import (
 )
 
 type Controller struct {
-    model     *model.Model
     basetmpl  *template.Template
+    Model     *model.Model
     TokenAuth *jwtauth.JWTAuth
 }
 
 func New(model *model.Model) Controller {
     return Controller{
-        model:     model,
         basetmpl:  template.Must(template.New("base").ParseFiles("templates/base.tmpl")),
+        Model:     model,
         TokenAuth: jwtauth.New("HS256", jwtKey, nil),
     }
 }

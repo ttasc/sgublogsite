@@ -8,7 +8,7 @@ import (
 
 type Model struct {
     ctx   context.Context
-    db    *sql.DB
+    DB    *sql.DB
     query *repos.Queries
 }
 
@@ -19,7 +19,7 @@ func New(db *sql.DB) *Model {
     )
     return &Model{
         ctx:   ctx,
-        db:    db,
+        DB:    db,
         query: query,
     }
 }

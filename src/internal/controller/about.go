@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Controller) About(w http.ResponseWriter, r *http.Request) {
-    about, _ := c.model.GetSiteAbout()
+    about, _ := c.Model.GetSiteAbout()
     data := struct {
         IsAuthenticated bool
         About string

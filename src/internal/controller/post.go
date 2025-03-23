@@ -14,7 +14,7 @@ func (c *Controller) Post(w http.ResponseWriter, r *http.Request) {
     // id := strings.TrimPrefix(r.URL.Path, "/post/")
     id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 
-    post, err := c.model.GetPostByID(int32(id))
+    post, err := c.Model.GetPostByID(int32(id))
     if err != nil {
         http.Error(w, "Bài viết không tồn tại", http.StatusNotFound)
         return

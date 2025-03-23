@@ -24,7 +24,7 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 
     hashedPassword, _ := utils.HashPassword(password)
 
-    c.model.AddUser(repos.User{
+    c.Model.AddUser(repos.User{
         Firstname:   firstname,
         Lastname:    lastname,
         Phone:       phone,

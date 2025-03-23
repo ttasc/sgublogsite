@@ -19,8 +19,8 @@ type category struct {
 }
 
 func (c *Controller) Categories(w http.ResponseWriter, r *http.Request) {
-    categories, _ := c.model.GetCategories()
-    tags, _       := c.model.GetTagNames()
+    categories, _ := c.Model.GetCategories()
+    tags, _       := c.Model.GetTagNames()
 
     data := struct {
         IsAuthenticated bool
@@ -73,7 +73,7 @@ func (c *Controller) CategoryPosts(w http.ResponseWriter, r *http.Request) {
     }
     offset := int32 (page - 1) * postsLimitPerPage
 
-    posts, _ := c.model.GetPostsByCategoryID(
+    posts, _ := c.Model.GetPostsByCategoryID(
         int32(categoryID),
         postsLimitPerPage,
         offset,

@@ -28,7 +28,7 @@ func (c *Controller) Search(w http.ResponseWriter, r *http.Request) {
     }
     offset := int32 (page - 1) * postsLimitPerPage
 
-    posts, _ := c.model.SearchPosts(
+    posts, _ := c.Model.SearchPosts(
         query,
         postsLimitPerPage,
         offset,

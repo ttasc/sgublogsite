@@ -95,7 +95,7 @@ func (m *Model) SearchPosts(text string, limit, offset int32, status string, get
 }
 
 func (m *Model) CreatePost(post repos.Post) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -119,7 +119,7 @@ func (m *Model) CreatePost(post repos.Post) error {
 }
 
 func (m *Model) AddPostToCategory(postID int32, categoryID int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -140,7 +140,7 @@ func (m *Model) AddPostToCategory(postID int32, categoryID int32) error {
 }
 
 func (m *Model) AddTagToPost(postID int32, tagID int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -161,7 +161,7 @@ func (m *Model) AddTagToPost(postID int32, tagID int32) error {
 }
 
 func (m *Model) SetPostPrivate(postID int32, isPrivate bool) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -182,7 +182,7 @@ func (m *Model) SetPostPrivate(postID int32, isPrivate bool) error {
 }
 
 func (m *Model) PublishPost(postID int32, isPrivate bool) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -217,7 +217,7 @@ func (m *Model) draftPost(qtx *repos.Queries, postID int32) error {
 }
 
 func (m *Model) UpdatePostMetadata(post repos.Post) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -246,7 +246,7 @@ func (m *Model) UpdatePostMetadata(post repos.Post) error {
 }
 
 func (m *Model) UpdatePostBody(post repos.Post) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -273,7 +273,7 @@ func (m *Model) UpdatePostBody(post repos.Post) error {
 }
 
 func (m *Model) DeletePost(id int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }

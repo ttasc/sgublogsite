@@ -25,7 +25,7 @@ func (m *Model) GetSiteMeta() (repos.GetSiteMetaRow, error) {
 }
 
 func (m *Model) CreateSiteInfo(info repos.Siteinfo) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -52,7 +52,7 @@ func (m *Model) CreateSiteInfo(info repos.Siteinfo) error {
 }
 
 func (m *Model) UpdateSiteInfo(info repos.Siteinfo) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }

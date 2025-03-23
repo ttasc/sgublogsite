@@ -33,7 +33,7 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
     emailorphone := r.FormValue("emailorphone")
     password := r.FormValue("password")
 
-    user, err := c.model.GetUserByEmailOrPhone(emailorphone)
+    user, err := c.Model.GetUserByEmailOrPhone(emailorphone)
 
     if err != nil || !utils.CheckPasswordHash(password, user.Password) {
         w.WriteHeader(http.StatusUnauthorized)

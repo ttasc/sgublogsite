@@ -28,7 +28,7 @@ func (c *Controller) Announcements(w http.ResponseWriter, r *http.Request) {
     }
     offset := (int32) (page - 1) * postsLimitPerPage
 
-    posts, _ := c.model.GetPostsByCategorySlug(
+    posts, _ := c.Model.GetPostsByCategorySlug(
         "announcements",
         postsLimitPerPage,
         offset,

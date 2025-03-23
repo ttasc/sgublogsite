@@ -15,14 +15,14 @@ func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
         isAuthenticated = true
     }
 
-    posts, _         := c.model.GetPostsByCategorySlug(
+    posts, _         := c.Model.GetPostsByCategorySlug(
         "news",
         postsLimitPerPage,
         0,
         string(repos.PostsStatusPublished),
         isAuthenticated,
     )
-    announcements, _ := c.model.GetPostsByCategorySlug(
+    announcements, _ := c.Model.GetPostsByCategorySlug(
         "announcements",
         postsLimitPerPage,
         0,

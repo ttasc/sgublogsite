@@ -25,7 +25,7 @@ func (m *Model) GetUsers() ([]repos.GetAllUsersRow, error) {
 }
 
 func (m *Model) AddUser(user repos.User) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -50,7 +50,7 @@ func (m *Model) AddUser(user repos.User) error {
 }
 
 func (m *Model) UpdateUserInfo(user repos.User) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -75,7 +75,7 @@ func (m *Model) UpdateUserInfo(user repos.User) error {
 }
 
 func (m *Model) UpdateUserPassword(userID int32, password string) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -96,7 +96,7 @@ func (m *Model) UpdateUserPassword(userID int32, password string) error {
 }
 
 func (m *Model) UpdateUserRole(userID int32, role repos.UsersRole) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -117,7 +117,7 @@ func (m *Model) UpdateUserRole(userID int32, role repos.UsersRole) error {
 }
 
 func (m *Model) DeleteUser(id int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }

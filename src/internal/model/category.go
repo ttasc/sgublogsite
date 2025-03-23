@@ -22,7 +22,7 @@ func (m *Model) GetRootCategories() ([]repos.Category, error) {
 }
 
 func (m *Model) AddCategory(category repos.Category) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -44,7 +44,7 @@ func (m *Model) AddCategory(category repos.Category) error {
 }
 
 func (m *Model) UpdateCategory(category repos.Category) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -67,7 +67,7 @@ func (m *Model) UpdateCategory(category repos.Category) error {
 }
 
 func (m *Model) DeleteCategory(id int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }

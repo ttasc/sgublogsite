@@ -11,7 +11,7 @@ func (m *Model) GetImages() ([]repos.Image, error) {
 }
 
 func (m *Model) AddImage(image repos.Image) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }
@@ -32,7 +32,7 @@ func (m *Model) AddImage(image repos.Image) error {
 }
 
 func (m *Model) DeleteImage(id int32) error {
-    tx, err := m.db.Begin()
+    tx, err := m.DB.Begin()
     if err != nil {
         return err
     }

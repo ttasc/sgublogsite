@@ -14,7 +14,7 @@ func (c *Controller) Profile(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    currentUser, _ := c.model.GetUserByID(int32(claims["ID"].(float64)))
+    currentUser, _ := c.Model.GetUserByID(int32(claims["ID"].(float64)))
 
     tmpl := template.Must(template.ParseFiles("templates/profile.tmpl"))
     tmpl.Execute(w, currentUser)
