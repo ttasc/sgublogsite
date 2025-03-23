@@ -9,9 +9,9 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	_ "github.com/joho/godotenv/autoload"
 
-	"sgublogsite/src/internal/model"
-	"sgublogsite/src/internal/model/repos"
-	// "sgublogsite/src/internal/utils"
+	"github.com/ttasc/sgublogsite/src/internal/model"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
+	// "github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
 var (

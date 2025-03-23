@@ -2,9 +2,9 @@ package controller
 
 import (
 	"net/http"
-	"sgublogsite/src/internal/model"
-	"sgublogsite/src/internal/model/repos"
-	"sgublogsite/src/internal/utils"
+	"github.com/ttasc/sgublogsite/src/internal/model"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
+	"github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {

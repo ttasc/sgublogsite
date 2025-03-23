@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth/v5"
 
-	"sgublogsite/src/internal/controller"
+	"github.com/ttasc/sgublogsite/src/internal/controller"
 )
 
 func registerHandlers() http.Handler {

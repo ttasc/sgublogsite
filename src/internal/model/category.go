@@ -2,7 +2,7 @@ package model
 
 import (
 	"database/sql"
-	"sgublogsite/src/internal/model/repos"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
 func (m *Model) GetCategoryByID(id int32) (repos.Category, error) {

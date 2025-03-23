@@ -1,6 +1,6 @@
 package model
 
-import "sgublogsite/src/internal/model/repos"
+import "github.com/ttasc/sgublogsite/src/internal/model/repos"
 
 func (m *Model) GetTagByID(id int32) (repos.Tag, error) {
     return m.query.GetTagByID(m.ctx, id)

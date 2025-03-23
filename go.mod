@@ -1,4 +1,4 @@
-module sgublogsite
+module github.com/ttasc/sgublogsite
 
 go 1.23.4
 

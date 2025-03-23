@@ -1,6 +1,6 @@
 package model
 
-import "sgublogsite/src/internal/model/repos"
+import "github.com/ttasc/sgublogsite/src/internal/model/repos"
 
 func (m *Model) GetImageByID(id int32) (repos.Image, error) {
     return m.query.GetImageByID(m.ctx, id)

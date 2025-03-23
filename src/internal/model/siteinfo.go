@@ -1,7 +1,7 @@
 package model
 
 import (
-	"sgublogsite/src/internal/model/repos"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
 func (m *Model) GetSiteInfo() (repos.Siteinfo, error) {

@@ -3,7 +3,7 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"sgublogsite/src/internal/model"
+	"github.com/ttasc/sgublogsite/src/internal/model"
 
 	"github.com/go-chi/jwtauth/v5"
 )

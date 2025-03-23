@@ -3,8 +3,8 @@ package model
 import (
     "context"
     "database/sql"
-    "sgublogsite/src/internal/model/repos"
-    "sgublogsite/src/internal/utils"
+    "github.com/ttasc/sgublogsite/src/internal/model/repos"
+    "github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
 type Model struct {

@@ -3,8 +3,8 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"sgublogsite/src/internal/model"
-	"sgublogsite/src/internal/model/repos"
+	"github.com/ttasc/sgublogsite/src/internal/model"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"

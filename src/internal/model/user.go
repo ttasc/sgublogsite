@@ -1,6 +1,6 @@
 package model
 
-import "sgublogsite/src/internal/model/repos"
+import "github.com/ttasc/sgublogsite/src/internal/model/repos"
 
 func (m *Model) GetUserByID(id int32) (repos.GetUserByIDRow, error) {
     return m.query.GetUserByID(m.ctx, id)
