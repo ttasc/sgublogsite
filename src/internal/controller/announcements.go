@@ -3,7 +3,6 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
 	"strings"
@@ -16,7 +15,7 @@ type monthGroup struct {
     Items     []repos.GetPostsByCategorySlugRow
 }
 
-func Announcements(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Announcements(w http.ResponseWriter, r *http.Request) {
     isAuthenticated := false
     _, claims, err := jwtauth.FromContext(r.Context())
     if claims != nil && err == nil {
@@ -29,7 +28,7 @@ func Announcements(w http.ResponseWriter, r *http.Request) {
     }
     offset := (int32) (page - 1) * postsLimitPerPage
 
-    posts, _ := model.New().GetPostsByCategorySlug(
+    posts, _ := c.model.GetPostsByCategorySlug(
         "announcements",
         postsLimitPerPage,
         offset,
@@ -45,7 +44,7 @@ func Announcements(w http.ResponseWriter, r *http.Request) {
         Pagination:           generatePagination(r.URL.Path, page, len(posts)/postsLimitPerPage+1),
     }
 
-    tmpl, _ := template.Must(basetmpl.Clone()).ParseFiles("templates/announcements.tmpl")
+    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/announcements.tmpl")
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {

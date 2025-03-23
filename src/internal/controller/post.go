@@ -3,7 +3,6 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
 
@@ -11,15 +10,16 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 )
 
-func Post(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Post(w http.ResponseWriter, r *http.Request) {
     // id := strings.TrimPrefix(r.URL.Path, "/post/")
     id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 
-    post, err := model.New().GetPostByID(int32(id))
+    post, err := c.model.GetPostByID(int32(id))
     if err != nil {
         http.Error(w, "Bài viết không tồn tại", http.StatusNotFound)
         return
     }
+    post.Body = string(template.HTML(post.Body))
 
     _, claims, err := jwtauth.FromContext(r.Context())
     isAuthenticated := (claims != nil && err == nil)
@@ -35,7 +35,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
         Post: post,
     }
 
-    tmpl, _ := template.Must(basetmpl.Clone()).ParseFiles("templates/post.tmpl")
+    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/post.tmpl")
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {

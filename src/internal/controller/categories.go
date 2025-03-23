@@ -3,7 +3,6 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
 
@@ -19,10 +18,9 @@ type category struct {
     Level    int
 }
 
-func Categories(w http.ResponseWriter, r *http.Request) {
-    m := model.New()
-    categories, _ := m.GetCategories()
-    tags, _       := m.GetTagNames()
+func (c *Controller) Categories(w http.ResponseWriter, r *http.Request) {
+    categories, _ := c.model.GetCategories()
+    tags, _       := c.model.GetTagNames()
 
     data := struct {
         IsAuthenticated bool
@@ -33,7 +31,7 @@ func Categories(w http.ResponseWriter, r *http.Request) {
         Tags:       tags,
     }
 
-    tmpl, _ := template.Must(basetmpl.Clone()).ParseFiles("templates/categories.tmpl")
+    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/categories.tmpl")
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {
@@ -60,7 +58,7 @@ func buildCategoryTree(categories []repos.Category, parentID int, level int) []c
     return result
 }
 
-func CategoryPosts(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) CategoryPosts(w http.ResponseWriter, r *http.Request) {
     isAuthenticated := false
     _, claims, err := jwtauth.FromContext(r.Context())
     if claims != nil && err == nil {
@@ -75,7 +73,7 @@ func CategoryPosts(w http.ResponseWriter, r *http.Request) {
     }
     offset := int32 (page - 1) * postsLimitPerPage
 
-    posts, _ := model.New().GetPostsByCategoryID(
+    posts, _ := c.model.GetPostsByCategoryID(
         int32(categoryID),
         postsLimitPerPage,
         offset,
@@ -91,7 +89,7 @@ func CategoryPosts(w http.ResponseWriter, r *http.Request) {
         Pagination: generatePagination(r.URL.Path, page, len(posts)/postsLimitPerPage+1),
     }
 
-    tmpl, _ := template.Must(basetmpl.Clone()).ParseFiles("templates/news.tmpl")
+    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/news.tmpl")
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {

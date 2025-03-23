@@ -2,12 +2,11 @@ package controller
 
 import (
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
-func Register(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
     if r.Method != http.MethodPost {
         w.WriteHeader(http.StatusMethodNotAllowed)
         w.Write([]byte("Method not allowed"))
@@ -22,11 +21,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
         role        = r.FormValue("role")
         password    = r.FormValue("password")
     )
-    m := model.New()
 
     hashedPassword, _ := utils.HashPassword(password)
 
-    m.AddUser(repos.User{
+    c.model.AddUser(repos.User{
         Firstname:   firstname,
         Lastname:    lastname,
         Phone:       phone,

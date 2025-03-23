@@ -199,7 +199,7 @@ func (m *Model) PublishPost(postID int32, isPrivate bool) error {
         return err
     }
 
-    err = New().SetPostPrivate(postID, isPrivate)
+    err = m.SetPostPrivate(postID, isPrivate)
 
     if err != nil {
         return err
@@ -236,7 +236,7 @@ func (m *Model) UpdatePostMetadata(post repos.Post) error {
         return err
     }
 
-    err = New().draftPost(qtx, post.PostID)
+    err = m.draftPost(qtx, post.PostID)
 
     if err != nil {
         return err
@@ -263,7 +263,7 @@ func (m *Model) UpdatePostBody(post repos.Post) error {
         return err
     }
 
-    err = New().draftPost(qtx, post.PostID)
+    err = m.draftPost(qtx, post.PostID)
 
     if err != nil {
         return err

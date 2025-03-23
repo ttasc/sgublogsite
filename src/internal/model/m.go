@@ -4,7 +4,6 @@ import (
     "context"
     "database/sql"
     "github.com/ttasc/sgublogsite/src/internal/model/repos"
-    "github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
 type Model struct {
@@ -13,10 +12,9 @@ type Model struct {
     query *repos.Queries
 }
 
-func New() *Model {
+func New(db *sql.DB) *Model {
     var (
         ctx     = context.Background()
-        db      = utils.NewDB()
         query   = repos.New(db)
     )
     return &Model{

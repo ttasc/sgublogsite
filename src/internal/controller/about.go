@@ -3,20 +3,19 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 
 	"github.com/go-chi/jwtauth/v5"
 )
 
-func About(w http.ResponseWriter, r *http.Request) {
-    about, _ := model.New().GetSiteAbout()
+func (c *Controller) About(w http.ResponseWriter, r *http.Request) {
+    about, _ := c.model.GetSiteAbout()
     data := struct {
         IsAuthenticated bool
         About string
     }{
         About: about,
     }
-    tmpl, err := template.Must(basetmpl.Clone()).ParseFiles("templates/about.tmpl")
+    tmpl, err := template.Must(c.basetmpl.Clone()).ParseFiles("templates/about.tmpl")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return

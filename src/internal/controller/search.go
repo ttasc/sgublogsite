@@ -3,7 +3,6 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
 
@@ -11,7 +10,7 @@ import (
 )
 
 
-func Search(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Search(w http.ResponseWriter, r *http.Request) {
     isAuthenticated := false
     _, claims, err := jwtauth.FromContext(r.Context())
     if claims != nil && err == nil {
@@ -29,7 +28,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
     }
     offset := int32 (page - 1) * postsLimitPerPage
 
-    posts, _ := model.New().SearchPosts(
+    posts, _ := c.model.SearchPosts(
         query,
         postsLimitPerPage,
         offset,
@@ -46,7 +45,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
         Posts:       posts,
         Pagination:  generatePagination(r.URL.Path+"?q="+query, page, len(posts)/postsLimitPerPage+1),
     }
-    tmpl, _ := template.Must(basetmpl.Clone()).ParseFiles("templates/search.tmpl")
+    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/search.tmpl")
     if r.Header.Get("HX-Request") == "true" {
         tmpl.ExecuteTemplate(w, "content", data)
     } else {

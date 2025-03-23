@@ -3,13 +3,12 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 
 	"github.com/go-chi/jwtauth/v5"
 )
 
-func Contact(w http.ResponseWriter, r *http.Request) {
-    contactInfo, _ := model.New().GetContactInfo()
+func (c *Controller) Contact(w http.ResponseWriter, r *http.Request) {
+    contactInfo, _ := c.model.GetContactInfo()
     data := struct {
         IsAuthenticated bool
         Address string
@@ -20,7 +19,7 @@ func Contact(w http.ResponseWriter, r *http.Request) {
         Email:   contactInfo.ContactEmail.String,
         Phone:   contactInfo.ContactPhone.String,
     }
-    tmpl, err := template.Must(basetmpl.Clone()).ParseFiles("templates/contact.tmpl")
+    tmpl, err := template.Must(c.basetmpl.Clone()).ParseFiles("templates/contact.tmpl")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return

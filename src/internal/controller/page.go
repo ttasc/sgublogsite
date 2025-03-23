@@ -2,13 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"html/template"
 	"net/url"
 )
-
-var basetmpl = template.Must(template.New("base").Funcs(template.FuncMap{
-        "safeHTML": func(s string) template.HTML { return template.HTML(s) },
-}).ParseFiles("templates/base.tmpl"))
 
 const postsLimitPerPage = 10
 const maxVisiblePageItem = 5

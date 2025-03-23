@@ -7,18 +7,16 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth/v5"
-
-	"github.com/ttasc/sgublogsite/src/internal/controller"
 )
 
-func registerHandlers() http.Handler {
+func (s *Server) registerHandlers() http.Handler {
     r := chi.NewRouter()
-    useMiddleware(r)
-    registerRoutes(r)
+    s.useMiddleware(r)
+    s.registerRoutes(r)
     return r
 }
 
-func useMiddleware(r *chi.Mux) {
+func (s *Server) useMiddleware(r *chi.Mux) {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
     r.Use(cors.Handler(cors.Options{
@@ -29,30 +27,30 @@ func useMiddleware(r *chi.Mux) {
         MaxAge:           300,
     }))
 
-    r.Use(jwtauth.Verifier(controller.TokenAuth))
+    r.Use(jwtauth.Verifier(s.ctrlr.TokenAuth))
 }
 
-func registerRoutes(r *chi.Mux) http.Handler {
+func (s *Server) registerRoutes(r *chi.Mux) http.Handler {
     r.Handle("/assets/*",  http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
-    r.Get("/"               , controller.Home)
-    r.Get("/about"          , controller.About)
-    r.Get("/contact"        , controller.Contact)
+    r.Get("/"               , s.ctrlr.Home)
+    r.Get("/about"          , s.ctrlr.About)
+    r.Get("/contact"        , s.ctrlr.Contact)
 
-    r.Get("/news"           , controller.News)
-    r.Get("/announcements"  , controller.Announcements)
-    r.Get("/categories"     , controller.Categories)
-    r.Get("/category/{id}"  , controller.CategoryPosts)
-    r.Get("/search"         , controller.Search)
+    r.Get("/news"           , s.ctrlr.News)
+    r.Get("/announcements"  , s.ctrlr.Announcements)
+    r.Get("/categories"     , s.ctrlr.Categories)
+    r.Get("/category/{id}"  , s.ctrlr.CategoryPosts)
+    r.Get("/search"         , s.ctrlr.Search)
 
-    r.Get("/post/{id}"      , controller.Post)
+    r.Get("/post/{id}"      , s.ctrlr.Post)
 
-    r.Get("/profile"        , controller.Profile)
-    r.Get("/login"          , controller.LoginPage)
+    r.Get("/profile"        , s.ctrlr.Profile)
+    r.Get("/login"          , s.ctrlr.LoginPage)
 
-    r.Post("/register"      , controller.Register)
-    r.Post("/login"         , controller.Login)
-    r.Post("/logout"        , controller.Logout)
+    r.Post("/register"      , s.ctrlr.Register)
+    r.Post("/login"         , s.ctrlr.Login)
+    r.Post("/logout"        , s.ctrlr.Logout)
 
     return r
 }

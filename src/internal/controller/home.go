@@ -3,28 +3,26 @@ package controller
 import (
 	"html/template"
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 
 	"github.com/go-chi/jwtauth/v5"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
     isAuthenticated := false
     _, claims, err := jwtauth.FromContext(r.Context())
     if claims != nil && err == nil {
         isAuthenticated = true
     }
 
-    m := model.New()
-    posts, _         := m.GetPostsByCategorySlug(
+    posts, _         := c.model.GetPostsByCategorySlug(
         "news",
         postsLimitPerPage,
         0,
         string(repos.PostsStatusPublished),
         isAuthenticated,
     )
-    announcements, _ := m.GetPostsByCategorySlug(
+    announcements, _ := c.model.GetPostsByCategorySlug(
         "announcements",
         postsLimitPerPage,
         0,
@@ -40,7 +38,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
         Posts:           posts,
         Announcements:   announcements,
     }
-    tmpl, err := template.Must(basetmpl.Clone()).ParseFiles("templates/home.tmpl")
+    tmpl, err := template.Must(c.basetmpl.Clone()).ParseFiles("templates/home.tmpl")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
