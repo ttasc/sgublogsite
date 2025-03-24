@@ -1,0 +1,107 @@
+<!--
+  vim: filetype=html
+-->
+{{template "admin" .}}
+{{define "content"}}
+<div class="user-detail-container">
+  <div class="avatar-section">
+    <img src="{{ .ProfilePic.String }}" class="avatar-preview" id="avatarPreview">
+    <div class="avatar-upload">
+      <input type="file" id="avatarInput" accept="image/*">
+      <button class="btn btn-primary" onclick="document.getElementById('avatarInput').click()">
+        <i class="fas fa-upload"></i> Choose Avatar
+      </button>
+    </div>
+  </div>
+
+  <form class="user-form" id="userForm">
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" class="form-control" name="first_name" value="{{ .Firstname }}">
+    </div>
+
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" class="form-control" name="last_name" value="{{ .Lastname }}">
+    </div>
+
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="tel" class="form-control" name="phone" value="{{ .Phone }}">
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" class="form-control" name="email" value="{{ .Email }}">
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-control" name="password" id="passwordInput">
+      <span class="password-toggle" onclick="togglePassword()">
+        <i class="fas fa-eye"></i> Show Password
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label>Role</label>
+      <select class="form-control" name="role">
+        <option value="admin" {{ if eq .Role.UsersRole "admin" }}selected{{ end }}>Admin</option>
+        <option value="subscriber" {{ if eq .Role.UsersRole "subscriber" }}selected{{ end }}>Subscriber</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="grid-column: span 2;">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById('passwordInput');
+    const toggleIcon = document.querySelector('.password-toggle i');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+  }
+
+  // Handle avatar upload preview
+  document.getElementById('avatarInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('avatarPreview').src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Handle form submission
+  document.getElementById('userForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    // Add avatar file if selected
+    const avatarInput = document.getElementById('avatarInput');
+    if (avatarInput.files[0]) {
+      formData.append('avatar', avatarInput.files[0]);
+    }
+
+    fetch(window.location.href, {
+      method: 'PUT',
+      body: formData
+    }).then(response => {
+      if (response.ok) {
+        window.location.reload();
+      }
+    });
+  });
+</script>
+{{ end }}

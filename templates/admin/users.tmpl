@@ -1,0 +1,91 @@
+<!--
+  vim: filetype=html
+-->
+{{template "admin" .}}
+{{define "content"}}
+<div class="user-management">
+  <div class="user-management-header">
+    <h1>User Management</h1>
+    <div class="search-box">
+      <input type="text" class="search-input" placeholder="Search users...">
+      <button class="btn btn-primary">Search</button>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="window.location.href='/admin/users/new'">
+    <i class="fas fa-plus"></i> Create Account
+  </button>
+
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Role</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .Users }}
+      <tr>
+        <td>{{ .UserID }}</td>
+        <td>{{ .Firstname }} {{ .Lastname }}</td>
+        <td>{{ .Role.UsersRole }}</td>
+        <td>{{ .Phone }}</td>
+        <td>{{ .Email }}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-danger btn-icon" onclick="confirmDelete({{ .UserID }})">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn btn-secondary btn-icon"
+                    onclick="window.location.href='/admin/users/{{ .UserID }}'">
+              <i class="fas fa-cog"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<div id="deleteDialog" class="confirmation-dialog" style="display: none;">
+  <p>Are you sure you want to delete this user?</p>
+  <div style="margin-top: 15px; text-align: right;">
+    <button class="btn btn-secondary" onclick="closeDialog()">Cancel</button>
+    <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+  </div>
+</div>
+
+<script>
+  deleteUserId = null;
+
+  function confirmDelete(userId) {
+    deleteUserId = userId;
+    document.getElementById('deleteDialog').style.display = 'block';
+    document.body.insertAdjacentHTML('beforeend', '<div class="dialog-backdrop"></div>');
+  }
+
+  function closeDialog() {
+    document.getElementById('deleteDialog').style.display = 'none';
+    document.querySelector('.dialog-backdrop').remove();
+  }
+
+  document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+    if (deleteUserId) {
+      fetch(`/admin/users/${deleteUserId}`, {
+        method: 'DELETE'
+      }).then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+    }
+    closeDialog();
+  });
+</script>
+{{ end }}

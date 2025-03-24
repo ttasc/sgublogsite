@@ -63,17 +63,23 @@ func (s *Server) registerRoutes(r *chi.Mux) http.Handler {
 func adminRoutes(s *Server) chi.Router {
     r := chi.NewRouter()
 
-    r.Group(func(r chi.Router) {
-        r.Use(jwtauth.Authenticator(s.ctrlr.TokenAuth))
+    r.Use(jwtauth.Authenticator(s.ctrlr.TokenAuth))
 
-        r.Get("/",              s.ctrlr.AdminWelcome)
-        // r.Get("/accounts",      s.ctrlr.AdminAccounts)
-        // r.Get("/categories",    s.ctrlr.AdminCategories)
-        // r.Get("/tags",          s.ctrlr.AdminTags)
-        // r.Get("/posts",         s.ctrlr.AdminPosts)
-        // r.Get("/images",        s.ctrlr.AdminImages)
-        // r.Get("/settings",      s.ctrlr.AdminSettings)
+    r.Get("/",              s.ctrlr.AdminWelcome)
+
+    r.Route("/users", func(r chi.Router) {
+        r.Get("/",          s.ctrlr.AdminUsers)
+        r.Get("/{id}",      s.ctrlr.AdminUser)
+        // r.Post("/",       s.ctrlr.AdminUserCreate)
+        // r.Put("/{id}",   s.ctrlr.AdminUserUpdate)
+        r.Delete("/{id}",   s.ctrlr.AdminUserDelete)
     })
+
+    // r.Get("/categories",    s.ctrlr.AdminCategories)
+    // r.Get("/tags",          s.ctrlr.AdminTags)
+    // r.Get("/posts",         s.ctrlr.AdminPosts)
+    // r.Get("/images",        s.ctrlr.AdminImages)
+    // r.Get("/settings",      s.ctrlr.AdminSettings)
 
     return r
 }
