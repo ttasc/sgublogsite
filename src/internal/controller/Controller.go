@@ -22,17 +22,26 @@ func New(model *model.Model) Controller {
 }
 
 func initTemplates() map[string]*template.Template {
-    base := template.Must(template.New("base").ParseFiles("templates/base.tmpl"))
+    base  := template.Must(template.New("base").ParseFiles("templates/base.tmpl"))
+    admin := template.Must(template.New("admin").ParseFiles("templates/admin/admin.tmpl"))
     return map[string]*template.Template{
         "profile":          template.Must(template.ParseFiles("templates/profile.tmpl")),
+
         "base":             base,
-        "announcements":    template.Must(template.Must(base.Clone()).ParseFiles("templates/announcements.tmpl")),
-        "post":             template.Must(template.Must(base.Clone()).ParseFiles("templates/post.tmpl")),
-        "search":           template.Must(template.Must(base.Clone()).ParseFiles("templates/search.tmpl")),
-        "categories":       template.Must(template.Must(base.Clone()).ParseFiles("templates/categories.tmpl")),
-        "news":             template.Must(template.Must(base.Clone()).ParseFiles("templates/news.tmpl")),
-        "contact":          template.Must(template.Must(base.Clone()).ParseFiles("templates/contact.tmpl")),
-        "about":            template.Must(template.Must(base.Clone()).ParseFiles("templates/about.tmpl")),
-        "home":             template.Must(template.Must(base.Clone()).ParseFiles("templates/home.tmpl")),
+        "announcements":    parseBase(base, "templates/announcements.tmpl"),
+        "post":             parseBase(base, "templates/post.tmpl"),
+        "search":           parseBase(base, "templates/search.tmpl"),
+        "categories":       parseBase(base, "templates/categories.tmpl"),
+        "news":             parseBase(base, "templates/news.tmpl"),
+        "contact":          parseBase(base, "templates/contact.tmpl"),
+        "about":            parseBase(base, "templates/about.tmpl"),
+        "home":             parseBase(base, "templates/home.tmpl"),
+
+        "admin":            admin,
+        "admin_welcome":    parseBase(admin, "templates/admin/welcome.tmpl"),
     }
+}
+
+func parseBase(base *template.Template, filename string) *template.Template {
+    return template.Must(template.Must(base.Clone()).ParseFiles(filename))
 }

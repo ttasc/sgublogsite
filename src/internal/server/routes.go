@@ -53,5 +53,27 @@ func (s *Server) registerRoutes(r *chi.Mux) http.Handler {
     r.Post("/login"         , s.ctrlr.Login)
     r.Post("/logout"        , s.ctrlr.Logout)
 
+
+    r.Mount("/admin", adminRoutes(s))
+
+    return r
+}
+
+
+func adminRoutes(s *Server) chi.Router {
+    r := chi.NewRouter()
+
+    r.Group(func(r chi.Router) {
+        r.Use(jwtauth.Authenticator(s.ctrlr.TokenAuth))
+
+        r.Get("/",              s.ctrlr.AdminWelcome)
+        // r.Get("/accounts",      s.ctrlr.AdminAccounts)
+        // r.Get("/categories",    s.ctrlr.AdminCategories)
+        // r.Get("/tags",          s.ctrlr.AdminTags)
+        // r.Get("/posts",         s.ctrlr.AdminPosts)
+        // r.Get("/images",        s.ctrlr.AdminImages)
+        // r.Get("/settings",      s.ctrlr.AdminSettings)
+    })
+
     return r
 }

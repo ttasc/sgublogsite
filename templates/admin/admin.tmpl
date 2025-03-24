@@ -1,0 +1,55 @@
+<!--
+  vim: filetype=html
+-->
+{{define "admin"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <nav class="admin-sidebar">
+        <div class="sidebar-header">
+          <h2>Dashboard</h2>
+        </div>
+
+        <div class="nav-links">
+          <a href="/admin/accounts" class="nav-item" hx-get="/admin/accounts" hx-target="#content">
+            <i class="fas fa-user"></i> Accounts
+          </a>
+          <a href="/admin/categories" class="nav-item" hx-get="/admin/categories" hx-target="#content">
+            <i class="fas fa-list"></i> Categories
+          </a>
+          <a href="/admin/tags" class="nav-item" hx-get="/admin/tags" hx-target="#content">
+            <i class="fas fa-tag"></i> Tags
+          </a>
+          <a href="/admin/posts" class="nav-item" hx-get="/admin/posts" hx-target="#content">
+            <i class="fas fa-file-alt"></i> Posts
+          </a>
+          <a href="/admin/images" class="nav-item" hx-get="/admin/images" hx-target="#content">
+            <i class="fas fa-image"></i> Images
+          </a>
+        </div>
+
+        <div class="sidebar-footer">
+          <a href="/admin/settings" class="nav-item" hx-get="/admin/settings" hx-target="#content">
+            <i class="fas fa-cog"></i> Site Settings
+          </a>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="admin-main" id="content">
+        {{block "content" .}}{{end}}
+      </main>
+    </div>
+  </body>
+</html>
+{{end}}
