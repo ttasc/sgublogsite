@@ -101,3 +101,35 @@ func (q *Queries) GetTagByID(ctx context.Context, tagID int32) (Tag, error) {
 	err := row.Scan(&i.TagID, &i.Name, &i.Slug)
 	return i, err
 }
+
+const getTagsByPostID = `-- name: GetTagsByPostID :many
+SELECT tags.tag_id, tags.name, tags.slug FROM tags
+WHERE tag_id IN (
+    SELECT tag_id
+    FROM post_tags
+    WHERE post_id = ?
+)
+`
+
+func (q *Queries) GetTagsByPostID(ctx context.Context, postID int32) ([]Tag, error) {
+	rows, err := q.query(ctx, q.getTagsByPostIDStmt, getTagsByPostID, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Tag
+	for rows.Next() {
+		var i Tag
+		if err := rows.Scan(&i.TagID, &i.Name, &i.Slug); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

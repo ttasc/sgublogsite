@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 	"strconv"
 
@@ -39,11 +38,10 @@ func (c *Controller) News(w http.ResponseWriter, r *http.Request) {
         Pagination: generatePagination(r.URL.Path, page, len(posts)/postsLimitPerPage+1),
     }
 
-    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/news.tmpl")
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["news"].ExecuteTemplate(w, "content", data)
     } else {
         data.IsAuthenticated = isAuthenticated
-        tmpl.Execute(w, data)
+        c.templates["news"].Execute(w, data)
     }
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
@@ -20,24 +19,23 @@ type category struct {
 
 func (c *Controller) Categories(w http.ResponseWriter, r *http.Request) {
     categories, _ := c.Model.GetCategories()
-    tags, _       := c.Model.GetTagNames()
+    tags, _       := c.Model.GetTags()
 
     data := struct {
         IsAuthenticated bool
         Categories []category
-        Tags       []string
+        Tags       []repos.Tag
     }{
         Categories: buildCategoryTree(categories, 0, 0),
         Tags:       tags,
     }
 
-    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/categories.tmpl")
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["categories"].ExecuteTemplate(w, "content", data)
     } else {
         _, claims, err := jwtauth.FromContext(r.Context())
         data.IsAuthenticated = (claims != nil && err == nil)
-        tmpl.Execute(w, data)
+        c.templates["categories"].Execute(w, data)
     }
 }
 
@@ -89,11 +87,49 @@ func (c *Controller) CategoryPosts(w http.ResponseWriter, r *http.Request) {
         Pagination: generatePagination(r.URL.Path, page, len(posts)/postsLimitPerPage+1),
     }
 
-    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/news.tmpl")
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["news"].ExecuteTemplate(w, "content", data)
     } else {
         data.isAuthenticated = isAuthenticated
-        tmpl.Execute(w, data)
+        c.templates["news"].Execute(w, data)
+    }
+}
+
+func (c *Controller) TagPosts(w http.ResponseWriter, r *http.Request) {
+    isAuthenticated := false
+    _, claims, err := jwtauth.FromContext(r.Context())
+    if claims != nil && err == nil {
+        isAuthenticated = true
+    }
+
+    // tagID := strings.TrimPrefix(r.URL.Path, "/tag/")
+    tagID, _ := strconv.Atoi(chi.URLParam(r, "id"))
+    page, err := strconv.Atoi(r.URL.Query().Get("page"))
+    if err != nil || page < 1 {
+        page = 1
+    }
+    offset := int32 (page - 1) * postsLimitPerPage
+
+    posts, _ := c.Model.GetPostsByTagID(
+        int32(tagID),
+        postsLimitPerPage,
+        offset,
+        string(repos.PostsStatusPublished),
+        isAuthenticated,
+    )
+    data := struct {
+        isAuthenticated bool
+        Posts       []repos.GetPostsByTagIDRow
+        Pagination  []paginationItem
+    }{
+        Posts:      posts,
+        Pagination: generatePagination(r.URL.Path, page, len(posts)/postsLimitPerPage+1),
+    }
+
+    if r.Header.Get("HX-Request") == "true" {
+        c.templates["news"].ExecuteTemplate(w, "content", data)
+    } else {
+        data.isAuthenticated = isAuthenticated
+        c.templates["news"].Execute(w, data)
     }
 }

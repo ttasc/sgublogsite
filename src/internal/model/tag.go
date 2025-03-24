@@ -14,6 +14,10 @@ func (m *Model) GetTagNames() ([]string, error) {
     return m.query.GetAllTagNames(m.ctx)
 }
 
+func (m *Model) GetTagsByPostID(id int32) ([]repos.Tag, error) {
+    return m.query.GetTagsByPostID(m.ctx, id)
+}
+
 func (m *Model) AddTag(tag repos.Tag) error {
     tx, err := m.DB.Begin()
     if err != nil {

@@ -9,6 +9,14 @@ SELECT * FROM tags;
 -- name: GetAllTagNames :many
 SELECT name FROM tags;
 
+-- name: GetTagsByPostID :many
+SELECT tags.* FROM tags
+WHERE tag_id IN (
+    SELECT tag_id
+    FROM post_tags
+    WHERE post_id = ?
+);
+
 -- name: AddTag :execresult
 INSERT INTO tags (
     name,

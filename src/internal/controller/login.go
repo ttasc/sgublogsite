@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 	"os"
 	"time"
@@ -19,8 +18,7 @@ var (
 )
 
 func (c *Controller) LoginPage(w http.ResponseWriter, r *http.Request) {
-    tmpl := template.Must(template.ParseFiles("statics/login.html"))
-    tmpl.Execute(w, nil)
+    http.ServeFile(w, r, "statics/login.html")
 }
 
 func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
@@ -36,8 +34,7 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
     user, err := c.Model.GetUserByEmailOrPhone(emailorphone)
 
     if err != nil || !utils.CheckPasswordHash(password, user.Password) {
-        w.WriteHeader(http.StatusUnauthorized)
-        w.Write([]byte("Invalid email or password"))
+        http.Redirect(w, r, "/login?error=auth_failed", http.StatusFound)
         return
     }
 

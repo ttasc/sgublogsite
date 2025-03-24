@@ -41,6 +41,7 @@ func (s *Server) registerRoutes(r *chi.Mux) http.Handler {
     r.Get("/announcements"  , s.ctrlr.Announcements)
     r.Get("/categories"     , s.ctrlr.Categories)
     r.Get("/category/{id}"  , s.ctrlr.CategoryPosts)
+    r.Get("/tag/{id}"       , s.ctrlr.TagPosts)
     r.Get("/search"         , s.ctrlr.Search)
 
     r.Get("/post/{id}"      , s.ctrlr.Post)

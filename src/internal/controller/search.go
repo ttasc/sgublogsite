@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
@@ -45,11 +44,10 @@ func (c *Controller) Search(w http.ResponseWriter, r *http.Request) {
         Posts:       posts,
         Pagination:  generatePagination(r.URL.Path+"?q="+query, page, len(posts)/postsLimitPerPage+1),
     }
-    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/search.tmpl")
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["search"].ExecuteTemplate(w, "content", data)
     } else {
         data.IsAuthenticated = isAuthenticated
-        tmpl.Execute(w, data)
+        c.templates["search"].Execute(w, data)
     }
 }

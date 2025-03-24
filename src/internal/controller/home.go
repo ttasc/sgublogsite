@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 
@@ -29,6 +28,7 @@ func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
         string(repos.PostsStatusPublished),
         isAuthenticated,
     )
+
     data := struct {
         IsAuthenticated bool
         Posts         []repos.GetPostsByCategorySlugRow
@@ -38,14 +38,10 @@ func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
         Posts:           posts,
         Announcements:   announcements,
     }
-    tmpl, err := template.Must(c.basetmpl.Clone()).ParseFiles("templates/home.tmpl")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["home"].ExecuteTemplate(w, "content", data)
     } else {
-        tmpl.Execute(w, data)
+        c.templates["home"].Execute(w, data)
     }
 }

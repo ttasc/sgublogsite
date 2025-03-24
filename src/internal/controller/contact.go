@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/go-chi/jwtauth/v5"
@@ -19,16 +18,11 @@ func (c *Controller) Contact(w http.ResponseWriter, r *http.Request) {
         Email:   contactInfo.ContactEmail.String,
         Phone:   contactInfo.ContactPhone.String,
     }
-    tmpl, err := template.Must(c.basetmpl.Clone()).ParseFiles("templates/contact.tmpl")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["contact"].ExecuteTemplate(w, "content", data)
     } else {
         _, claims, err := jwtauth.FromContext(r.Context())
         data.IsAuthenticated = (claims != nil && err == nil)
-        tmpl.Execute(w, data)
+        c.templates["contact"].Execute(w, data)
     }
 }

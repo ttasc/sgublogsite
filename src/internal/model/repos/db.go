@@ -135,6 +135,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getTagByIDStmt, err = db.PrepareContext(ctx, getTagByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTagByID: %w", err)
 	}
+	if q.getTagsByPostIDStmt, err = db.PrepareContext(ctx, getTagsByPostID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTagsByPostID: %w", err)
+	}
 	if q.getUncategorizedPostsStmt, err = db.PrepareContext(ctx, getUncategorizedPosts); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUncategorizedPosts: %w", err)
 	}
@@ -361,6 +364,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getTagByIDStmt: %w", cerr)
 		}
 	}
+	if q.getTagsByPostIDStmt != nil {
+		if cerr := q.getTagsByPostIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTagsByPostIDStmt: %w", cerr)
+		}
+	}
 	if q.getUncategorizedPostsStmt != nil {
 		if cerr := q.getUncategorizedPostsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUncategorizedPostsStmt: %w", cerr)
@@ -497,6 +505,7 @@ type Queries struct {
 	getSiteInfoStmt            *sql.Stmt
 	getSiteMetaStmt            *sql.Stmt
 	getTagByIDStmt             *sql.Stmt
+	getTagsByPostIDStmt        *sql.Stmt
 	getUncategorizedPostsStmt  *sql.Stmt
 	getUserByEmailOrPhoneStmt  *sql.Stmt
 	getUserByIDStmt            *sql.Stmt
@@ -552,6 +561,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getSiteInfoStmt:            q.getSiteInfoStmt,
 		getSiteMetaStmt:            q.getSiteMetaStmt,
 		getTagByIDStmt:             q.getTagByIDStmt,
+		getTagsByPostIDStmt:        q.getTagsByPostIDStmt,
 		getUncategorizedPostsStmt:  q.getUncategorizedPostsStmt,
 		getUserByEmailOrPhoneStmt:  q.getUserByEmailOrPhoneStmt,
 		getUserByIDStmt:            q.getUserByIDStmt,

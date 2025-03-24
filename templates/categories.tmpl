@@ -14,7 +14,12 @@
     <h3>Tags</h3>
     <div class="tags-container">
       {{range .Tags}}
-      <span class="tag-item">{{.}}</span>
+      <span class="tag-item"
+            hx-get="/tag/{{.TagID}}?page=1"
+            hx-target="#main-content"
+            hx-push-url="true"
+            hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>
+        {{.Name}}</span>
       {{end}}
     </div>
   </div>

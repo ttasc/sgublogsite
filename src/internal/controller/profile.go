@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/go-chi/jwtauth/v5"
@@ -16,6 +15,5 @@ func (c *Controller) Profile(w http.ResponseWriter, r *http.Request) {
 
     currentUser, _ := c.Model.GetUserByID(int32(claims["ID"].(float64)))
 
-    tmpl := template.Must(template.ParseFiles("templates/profile.tmpl"))
-    tmpl.Execute(w, currentUser)
+    c.templates["profile"].Execute(w, currentUser)
 }

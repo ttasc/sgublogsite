@@ -28,18 +28,21 @@ func (c *Controller) Post(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    tags, _ := c.Model.GetTagsByPostID(int32(id))
+
     data := struct {
         IsAuthenticated bool
         Post repos.GetPostByIDRow
+        Tags []repos.Tag
     }{
         Post: post,
+        Tags: tags,
     }
 
-    tmpl, _ := template.Must(c.basetmpl.Clone()).ParseFiles("templates/post.tmpl")
     if r.Header.Get("HX-Request") == "true" {
-        tmpl.ExecuteTemplate(w, "content", data)
+        c.templates["post"].ExecuteTemplate(w, "content", data)
     } else {
         data.IsAuthenticated = isAuthenticated
-        tmpl.Execute(w, data)
+        c.templates["post"].Execute(w, data)
     }
 }
