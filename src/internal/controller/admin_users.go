@@ -30,7 +30,6 @@ func (c *Controller) AdminUsers(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) AdminUser(w http.ResponseWriter, r *http.Request) {
     id, _ := strconv.Atoi(chi.URLParam(r, "id"))
     user, _ := c.Model.GetUserByID(int32(id))
-    println(user.ProfilePic.String)
     if r.Header.Get("HX-Request") == "true" {
         c.templates["admin_user"].ExecuteTemplate(w, "content", user)
     } else {

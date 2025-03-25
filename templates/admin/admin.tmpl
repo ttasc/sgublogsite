@@ -48,33 +48,18 @@
 
       <!-- Main Content -->
       <main class="admin-main" id="content">
-        {{template "errorPopup"}}
+        <div id="errorPopup" class="error-popup">
+          <i class="fas fa-exclamation-circle error-icon"></i>
+          <div class="error-content">
+            <p id="errorMessage"></p>
+          </div>
+          <span class="close-error" onclick="closeError()">&times;</span>
+        </div>
         {{block "content" .}}{{end}}
       </main>
     </div>
+
+    <script src="/assets/js/script.js"></script>
   </body>
 </html>
-{{end}}
-
-{{define "errorPopup"}}
-<div id="errorPopup" class="error-popup">
-  <i class="fas fa-exclamation-circle error-icon"></i>
-  <div class="error-content">
-    <p id="errorMessage"></p>
-  </div>
-  <span class="close-error" onclick="closeError()">&times;</span>
-</div>
-
-<script>
-  function showError(message) {
-    const popup = document.getElementById('errorPopup');
-    document.getElementById('errorMessage').textContent = message;
-    popup.classList.add('show');
-    setTimeout(() => popup.classList.remove('show'), 5000);
-  }
-
-  function closeError() {
-    document.getElementById('errorPopup').classList.remove('show');
-  }
-</script>
 {{end}}

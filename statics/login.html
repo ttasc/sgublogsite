@@ -45,17 +45,7 @@
         </a>
       </form>
     </div>
-    <script>
-      // Kiểm tra tham số URL
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('error') === 'auth_failed') {
-        const errorDiv = document.getElementById('errorMessage');
-        errorDiv.textContent = 'Thông tin đăng nhập không đúng';
-        errorDiv.style.display = 'block';
 
-        // Xóa tham số error khỏi URL
-        window.history.replaceState({}, document.title, "/login");
-      }
-    </script>
+    <script src="/assets/js/login.js"></script>
   </body>
 </html>

@@ -60,40 +60,4 @@
     <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
   </div>
 </div>
-
-<script>
-  deleteUserId = null;
-
-  function confirmDelete(userId) {
-    deleteUserId = userId;
-    document.getElementById('deleteDialog').style.display = 'block';
-    document.body.insertAdjacentHTML('beforeend', '<div class="dialog-backdrop"></div>');
-  }
-
-  function closeDialog() {
-    document.getElementById('deleteDialog').style.display = 'none';
-    document.querySelector('.dialog-backdrop').remove();
-  }
-
-  document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
-    if (deleteUserId) {
-      try {
-        const response = await fetch(`/admin/users/${deleteUserId}`, {
-          method: 'DELETE'
-        });
-
-        if (!response.ok) {
-          const result = await response.json();
-          showError(result.message || 'An error occurred');
-          return;
-        }
-
-        window.location.reload();
-      } catch (error) {
-        showError('Network error. Please try again.');
-      }
-    }
-    closeDialog();
-  });
-</script>
 {{ end }}

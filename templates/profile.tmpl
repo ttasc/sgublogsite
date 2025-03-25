@@ -74,57 +74,7 @@
       <span class="close-error" onclick="closeError()">&times;</span>
     </div>
 
-    <script>
-      document.getElementById('avatarUpload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            document.getElementById('avatarPreview').src = e.target.result;
-          }
-          reader.readAsDataURL(file);
-        }
-      });
-
-      document.getElementById('profileForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-
-        const avatarUpload = document.getElementById('avatarUpload');
-        if (avatarUpload.files[0]) {
-          formData.append('avatar', avatarUpload.files[0]);
-        }
-
-        try {
-          const response = await fetch(window.location.href, {
-            method: 'PUT',
-            body: formData
-          });
-
-          if (!response.ok) {
-            const result = await response.json();
-            showError(result.message || 'An error occurred');
-            return;
-          }
-
-          window.location.reload();
-        } catch (error) {
-          console.error(error);
-          showError('Network error. Please try again.');
-        }
-      });
-
-      function showError(message) {
-        const popup = document.getElementById('errorPopup');
-        document.getElementById('errorMessage').textContent = message;
-        popup.classList.add('show');
-        setTimeout(() => popup.classList.remove('show'), 5000);
-      }
-
-      function closeError() {
-        document.getElementById('errorPopup').classList.remove('show');
-      }
-    </script>
+    <script src="/assets/js/script.js"></script>
   </body>
 </html>
 
