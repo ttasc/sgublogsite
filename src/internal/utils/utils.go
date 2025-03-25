@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
@@ -35,15 +36,15 @@ func SaveUploadedFile(file multipart.File, handler *multipart.FileHeader) (strin
     defer file.Close()
 
     // Create upload directory if it doesn't exist
-    const uploadABDir = "./assets/uploads/avatars/"
-    const uploadREDir = "/assets/uploads/avatars/"
+    const uploadREDIR = "./assets/uploads/avatars/"
+    const uploadABDir = "/assets/uploads/avatars/"
 
-    if err := os.MkdirAll(uploadABDir, 0755); err != nil {
+    if err := os.MkdirAll(uploadREDIR, 0755); err != nil {
         return "", err
     }
 
     filename := handler.Filename
-    filePath := path.Join(uploadABDir, filename)
+    filePath := path.Join(uploadREDIR, filename)
 
     // Write the file to disk
     f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
@@ -53,5 +54,23 @@ func SaveUploadedFile(file multipart.File, handler *multipart.FileHeader) (strin
     defer f.Close()
 
     io.Copy(f, file)
-    return path.Join(uploadREDir, filename), nil
+    return path.Join(uploadABDir, filename), nil
+}
+
+func DeleteUploadedFile(url string) error {
+    if url == "" {
+        return nil
+    }
+
+    filePath := fmt.Sprintf(".%s", url)
+
+    if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        return fmt.Errorf("file not found: %s", filePath)
+    }
+
+    if err := os.Remove(filePath); err != nil {
+        return fmt.Errorf("failed to delete file: %v", err)
+    }
+
+    return nil
 }

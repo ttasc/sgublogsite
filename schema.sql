@@ -32,7 +32,7 @@ CREATE TABLE users (
     email           VARCHAR(50) NOT NULL UNIQUE,
     password        VARCHAR(255) NOT NULL, -- Assuming hashed
     profile_pic_id  INT,
-    role            ENUM('admin', 'author', 'subscriber') DEFAULT 'subscriber', -- Basic role management
+    role            ENUM('admin', 'author', 'subscriber') NOT NULL DEFAULT 'subscriber', -- Basic role management
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

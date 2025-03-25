@@ -7,8 +7,8 @@
   <div class="avatar-section">
     <img src="/assets/avatar.def.png" class="avatar-preview" id="avatarPreview">
     <div class="avatar-upload">
-      <input type="file" id="avatarInput" accept="image/*">
-      <button class="btn btn-primary" onclick="document.getElementById('avatarInput').click()">
+      <input type="file" id="avatarUpload" accept="image/*">
+      <button class="btn btn-primary" onclick="document.getElementById('avatarUpload').click()">
         <i class="fas fa-upload"></i> Choose Avatar
       </button>
     </div>
@@ -76,7 +76,7 @@
     }
   }
 
-  document.getElementById('avatarInput').addEventListener('change', function(e) {
+  document.getElementById('avatarUpload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -91,9 +91,9 @@
     e.preventDefault();
     const formData = new FormData(this);
 
-    const avatarInput = document.getElementById('avatarInput');
-    if (avatarInput.files[0]) {
-      formData.append('avatar', avatarInput.files[0]);
+    const avatarUpload = document.getElementById('avatarUpload');
+    if (avatarUpload.files[0]) {
+      formData.append('avatar', avatarUpload.files[0]);
     }
 
     try {

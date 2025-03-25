@@ -130,6 +130,7 @@
 }
 
 .user-table {
+    margin-top: 1rem;
     width: 100%;
     border-collapse: collapse;
     background: white;
@@ -263,7 +264,6 @@
     background: rgba(0,0,0,0.5);
     z-index: 999;
 }
-
 
 .error-popup {
     position: fixed;

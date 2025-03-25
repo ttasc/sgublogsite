@@ -32,7 +32,7 @@
       <tr>
         <td>{{ .UserID }}</td>
         <td>{{ .Firstname }} {{ .Lastname }}</td>
-        <td>{{ .Role.UsersRole }}</td>
+        <td>{{ .Role }}</td>
         <td>{{ .Phone }}</td>
         <td>{{ .Email }}</td>
         <td>
@@ -75,15 +75,23 @@
     document.querySelector('.dialog-backdrop').remove();
   }
 
-  document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+  document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
     if (deleteUserId) {
-      fetch(`/admin/users/${deleteUserId}`, {
-        method: 'DELETE'
-      }).then(response => {
-        if (response.ok) {
-          window.location.reload();
+      try {
+        const response = await fetch(`/admin/users/${deleteUserId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const result = await response.json();
+          showError(result.message || 'An error occurred');
+          return;
         }
-      });
+
+        window.location.reload();
+      } catch (error) {
+        showError('Network error. Please try again.');
+      }
     }
     closeDialog();
   });

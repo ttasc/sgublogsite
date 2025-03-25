@@ -13,6 +13,11 @@ SELECT * FROM images;
 INSERT INTO images (url, name)
 VALUES (?, ?);
 
+-- name: UpdateImageURL :execresult
+UPDATE images
+SET url = ?
+WHERE image_id = ?;
+
 -- name: DeleteImage :execresult
 DELETE FROM images
 WHERE image_id = ?;

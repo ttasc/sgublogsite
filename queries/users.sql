@@ -19,6 +19,11 @@ SELECT users.*, images.url AS profile_pic
 FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
 ORDER BY lastname;
 
+-- name: GetUserProfilePicID :one
+SELECT profile_pic_id
+FROM users
+WHERE user_id = ?;
+
 -- name: AddUser :execresult
 INSERT INTO users (
     firstname,
@@ -35,8 +40,12 @@ SET
     firstname = ?,
     lastname = ?,
     phone = ?,
-    email = ?,
-    profile_pic_id = ?
+    email = ?
+WHERE user_id = ?;
+
+-- name: UpdateUserProfilePic :execresult
+UPDATE users
+SET profile_pic_id = ?
 WHERE user_id = ?;
 
 -- name: UpdateUserPassword :execresult

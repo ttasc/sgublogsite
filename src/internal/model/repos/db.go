@@ -150,8 +150,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUserByIDStmt, err = db.PrepareContext(ctx, getUserByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByID: %w", err)
 	}
+	if q.getUserProfilePicIDStmt, err = db.PrepareContext(ctx, getUserProfilePicID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserProfilePicID: %w", err)
+	}
 	if q.updateCategoryStmt, err = db.PrepareContext(ctx, updateCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCategory: %w", err)
+	}
+	if q.updateImageURLStmt, err = db.PrepareContext(ctx, updateImageURL); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateImageURL: %w", err)
 	}
 	if q.updatePostBodyStmt, err = db.PrepareContext(ctx, updatePostBody); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePostBody: %w", err)
@@ -173,6 +179,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateUserPasswordStmt, err = db.PrepareContext(ctx, updateUserPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserPassword: %w", err)
+	}
+	if q.updateUserProfilePicStmt, err = db.PrepareContext(ctx, updateUserProfilePic); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUserProfilePic: %w", err)
 	}
 	if q.updateUserRoleStmt, err = db.PrepareContext(ctx, updateUserRole); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserRole: %w", err)
@@ -392,9 +401,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUserByIDStmt: %w", cerr)
 		}
 	}
+	if q.getUserProfilePicIDStmt != nil {
+		if cerr := q.getUserProfilePicIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserProfilePicIDStmt: %w", cerr)
+		}
+	}
 	if q.updateCategoryStmt != nil {
 		if cerr := q.updateCategoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateCategoryStmt: %w", cerr)
+		}
+	}
+	if q.updateImageURLStmt != nil {
+		if cerr := q.updateImageURLStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateImageURLStmt: %w", cerr)
 		}
 	}
 	if q.updatePostBodyStmt != nil {
@@ -430,6 +449,11 @@ func (q *Queries) Close() error {
 	if q.updateUserPasswordStmt != nil {
 		if cerr := q.updateUserPasswordStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateUserPasswordStmt: %w", cerr)
+		}
+	}
+	if q.updateUserProfilePicStmt != nil {
+		if cerr := q.updateUserProfilePicStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserProfilePicStmt: %w", cerr)
 		}
 	}
 	if q.updateUserRoleStmt != nil {
@@ -518,7 +542,9 @@ type Queries struct {
 	getUncategorizedPostsStmt  *sql.Stmt
 	getUserByEmailOrPhoneStmt  *sql.Stmt
 	getUserByIDStmt            *sql.Stmt
+	getUserProfilePicIDStmt    *sql.Stmt
 	updateCategoryStmt         *sql.Stmt
+	updateImageURLStmt         *sql.Stmt
 	updatePostBodyStmt         *sql.Stmt
 	updatePostMetadataStmt     *sql.Stmt
 	updatePostPrivateStmt      *sql.Stmt
@@ -526,6 +552,7 @@ type Queries struct {
 	updateSiteInfoStmt         *sql.Stmt
 	updateUserInfoStmt         *sql.Stmt
 	updateUserPasswordStmt     *sql.Stmt
+	updateUserProfilePicStmt   *sql.Stmt
 	updateUserRoleStmt         *sql.Stmt
 }
 
@@ -575,7 +602,9 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getUncategorizedPostsStmt:  q.getUncategorizedPostsStmt,
 		getUserByEmailOrPhoneStmt:  q.getUserByEmailOrPhoneStmt,
 		getUserByIDStmt:            q.getUserByIDStmt,
+		getUserProfilePicIDStmt:    q.getUserProfilePicIDStmt,
 		updateCategoryStmt:         q.updateCategoryStmt,
+		updateImageURLStmt:         q.updateImageURLStmt,
 		updatePostBodyStmt:         q.updatePostBodyStmt,
 		updatePostMetadataStmt:     q.updatePostMetadataStmt,
 		updatePostPrivateStmt:      q.updatePostPrivateStmt,
@@ -583,6 +612,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateSiteInfoStmt:         q.updateSiteInfoStmt,
 		updateUserInfoStmt:         q.updateUserInfoStmt,
 		updateUserPasswordStmt:     q.updateUserPasswordStmt,
+		updateUserProfilePicStmt:   q.updateUserProfilePicStmt,
 		updateUserRoleStmt:         q.updateUserRoleStmt,
 	}
 }

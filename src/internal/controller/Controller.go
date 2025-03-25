@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"html/template"
+	"log"
+	"net/http"
 
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/ttasc/sgublogsite/src/internal/model"
@@ -47,4 +50,11 @@ func initTemplates() map[string]*template.Template {
 
 func parseBase(base *template.Template, filename string) *template.Template {
     return template.Must(template.Must(base.Clone()).ParseFiles(filename))
+}
+
+func sendErrorResponse(err error, w http.ResponseWriter, statusCode int, data any) {
+    log.Println(err)
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(statusCode)
+    json.NewEncoder(w).Encode(data)
 }

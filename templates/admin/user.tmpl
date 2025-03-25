@@ -7,8 +7,8 @@
   <div class="avatar-section">
     <img src="{{ if .ProfilePic.Valid }} {{ .ProfilePic.String }} {{ else }} /assets/avatar.def.png {{ end }}" class="avatar-preview" id="avatarPreview">
     <div class="avatar-upload">
-      <input type="file" id="avatarInput" accept="image/*">
-      <button class="btn btn-primary" onclick="document.getElementById('avatarInput').click()">
+      <input type="file" id="avatarUpload" accept="image/*">
+      <button class="btn btn-primary" onclick="document.getElementById('avatarUpload').click()">
         <i class="fas fa-upload"></i> Choose Avatar
       </button>
     </div>
@@ -46,8 +46,8 @@
     <div class="form-group">
       <label>Role</label>
       <select class="form-control" name="role">
-        <option value="admin" {{ if eq .Role.UsersRole "admin" }}selected{{ end }}>Admin</option>
-        <option value="subscriber" {{ if eq .Role.UsersRole "subscriber" }}selected{{ end }}>Subscriber</option>
+        <option value="admin" {{ if eq .Role "admin" }}selected{{ end }}>Admin</option>
+        <option value="subscriber" {{ if eq .Role "subscriber" }}selected{{ end }}>Subscriber</option>
       </select>
     </div>
 
@@ -73,7 +73,7 @@
   }
 
   // Handle avatar upload preview
-  document.getElementById('avatarInput').addEventListener('change', function(e) {
+  document.getElementById('avatarUpload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -84,25 +84,32 @@
     }
   });
 
-  // Handle form submission
-  document.getElementById('userForm').addEventListener('submit', function(e) {
+  document.getElementById('userForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const formData = new FormData(this);
 
-    // Add avatar file if selected
-    const avatarInput = document.getElementById('avatarInput');
-    if (avatarInput.files[0]) {
-      formData.append('avatar', avatarInput.files[0]);
+    const avatarUpload = document.getElementById('avatarUpload');
+    if (avatarUpload.files[0]) {
+      formData.append('avatar', avatarUpload.files[0]);
     }
 
-    fetch(window.location.href, {
-      method: 'PUT',
-      body: formData
-    }).then(response => {
-      if (response.ok) {
-        window.location.reload();
+    try {
+      const response = await fetch(window.location.href, {
+        method: 'PUT',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        showError(result.message || 'An error occurred');
+        return;
       }
-    });
+
+      window.location.href = '/admin/users';
+    } catch (error) {
+      console.error(error);
+      showError('Network error. Please try again.');
+    }
   });
 </script>
 {{ end }}

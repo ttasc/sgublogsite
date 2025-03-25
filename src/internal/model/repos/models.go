@@ -158,7 +158,7 @@ type User struct {
 	Email        string        `json:"email"`
 	Password     string        `json:"password"`
 	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`
-	Role         NullUsersRole `json:"role"`
+	Role         UsersRole     `json:"role"`
 	CreatedAt    time.Time     `json:"created_at"`
 	UpdatedAt    time.Time     `json:"updated_at"`
 }

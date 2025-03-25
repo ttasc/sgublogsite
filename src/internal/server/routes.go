@@ -47,9 +47,9 @@ func (s *Server) registerRoutes(r *chi.Mux) http.Handler {
     r.Get("/post/{id}"      , s.ctrlr.Post)
 
     r.Get("/profile"        , s.ctrlr.Profile)
+    r.Put("/profile"        , s.ctrlr.ProfileUpdate)
     r.Get("/login"          , s.ctrlr.LoginPage)
 
-    r.Post("/register"      , s.ctrlr.Register)
     r.Post("/login"         , s.ctrlr.Login)
     r.Post("/logout"        , s.ctrlr.Logout)
 
@@ -72,7 +72,7 @@ func adminRoutes(s *Server) chi.Router {
         r.Get("/{id}",      s.ctrlr.AdminUser)
         r.Get("/new",       s.ctrlr.AdminUserNew)
         r.Post("/",         s.ctrlr.AdminUserCreate)
-        // r.Put("/{id}",   s.ctrlr.AdminUserUpdate)
+        r.Put("/{id}",      s.ctrlr.AdminUserUpdate)
         r.Delete("/{id}",   s.ctrlr.AdminUserDelete)
     })
 

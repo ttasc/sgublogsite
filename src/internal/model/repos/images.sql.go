@@ -83,3 +83,18 @@ func (q *Queries) GetImageByURL(ctx context.Context, url string) (Image, error) 
 	err := row.Scan(&i.ImageID, &i.Url, &i.Name)
 	return i, err
 }
+
+const updateImageURL = `-- name: UpdateImageURL :execresult
+UPDATE images
+SET url = ?
+WHERE image_id = ?
+`
+
+type UpdateImageURLParams struct {
+	Url     string `json:"url"`
+	ImageID int32  `json:"image_id"`
+}
+
+func (q *Queries) UpdateImageURL(ctx context.Context, arg UpdateImageURLParams) (sql.Result, error) {
+	return q.exec(ctx, q.updateImageURLStmt, updateImageURL, arg.Url, arg.ImageID)
+}

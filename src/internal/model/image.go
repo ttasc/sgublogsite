@@ -40,6 +40,27 @@ func (m *Model) AddImage(image repos.Image) (int32, error) {
     return int32(id), tx.Commit()
 }
 
+func (m *Model) UpdateImageURL(id int32, url string) error {
+    tx, err := m.DB.Begin()
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    qtx := m.query.WithTx(tx)
+
+    _, err = qtx.UpdateImageURL(m.ctx, repos.UpdateImageURLParams{
+        ImageID:        id,
+        Url:            url,
+    })
+
+    if err != nil {
+        return err
+    }
+
+    return tx.Commit()
+}
+
 func (m *Model) DeleteImage(id int32) error {
     tx, err := m.DB.Begin()
     if err != nil {

@@ -1,6 +1,10 @@
 package model
 
-import "github.com/ttasc/sgublogsite/src/internal/model/repos"
+import (
+	"database/sql"
+
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
+)
 
 func (m *Model) GetUserByID(id int32) (repos.GetUserByIDRow, error) {
     return m.query.GetUserByID(m.ctx, id)
@@ -22,6 +26,10 @@ func (m *Model) SearchUsers(text string) ([]repos.FindUsersRow, error) {
 
 func (m *Model) GetUsers() ([]repos.GetAllUsersRow, error) {
     return m.query.GetAllUsers(m.ctx)
+}
+
+func (m *Model) GetUserProfilePicID(id int32) (sql.NullInt32, error) {
+    return m.query.GetUserProfilePicID(m.ctx, id)
 }
 
 func (m *Model) AddUser(user repos.User) (int32, error) {
@@ -69,7 +77,27 @@ func (m *Model) UpdateUserInfo(user repos.User) error {
         Lastname:       user.Lastname,
         Phone:          user.Phone,
         Email:          user.Email,
-        ProfilePicID:   user.ProfilePicID,
+    })
+
+    if err != nil {
+        return err
+    }
+
+    return tx.Commit()
+}
+
+func (m *Model) UpdateUserProfilePicID(userID, imageID int32) error {
+    tx, err := m.DB.Begin()
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    qtx := m.query.WithTx(tx)
+
+    _, err = qtx.UpdateUserProfilePic(m.ctx, repos.UpdateUserProfilePicParams{
+        UserID:         userID,
+        ProfilePicID:   sql.NullInt32{Int32: imageID, Valid: true},
     })
 
     if err != nil {
@@ -111,7 +139,7 @@ func (m *Model) UpdateUserRole(userID int32, role repos.UsersRole) error {
 
     _, err = qtx.UpdateUserRole(m.ctx, repos.UpdateUserRoleParams{
         UserID:         userID,
-        Role:           repos.NullUsersRole{ UsersRole: role, Valid:  true},
+        Role:           repos.UsersRole(role),
     })
 
     if err != nil {

@@ -23,12 +23,12 @@ INSERT INTO users (
 `
 
 type AddUserParams struct {
-	Firstname string        `json:"firstname"`
-	Lastname  string        `json:"lastname"`
-	Phone     string        `json:"phone"`
-	Email     string        `json:"email"`
-	Password  string        `json:"password"`
-	Role      NullUsersRole `json:"role"`
+	Firstname string    `json:"firstname"`
+	Lastname  string    `json:"lastname"`
+	Phone     string    `json:"phone"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Role      UsersRole `json:"role"`
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (sql.Result, error) {
@@ -65,7 +65,7 @@ type FindUsersRow struct {
 	Email        string         `json:"email"`
 	Password     string         `json:"password"`
 	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
-	Role         NullUsersRole  `json:"role"`
+	Role         UsersRole      `json:"role"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	ProfilePic   sql.NullString `json:"profile_pic"`
@@ -121,7 +121,7 @@ type GetAllUsersRow struct {
 	Email        string         `json:"email"`
 	Password     string         `json:"password"`
 	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
-	Role         NullUsersRole  `json:"role"`
+	Role         UsersRole      `json:"role"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	ProfilePic   sql.NullString `json:"profile_pic"`
@@ -182,7 +182,7 @@ type GetUserByEmailOrPhoneRow struct {
 	Email        string         `json:"email"`
 	Password     string         `json:"password"`
 	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
-	Role         NullUsersRole  `json:"role"`
+	Role         UsersRole      `json:"role"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	ProfilePic   sql.NullString `json:"profile_pic"`
@@ -221,7 +221,7 @@ type GetUserByIDRow struct {
 	Email        string         `json:"email"`
 	Password     string         `json:"password"`
 	ProfilePicID sql.NullInt32  `json:"profile_pic_id"`
-	Role         NullUsersRole  `json:"role"`
+	Role         UsersRole      `json:"role"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	ProfilePic   sql.NullString `json:"profile_pic"`
@@ -246,24 +246,35 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow
 	return i, err
 }
 
+const getUserProfilePicID = `-- name: GetUserProfilePicID :one
+SELECT profile_pic_id
+FROM users
+WHERE user_id = ?
+`
+
+func (q *Queries) GetUserProfilePicID(ctx context.Context, userID int32) (sql.NullInt32, error) {
+	row := q.queryRow(ctx, q.getUserProfilePicIDStmt, getUserProfilePicID, userID)
+	var profile_pic_id sql.NullInt32
+	err := row.Scan(&profile_pic_id)
+	return profile_pic_id, err
+}
+
 const updateUserInfo = `-- name: UpdateUserInfo :execresult
 UPDATE users
 SET
     firstname = ?,
     lastname = ?,
     phone = ?,
-    email = ?,
-    profile_pic_id = ?
+    email = ?
 WHERE user_id = ?
 `
 
 type UpdateUserInfoParams struct {
-	Firstname    string        `json:"firstname"`
-	Lastname     string        `json:"lastname"`
-	Phone        string        `json:"phone"`
-	Email        string        `json:"email"`
-	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`
-	UserID       int32         `json:"user_id"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	UserID    int32  `json:"user_id"`
 }
 
 func (q *Queries) UpdateUserInfo(ctx context.Context, arg UpdateUserInfoParams) (sql.Result, error) {
@@ -272,7 +283,6 @@ func (q *Queries) UpdateUserInfo(ctx context.Context, arg UpdateUserInfoParams) 
 		arg.Lastname,
 		arg.Phone,
 		arg.Email,
-		arg.ProfilePicID,
 		arg.UserID,
 	)
 }
@@ -292,6 +302,21 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 	return q.exec(ctx, q.updateUserPasswordStmt, updateUserPassword, arg.Password, arg.UserID)
 }
 
+const updateUserProfilePic = `-- name: UpdateUserProfilePic :execresult
+UPDATE users
+SET profile_pic_id = ?
+WHERE user_id = ?
+`
+
+type UpdateUserProfilePicParams struct {
+	ProfilePicID sql.NullInt32 `json:"profile_pic_id"`
+	UserID       int32         `json:"user_id"`
+}
+
+func (q *Queries) UpdateUserProfilePic(ctx context.Context, arg UpdateUserProfilePicParams) (sql.Result, error) {
+	return q.exec(ctx, q.updateUserProfilePicStmt, updateUserProfilePic, arg.ProfilePicID, arg.UserID)
+}
+
 const updateUserRole = `-- name: UpdateUserRole :execresult
 UPDATE users
 SET role = ?
@@ -299,8 +324,8 @@ WHERE user_id = ?
 `
 
 type UpdateUserRoleParams struct {
-	Role   NullUsersRole `json:"role"`
-	UserID int32         `json:"user_id"`
+	Role   UsersRole `json:"role"`
+	UserID int32     `json:"user_id"`
 }
 
 func (q *Queries) UpdateUserRole(ctx context.Context, arg UpdateUserRoleParams) (sql.Result, error) {
