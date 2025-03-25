@@ -38,9 +38,10 @@ func initTemplates() map[string]*template.Template {
         "home":             parseBase(base, "templates/home.tmpl"),
 
         "admin":            admin,
-        "admin_welcome":    parseBase(admin, "templates/admin/welcome.tmpl"),
+        "admin_dashboard":  parseBase(admin, "templates/admin/dashboard.tmpl"),
         "admin_users":      parseBase(admin, "templates/admin/users.tmpl"),
         "admin_user":       parseBase(admin, "templates/admin/user.tmpl"),
+        "admin_user_new":   parseBase(admin, "templates/admin/user_new.tmpl"),
     }
 }
 

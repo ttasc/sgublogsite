@@ -99,6 +99,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getImageByIDStmt, err = db.PrepareContext(ctx, getImageByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetImageByID: %w", err)
 	}
+	if q.getImageByURLStmt, err = db.PrepareContext(ctx, getImageByURL); err != nil {
+		return nil, fmt.Errorf("error preparing query GetImageByURL: %w", err)
+	}
 	if q.getPostByIDStmt, err = db.PrepareContext(ctx, getPostByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostByID: %w", err)
 	}
@@ -304,6 +307,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getImageByIDStmt: %w", cerr)
 		}
 	}
+	if q.getImageByURLStmt != nil {
+		if cerr := q.getImageByURLStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getImageByURLStmt: %w", cerr)
+		}
+	}
 	if q.getPostByIDStmt != nil {
 		if cerr := q.getPostByIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPostByIDStmt: %w", cerr)
@@ -493,6 +501,7 @@ type Queries struct {
 	getChildCategoriesStmt     *sql.Stmt
 	getContactInfoStmt         *sql.Stmt
 	getImageByIDStmt           *sql.Stmt
+	getImageByURLStmt          *sql.Stmt
 	getPostByIDStmt            *sql.Stmt
 	getPostsByCategoryIDStmt   *sql.Stmt
 	getPostsByCategorySlugStmt *sql.Stmt
@@ -549,6 +558,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getChildCategoriesStmt:     q.getChildCategoriesStmt,
 		getContactInfoStmt:         q.getContactInfoStmt,
 		getImageByIDStmt:           q.getImageByIDStmt,
+		getImageByURLStmt:          q.getImageByURLStmt,
 		getPostByIDStmt:            q.getPostByIDStmt,
 		getPostsByCategoryIDStmt:   q.getPostsByCategoryIDStmt,
 		getPostsByCategorySlugStmt: q.getPostsByCategorySlugStmt,

@@ -65,12 +65,13 @@ func adminRoutes(s *Server) chi.Router {
 
     r.Use(jwtauth.Authenticator(s.ctrlr.TokenAuth))
 
-    r.Get("/",              s.ctrlr.AdminWelcome)
+    r.Get("/",              s.ctrlr.AdminDashboard)
 
     r.Route("/users", func(r chi.Router) {
         r.Get("/",          s.ctrlr.AdminUsers)
         r.Get("/{id}",      s.ctrlr.AdminUser)
-        // r.Post("/",       s.ctrlr.AdminUserCreate)
+        r.Get("/new",       s.ctrlr.AdminUserNew)
+        r.Post("/",         s.ctrlr.AdminUserCreate)
         // r.Put("/{id}",   s.ctrlr.AdminUserUpdate)
         r.Delete("/{id}",   s.ctrlr.AdminUserDelete)
     })

@@ -2,6 +2,10 @@
 SELECT * FROM images
 WHERE image_id = ?;
 
+-- name: GetImageByURL :one
+SELECT * FROM images
+WHERE url = ?;
+
 -- name: GetAllImages :many
 SELECT * FROM images;
 

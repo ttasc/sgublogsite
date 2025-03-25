@@ -11,6 +11,7 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/admin/admin.css">
+    <link href="/assets/logo.png" rel="shortcut icon" type="image/x-icon" />
   </head>
   <body>
     <div class="admin-container">
@@ -47,9 +48,33 @@
 
       <!-- Main Content -->
       <main class="admin-main" id="content">
+        {{template "errorPopup"}}
         {{block "content" .}}{{end}}
       </main>
     </div>
   </body>
 </html>
+{{end}}
+
+{{define "errorPopup"}}
+<div id="errorPopup" class="error-popup">
+  <i class="fas fa-exclamation-circle error-icon"></i>
+  <div class="error-content">
+    <p id="errorMessage"></p>
+  </div>
+  <span class="close-error" onclick="closeError()">&times;</span>
+</div>
+
+<script>
+  function showError(message) {
+    const popup = document.getElementById('errorPopup');
+    document.getElementById('errorMessage').textContent = message;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 5000);
+  }
+
+  function closeError() {
+    document.getElementById('errorPopup').classList.remove('show');
+  }
+</script>
 {{end}}

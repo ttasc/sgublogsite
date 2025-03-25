@@ -71,3 +71,15 @@ func (q *Queries) GetImageByID(ctx context.Context, imageID int32) (Image, error
 	err := row.Scan(&i.ImageID, &i.Url, &i.Name)
 	return i, err
 }
+
+const getImageByURL = `-- name: GetImageByURL :one
+SELECT image_id, url, name FROM images
+WHERE url = ?
+`
+
+func (q *Queries) GetImageByURL(ctx context.Context, url string) (Image, error) {
+	row := q.queryRow(ctx, q.getImageByURLStmt, getImageByURL, url)
+	var i Image
+	err := row.Scan(&i.ImageID, &i.Url, &i.Name)
+	return i, err
+}

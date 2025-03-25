@@ -24,29 +24,34 @@ func (m *Model) GetUsers() ([]repos.GetAllUsersRow, error) {
     return m.query.GetAllUsers(m.ctx)
 }
 
-func (m *Model) AddUser(user repos.User) error {
+func (m *Model) AddUser(user repos.User) (int32, error) {
     tx, err := m.DB.Begin()
     if err != nil {
-        return err
+        return 0, err
     }
     defer tx.Rollback()
 
     qtx := m.query.WithTx(tx)
 
-    _, err = qtx.AddUser(m.ctx, repos.AddUserParams{
+    res, err := qtx.AddUser(m.ctx, repos.AddUserParams{
         Firstname:      user.Firstname,
         Lastname:       user.Lastname,
-        Phone:         user.Phone,
+        Phone:          user.Phone,
         Email:          user.Email,
         Password:       user.Password,
         Role:           user.Role,
     })
 
     if err != nil {
-        return err
+        return 0, err
     }
 
-    return tx.Commit()
+    id, err := res.LastInsertId()
+    if err != nil {
+        return 0, err
+    }
+
+    return int32(id), tx.Commit()
 }
 
 func (m *Model) UpdateUserInfo(user repos.User) error {
@@ -62,7 +67,7 @@ func (m *Model) UpdateUserInfo(user repos.User) error {
         UserID:         user.UserID,
         Firstname:      user.Firstname,
         Lastname:       user.Lastname,
-        Phone:         user.Phone,
+        Phone:          user.Phone,
         Email:          user.Email,
         ProfilePicID:   user.ProfilePicID,
     })

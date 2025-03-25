@@ -9,6 +9,8 @@
 .admin-container {
     display: flex;
     min-height: 100vh;
+    position: relative;
+    padding-left: 200px; /* Bằng width của sidebar */
 }
 
 /* Sidebar Styles */
@@ -19,6 +21,12 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh; /* Chiếm full chiều cao màn hình */
+    z-index: 100;
+    overflow-y: auto; /* Cho phép cuộn nếu sidebar quá dài */
 }
 
 .sidebar-header {
@@ -71,6 +79,8 @@
     flex: 1;
     background: #f5f5f5;
     padding: 30px;
+    min-height: 100vh;
+    overflow-y: auto; /* Cho phép cuộn nội dung chính */
 }
 
 .content-header h1 {
@@ -252,4 +262,44 @@
     height: 100%;
     background: rgba(0,0,0,0.5);
     z-index: 999;
+}
+
+
+.error-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ffebee;
+    border: 1px solid #ffcdd2;
+    border-radius: 8px;
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-width: 400px;
+    transform: translateX(110%);
+    transition: transform 0.3s ease-out;
+}
+
+.error-popup.show {
+    transform: translateX(0);
+}
+
+.error-icon {
+    color: #d32f2f;
+    font-size: 1.5em;
+}
+
+.error-content p {
+    margin: 0;
+    color: #d32f2f;
+    font-weight: 500;
+}
+
+.close-error {
+    cursor: pointer;
+    color: #d32f2f;
+    margin-left: auto;
 }

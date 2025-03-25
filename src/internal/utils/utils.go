@@ -3,7 +3,11 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"io"
 	"log"
+	"mime/multipart"
+	"os"
+	"path"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,4 +29,29 @@ func GenerateToken(length int) string {
         return ""
     }
     return base64.URLEncoding.EncodeToString(bytes)
+}
+
+func SaveUploadedFile(file multipart.File, handler *multipart.FileHeader) (string, error) {
+    defer file.Close()
+
+    // Create upload directory if it doesn't exist
+    const uploadABDir = "./assets/uploads/avatars/"
+    const uploadREDir = "/assets/uploads/avatars/"
+
+    if err := os.MkdirAll(uploadABDir, 0755); err != nil {
+        return "", err
+    }
+
+    filename := handler.Filename
+    filePath := path.Join(uploadABDir, filename)
+
+    // Write the file to disk
+    f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+    if err != nil {
+        return "", err
+    }
+    defer f.Close()
+
+    io.Copy(f, file)
+    return path.Join(uploadREDir, filename), nil
 }
