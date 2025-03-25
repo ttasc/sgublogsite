@@ -5,7 +5,7 @@
 {{define "content"}}
 <div class="user-detail-container">
   <div class="avatar-section">
-    <img src="{{ .ProfilePic.String }}" class="avatar-preview" id="avatarPreview">
+    <img src="{{ if .ProfilePic.Valid }} {{ .ProfilePic.String }} {{ else }} /assets/avatar.def.png {{ end }}" class="avatar-preview" id="avatarPreview">
     <div class="avatar-upload">
       <input type="file" id="avatarInput" accept="image/*">
       <button class="btn btn-primary" onclick="document.getElementById('avatarInput').click()">

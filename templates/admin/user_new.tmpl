@@ -102,15 +102,15 @@
         body: formData
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
+        const result = await response.json();
         showError(result.message || 'An error occurred');
         return;
       }
 
       window.location.href = '/admin/users';
     } catch (error) {
+      console.error(error);
       showError('Network error. Please try again.');
     }
   });
