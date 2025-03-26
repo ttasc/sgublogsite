@@ -24,14 +24,14 @@ INSERT INTO siteinfo (
 `
 
 type CreateSiteInfoParams struct {
-	SiteTitle      sql.NullString `json:"site_title"`
-	SiteLogoID     sql.NullInt32  `json:"site_logo_id"`
-	SiteName       sql.NullString `json:"site_name"`
-	SiteAbout      sql.NullString `json:"site_about"`
-	SiteCopyright  sql.NullString `json:"site_copyright"`
-	ContactAddress sql.NullString `json:"contact_address"`
-	ContactEmail   sql.NullString `json:"contact_email"`
-	ContactPhone   sql.NullString `json:"contact_phone"`
+	SiteTitle      sql.NullString
+	SiteLogoID     sql.NullInt32
+	SiteName       sql.NullString
+	SiteAbout      sql.NullString
+	SiteCopyright  sql.NullString
+	ContactAddress sql.NullString
+	ContactEmail   sql.NullString
+	ContactPhone   sql.NullString
 }
 
 func (q *Queries) CreateSiteInfo(ctx context.Context, arg CreateSiteInfoParams) (sql.Result, error) {
@@ -52,9 +52,9 @@ SELECT contact_address, contact_email, contact_phone FROM siteinfo
 `
 
 type GetContactInfoRow struct {
-	ContactAddress sql.NullString `json:"contact_address"`
-	ContactEmail   sql.NullString `json:"contact_email"`
-	ContactPhone   sql.NullString `json:"contact_phone"`
+	ContactAddress sql.NullString
+	ContactEmail   sql.NullString
+	ContactPhone   sql.NullString
 }
 
 func (q *Queries) GetContactInfo(ctx context.Context) (GetContactInfoRow, error) {
@@ -107,10 +107,10 @@ ON siteinfo.site_logo_id = images.image_id
 `
 
 type GetSiteMetaRow struct {
-	SiteTitle     sql.NullString `json:"site_title"`
-	SiteName      sql.NullString `json:"site_name"`
-	Url           string         `json:"url"`
-	SiteCopyright sql.NullString `json:"site_copyright"`
+	SiteTitle     sql.NullString
+	SiteName      sql.NullString
+	Url           string
+	SiteCopyright sql.NullString
 }
 
 func (q *Queries) GetSiteMeta(ctx context.Context) (GetSiteMetaRow, error) {
@@ -139,14 +139,14 @@ WHERE site_id = 1
 `
 
 type UpdateSiteInfoParams struct {
-	SiteTitle      sql.NullString `json:"site_title"`
-	SiteLogoID     sql.NullInt32  `json:"site_logo_id"`
-	SiteName       sql.NullString `json:"site_name"`
-	SiteAbout      sql.NullString `json:"site_about"`
-	SiteCopyright  sql.NullString `json:"site_copyright"`
-	ContactAddress sql.NullString `json:"contact_address"`
-	ContactEmail   sql.NullString `json:"contact_email"`
-	ContactPhone   sql.NullString `json:"contact_phone"`
+	SiteTitle      sql.NullString
+	SiteLogoID     sql.NullInt32
+	SiteName       sql.NullString
+	SiteAbout      sql.NullString
+	SiteCopyright  sql.NullString
+	ContactAddress sql.NullString
+	ContactEmail   sql.NullString
+	ContactPhone   sql.NullString
 }
 
 func (q *Queries) UpdateSiteInfo(ctx context.Context, arg UpdateSiteInfoParams) (sql.Result, error) {

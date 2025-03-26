@@ -18,6 +18,9 @@ func (m *Model) GetPosts(limit, offset int32, status string) ([]repos.GetAllPost
 }
 
 func (m *Model) GetPostsByUserID(id, limit, offset int32, status string) ([]repos.GetPostsByUserIDRow, error) {
+    if id < 1 {
+        return nil, nil
+    }
     return m.query.GetPostsByUserID(m.ctx, repos.GetPostsByUserIDParams{
         UserID:         sql.NullInt32{Int32: id, Valid: true},
         Limit:          limit,
@@ -94,7 +97,7 @@ func (m *Model) SearchPosts(text string, limit, offset int32, status string, get
     })
 }
 
-func (m *Model) CreatePost(post repos.Post) error {
+func (m *Model) CreatePost(id int32, title string, slug string, thumbnailID int32, body string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -104,11 +107,11 @@ func (m *Model) CreatePost(post repos.Post) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.CreatePost(m.ctx, repos.CreatePostParams{
-        UserID:         post.UserID,
-        Title:          post.Title,
-        Slug:           post.Slug,
-        ThumbnailID:   post.ThumbnailID,
-        Body:           post.Body,
+        UserID:         sql.NullInt32{Int32: id, Valid: id > 0},
+        Title:          title,
+        Slug:           slug,
+        ThumbnailID:    sql.NullInt32{Int32: thumbnailID, Valid: thumbnailID > 0},
+        Body:           body,
     })
 
     if err != nil {
@@ -216,7 +219,7 @@ func (m *Model) draftPost(qtx *repos.Queries, postID int32) error {
     return err
 }
 
-func (m *Model) UpdatePostMetadata(post repos.Post) error {
+func (m *Model) UpdatePostMetadata(id int32, title string, slug string, thumbnailID int32) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -226,17 +229,17 @@ func (m *Model) UpdatePostMetadata(post repos.Post) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.UpdatePostMetadata(m.ctx, repos.UpdatePostMetadataParams{
-        PostID:         post.PostID,
-        Title:          post.Title,
-        Slug:           post.Slug,
-        ThumbnailID:   post.ThumbnailID,
+        PostID:         id,
+        Title:          title,
+        Slug:           slug,
+        ThumbnailID:    sql.NullInt32{Int32: thumbnailID, Valid: thumbnailID > 0},
     })
 
     if err != nil {
         return err
     }
 
-    err = m.draftPost(qtx, post.PostID)
+    err = m.draftPost(qtx, id)
 
     if err != nil {
         return err
@@ -245,7 +248,7 @@ func (m *Model) UpdatePostMetadata(post repos.Post) error {
     return tx.Commit()
 }
 
-func (m *Model) UpdatePostBody(post repos.Post) error {
+func (m *Model) UpdatePostBody(id int32, body string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -255,15 +258,15 @@ func (m *Model) UpdatePostBody(post repos.Post) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.UpdatePostBody(m.ctx, repos.UpdatePostBodyParams{
-        PostID:         post.PostID,
-        Body:           post.Body,
+        PostID:         id,
+        Body:           body,
     })
 
     if err != nil {
         return err
     }
 
-    err = m.draftPost(qtx, post.PostID)
+    err = m.draftPost(qtx, id)
 
     if err != nil {
         return err

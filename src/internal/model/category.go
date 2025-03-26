@@ -14,14 +14,14 @@ func (m *Model) GetCategories() ([]repos.Category, error) {
 }
 
 func (m *Model) GetChildCategories(id int32) ([]repos.Category, error) {
-    return m.query.GetChildCategories(m.ctx, sql.NullInt32{Int32: id, Valid: true})
+    return m.query.GetChildCategories(m.ctx, sql.NullInt32{Int32: id, Valid: id > 0})
 }
 
 func (m *Model) GetRootCategories() ([]repos.Category, error) {
     return m.query.GetRootCategories(m.ctx)
 }
 
-func (m *Model) AddCategory(category repos.Category) error {
+func (m *Model) AddCategory(pid int32, name, slug string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -31,9 +31,9 @@ func (m *Model) AddCategory(category repos.Category) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.AddCategory(m.ctx, repos.AddCategoryParams{
-        ParentCategoryID:   category.ParentCategoryID,
-        Name:               category.Name,
-        Slug:               category.Slug,
+        ParentCategoryID:   sql.NullInt32{Int32: pid, Valid: pid > 0},
+        Name:               name,
+        Slug:               slug,
     })
 
     if err != nil {
@@ -43,7 +43,7 @@ func (m *Model) AddCategory(category repos.Category) error {
     return tx.Commit()
 }
 
-func (m *Model) UpdateCategory(category repos.Category) error {
+func (m *Model) UpdateCategory(id, pid int32, name, slug string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -53,10 +53,10 @@ func (m *Model) UpdateCategory(category repos.Category) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.UpdateCategory(m.ctx, repos.UpdateCategoryParams{
-        CategoryID:         category.CategoryID,
-        ParentCategoryID:   category.ParentCategoryID,
-        Name:               category.Name,
-        Slug:               category.Slug,
+        CategoryID:         id,
+        ParentCategoryID:   sql.NullInt32{Int32: pid, Valid: pid > 0},
+        Name:               name,
+        Slug:               slug,
     })
 
     if err != nil {

@@ -19,9 +19,9 @@ INSERT INTO categories (
 `
 
 type AddCategoryParams struct {
-	ParentCategoryID sql.NullInt32 `json:"parent_category_id"`
-	Name             string        `json:"name"`
-	Slug             string        `json:"slug"`
+	ParentCategoryID sql.NullInt32
+	Name             string
+	Slug             string
 }
 
 func (q *Queries) AddCategory(ctx context.Context, arg AddCategoryParams) (sql.Result, error) {
@@ -165,10 +165,10 @@ WHERE category_id = ?
 `
 
 type UpdateCategoryParams struct {
-	ParentCategoryID sql.NullInt32 `json:"parent_category_id"`
-	Name             string        `json:"name"`
-	Slug             string        `json:"slug"`
-	CategoryID       int32         `json:"category_id"`
+	ParentCategoryID sql.NullInt32
+	Name             string
+	Slug             string
+	CategoryID       int32
 }
 
 func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (sql.Result, error) {

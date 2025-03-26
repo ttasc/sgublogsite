@@ -144,14 +144,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUncategorizedPostsStmt, err = db.PrepareContext(ctx, getUncategorizedPosts); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUncategorizedPosts: %w", err)
 	}
+	if q.getUserAvatarIDStmt, err = db.PrepareContext(ctx, getUserAvatarID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserAvatarID: %w", err)
+	}
 	if q.getUserByEmailOrPhoneStmt, err = db.PrepareContext(ctx, getUserByEmailOrPhone); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByEmailOrPhone: %w", err)
 	}
 	if q.getUserByIDStmt, err = db.PrepareContext(ctx, getUserByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByID: %w", err)
-	}
-	if q.getUserProfilePicIDStmt, err = db.PrepareContext(ctx, getUserProfilePicID); err != nil {
-		return nil, fmt.Errorf("error preparing query GetUserProfilePicID: %w", err)
 	}
 	if q.updateCategoryStmt, err = db.PrepareContext(ctx, updateCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCategory: %w", err)
@@ -174,14 +174,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateSiteInfoStmt, err = db.PrepareContext(ctx, updateSiteInfo); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateSiteInfo: %w", err)
 	}
+	if q.updateUserAvatarStmt, err = db.PrepareContext(ctx, updateUserAvatar); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUserAvatar: %w", err)
+	}
 	if q.updateUserInfoStmt, err = db.PrepareContext(ctx, updateUserInfo); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserInfo: %w", err)
 	}
 	if q.updateUserPasswordStmt, err = db.PrepareContext(ctx, updateUserPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserPassword: %w", err)
-	}
-	if q.updateUserProfilePicStmt, err = db.PrepareContext(ctx, updateUserProfilePic); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateUserProfilePic: %w", err)
 	}
 	if q.updateUserRoleStmt, err = db.PrepareContext(ctx, updateUserRole); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserRole: %w", err)
@@ -391,6 +391,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUncategorizedPostsStmt: %w", cerr)
 		}
 	}
+	if q.getUserAvatarIDStmt != nil {
+		if cerr := q.getUserAvatarIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserAvatarIDStmt: %w", cerr)
+		}
+	}
 	if q.getUserByEmailOrPhoneStmt != nil {
 		if cerr := q.getUserByEmailOrPhoneStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserByEmailOrPhoneStmt: %w", cerr)
@@ -399,11 +404,6 @@ func (q *Queries) Close() error {
 	if q.getUserByIDStmt != nil {
 		if cerr := q.getUserByIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserByIDStmt: %w", cerr)
-		}
-	}
-	if q.getUserProfilePicIDStmt != nil {
-		if cerr := q.getUserProfilePicIDStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getUserProfilePicIDStmt: %w", cerr)
 		}
 	}
 	if q.updateCategoryStmt != nil {
@@ -441,6 +441,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateSiteInfoStmt: %w", cerr)
 		}
 	}
+	if q.updateUserAvatarStmt != nil {
+		if cerr := q.updateUserAvatarStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserAvatarStmt: %w", cerr)
+		}
+	}
 	if q.updateUserInfoStmt != nil {
 		if cerr := q.updateUserInfoStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateUserInfoStmt: %w", cerr)
@@ -449,11 +454,6 @@ func (q *Queries) Close() error {
 	if q.updateUserPasswordStmt != nil {
 		if cerr := q.updateUserPasswordStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateUserPasswordStmt: %w", cerr)
-		}
-	}
-	if q.updateUserProfilePicStmt != nil {
-		if cerr := q.updateUserProfilePicStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateUserProfilePicStmt: %w", cerr)
 		}
 	}
 	if q.updateUserRoleStmt != nil {
@@ -540,9 +540,9 @@ type Queries struct {
 	getTagByIDStmt             *sql.Stmt
 	getTagsByPostIDStmt        *sql.Stmt
 	getUncategorizedPostsStmt  *sql.Stmt
+	getUserAvatarIDStmt        *sql.Stmt
 	getUserByEmailOrPhoneStmt  *sql.Stmt
 	getUserByIDStmt            *sql.Stmt
-	getUserProfilePicIDStmt    *sql.Stmt
 	updateCategoryStmt         *sql.Stmt
 	updateImageURLStmt         *sql.Stmt
 	updatePostBodyStmt         *sql.Stmt
@@ -550,9 +550,9 @@ type Queries struct {
 	updatePostPrivateStmt      *sql.Stmt
 	updatePostStatusStmt       *sql.Stmt
 	updateSiteInfoStmt         *sql.Stmt
+	updateUserAvatarStmt       *sql.Stmt
 	updateUserInfoStmt         *sql.Stmt
 	updateUserPasswordStmt     *sql.Stmt
-	updateUserProfilePicStmt   *sql.Stmt
 	updateUserRoleStmt         *sql.Stmt
 }
 
@@ -600,9 +600,9 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getTagByIDStmt:             q.getTagByIDStmt,
 		getTagsByPostIDStmt:        q.getTagsByPostIDStmt,
 		getUncategorizedPostsStmt:  q.getUncategorizedPostsStmt,
+		getUserAvatarIDStmt:        q.getUserAvatarIDStmt,
 		getUserByEmailOrPhoneStmt:  q.getUserByEmailOrPhoneStmt,
 		getUserByIDStmt:            q.getUserByIDStmt,
-		getUserProfilePicIDStmt:    q.getUserProfilePicIDStmt,
 		updateCategoryStmt:         q.updateCategoryStmt,
 		updateImageURLStmt:         q.updateImageURLStmt,
 		updatePostBodyStmt:         q.updatePostBodyStmt,
@@ -610,9 +610,9 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updatePostPrivateStmt:      q.updatePostPrivateStmt,
 		updatePostStatusStmt:       q.updatePostStatusStmt,
 		updateSiteInfoStmt:         q.updateSiteInfoStmt,
+		updateUserAvatarStmt:       q.updateUserAvatarStmt,
 		updateUserInfoStmt:         q.updateUserInfoStmt,
 		updateUserPasswordStmt:     q.updateUserPasswordStmt,
-		updateUserProfilePicStmt:   q.updateUserProfilePicStmt,
 		updateUserRoleStmt:         q.updateUserRoleStmt,
 	}
 }

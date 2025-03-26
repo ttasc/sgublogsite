@@ -74,6 +74,21 @@
     border-top: 1px solid #333;
 }
 
+.btn-logout {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: 1em;
+}
+
+.btn-logout i {
+    width: 25px;
+    margin-right: 10px;
+}
+
 /* Main Content Styles */
 .admin-main {
     flex: 1;

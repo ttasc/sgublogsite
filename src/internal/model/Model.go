@@ -1,9 +1,10 @@
 package model
 
 import (
-    "context"
-    "database/sql"
-    "github.com/ttasc/sgublogsite/src/internal/model/repos"
+	"context"
+	"database/sql"
+
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
 type Model struct {
@@ -13,13 +14,15 @@ type Model struct {
 }
 
 func New(db *sql.DB) *Model {
-    var (
-        ctx     = context.Background()
-        query   = repos.New(db)
-    )
     return &Model{
         DB:    db,
-        ctx:   ctx,
-        query: query,
+        ctx:   context.Background(),
+        query: repos.New(db),
     }
+}
+
+var ValidRoles = []string{
+    string(repos.UsersRoleAdmin),
+    // string(repos.UsersRoleAuthor),
+    string(repos.UsersRoleSubscriber),
 }

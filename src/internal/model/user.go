@@ -16,7 +16,8 @@ func (m *Model) GetUserByEmailOrPhone(emailorphone string) (repos.GetUserByEmail
         repos.GetUserByEmailOrPhoneParams{
             Email: emailorphone,
             Phone: emailorphone,
-        })
+        },
+    )
 }
 
 func (m *Model) SearchUsers(text string) ([]repos.FindUsersRow, error) {
@@ -28,11 +29,15 @@ func (m *Model) GetUsers() ([]repos.GetAllUsersRow, error) {
     return m.query.GetAllUsers(m.ctx)
 }
 
-func (m *Model) GetUserProfilePicID(id int32) (sql.NullInt32, error) {
-    return m.query.GetUserProfilePicID(m.ctx, id)
+func (m *Model) GetUserAvatarID(id int32) (int32, error) {
+    res, err := m.query.GetUserAvatarID(m.ctx, id)
+    if err != nil {
+        return 0, err
+    }
+    return res.Int32, nil
 }
 
-func (m *Model) AddUser(user repos.User) (int32, error) {
+func (m *Model) AddUser(firstname, lastname, phone, email, password string, role repos.UsersRole) (int32, error) {
     tx, err := m.DB.Begin()
     if err != nil {
         return 0, err
@@ -42,12 +47,12 @@ func (m *Model) AddUser(user repos.User) (int32, error) {
     qtx := m.query.WithTx(tx)
 
     res, err := qtx.AddUser(m.ctx, repos.AddUserParams{
-        Firstname:      user.Firstname,
-        Lastname:       user.Lastname,
-        Phone:          user.Phone,
-        Email:          user.Email,
-        Password:       user.Password,
-        Role:           user.Role,
+        Firstname:      firstname,
+        Lastname:       lastname,
+        Phone:          phone,
+        Email:          email,
+        Password:       password,
+        Role:           role,
     })
 
     if err != nil {
@@ -62,7 +67,7 @@ func (m *Model) AddUser(user repos.User) (int32, error) {
     return int32(id), tx.Commit()
 }
 
-func (m *Model) UpdateUserInfo(user repos.User) error {
+func (m *Model) UpdateUserInfo(id int32, firstname, lastname, phone, email string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -72,11 +77,11 @@ func (m *Model) UpdateUserInfo(user repos.User) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.UpdateUserInfo(m.ctx, repos.UpdateUserInfoParams{
-        UserID:         user.UserID,
-        Firstname:      user.Firstname,
-        Lastname:       user.Lastname,
-        Phone:          user.Phone,
-        Email:          user.Email,
+        UserID:         id,
+        Firstname:      firstname,
+        Lastname:       lastname,
+        Phone:          phone,
+        Email:          email,
     })
 
     if err != nil {
@@ -86,7 +91,7 @@ func (m *Model) UpdateUserInfo(user repos.User) error {
     return tx.Commit()
 }
 
-func (m *Model) UpdateUserProfilePicID(userID, imageID int32) error {
+func (m *Model) UpdateUserAvatarID(userID, imageID int32) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -95,9 +100,9 @@ func (m *Model) UpdateUserProfilePicID(userID, imageID int32) error {
 
     qtx := m.query.WithTx(tx)
 
-    _, err = qtx.UpdateUserProfilePic(m.ctx, repos.UpdateUserProfilePicParams{
+    _, err = qtx.UpdateUserAvatar(m.ctx, repos.UpdateUserAvatarParams{
         UserID:         userID,
-        ProfilePicID:   sql.NullInt32{Int32: imageID, Valid: true},
+        AvatarID:       sql.NullInt32{Int32: imageID, Valid: imageID > 0},
     })
 
     if err != nil {

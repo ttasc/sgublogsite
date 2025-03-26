@@ -31,7 +31,7 @@ CREATE TABLE users (
     phone           VARCHAR(20) NOT NULL UNIQUE,
     email           VARCHAR(50) NOT NULL UNIQUE,
     password        VARCHAR(255) NOT NULL, -- Assuming hashed
-    profile_pic_id  INT,
+    avatar_id       INT,
     role            ENUM('admin', 'author', 'subscriber') NOT NULL DEFAULT 'subscriber', -- Basic role management
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -41,7 +41,7 @@ CREATE TABLE users (
     INDEX idx_users_phone (phone ASC),
     INDEX idx_users_email (email ASC),
     FULLTEXT(firstname, lastname, phone, email),
-    FOREIGN KEY (profile_pic_id) REFERENCES images(image_id) ON DELETE SET NULL
+    FOREIGN KEY (avatar_id) REFERENCES images(image_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 DROP TABLE IF EXISTS posts;
@@ -119,8 +119,8 @@ VALUES
 ('My Blog', 'Tech Insights', 1, 'A blog about technology and programming', '© 2023 My Blog', '123 Main St, City', 'info@example.com', '123-456-7890');
 
 -- Chèn dữ liệu mẫu cho bảng users
-INSERT INTO users (firstname, lastname, phone, email, password, profile_pic_id, role) VALUES
-('John', 'Doe', '0987654321', 'admin@example.com', 'hashed_password_123', 2, 'admin'),
+INSERT INTO users (firstname, lastname, phone, email, password, role) VALUES
+('TT', 'ASC', '0000', 'ad@ad.ad', '$2a$10$EqoYIVoqP6FeOYbaa2GD7.OtEdyBGUCsue/gvmi5gjxlqL8yi2cg.', 'admin'),
 ('Jane', 'Smith', '0123456789', 'author@example.com', 'hashed_password_456', NULL, 'author'),
 ('Bob', 'Johnson', '0369852147', 'subscriber@example.com', 'hashed_password_789', NULL, 'subscriber');
 

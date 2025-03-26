@@ -26,7 +26,7 @@
     <div class="profile-container">
       <div class="profile-header">
         <div class="avatar-wrapper">
-            <img src="{{if .ProfilePic.Valid}} {{.ProfilePic.String}} {{else}} /assets/avatar.def.png {{end}}" class="profile-avatar" id="avatarPreview">
+            <img src="{{if .Avatar.Valid}} {{.Avatar.String}} {{else}} /assets/avatar.def.png {{end}}" class="profile-avatar" id="avatarPreview">
           <label for="avatarUpload" class="avatar-upload-btn">
             <i class="fas fa-camera"></i>
           </label>

@@ -46,8 +46,9 @@
     <div class="form-group">
       <label>Role *</label>
       <select class="form-control" name="role" required>
-        <option value="admin">Admin</option>
-        <option value="subscriber" selected>Subscriber</option>
+        {{ range .Roles }}
+        <option value="{{.}}">{{.}}</option>
+        {{ end }}
       </select>
     </div>
 

@@ -18,7 +18,7 @@ func (m *Model) GetTagsByPostID(id int32) ([]repos.Tag, error) {
     return m.query.GetTagsByPostID(m.ctx, id)
 }
 
-func (m *Model) AddTag(tag repos.Tag) error {
+func (m *Model) AddTag(name, slug string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -28,8 +28,8 @@ func (m *Model) AddTag(tag repos.Tag) error {
     qtx := m.query.WithTx(tx)
 
     _, err = qtx.AddTag(m.ctx, repos.AddTagParams{
-        Name:           tag.Name,
-        Slug:           tag.Slug,
+        Name:           name,
+        Slug:           slug,
     })
 
     if err != nil {

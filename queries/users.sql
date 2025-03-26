@@ -1,26 +1,26 @@
 -- name: GetUserByID :one
-SELECT users.*, images.url AS profile_pic
-FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
+SELECT users.*, images.url AS avatar
+FROM users LEFT JOIN images ON users.avatar_id = images.image_id
 WHERE user_id = ?;
 
 -- name: GetUserByEmailOrPhone :one
-SELECT users.*, images.url AS profile_pic
-FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
+SELECT users.*, images.url AS avatar
+FROM users LEFT JOIN images ON users.avatar_id = images.image_id
 WHERE email = ? OR phone = ?;
 
 -- name: FindUsers :many
-SELECT users.*, images.url AS profile_pic
-FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
+SELECT users.*, images.url AS avatar
+FROM users LEFT JOIN images ON users.avatar_id = images.image_id
 WHERE lower(concat(firstname, ' ', lastname, ' ', phone, ' ', email)) LIKE lower(sqlc.arg(text));
 -- WHERE MATCH(firstname, lastname, phone, email)) AGAINST (sqlc.arg(text));
 
 -- name: GetAllUsers :many
-SELECT users.*, images.url AS profile_pic
-FROM users LEFT JOIN images ON users.profile_pic_id = images.image_id
+SELECT users.*, images.url AS avatar
+FROM users LEFT JOIN images ON users.avatar_id = images.image_id
 ORDER BY lastname;
 
--- name: GetUserProfilePicID :one
-SELECT profile_pic_id
+-- name: GetUserAvatarID :one
+SELECT avatar_id
 FROM users
 WHERE user_id = ?;
 
@@ -43,9 +43,9 @@ SET
     email = ?
 WHERE user_id = ?;
 
--- name: UpdateUserProfilePic :execresult
+-- name: UpdateUserAvatar :execresult
 UPDATE users
-SET profile_pic_id = ?
+SET avatar_id = ?
 WHERE user_id = ?;
 
 -- name: UpdateUserPassword :execresult

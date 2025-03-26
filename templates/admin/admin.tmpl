@@ -43,6 +43,11 @@
           <a href="/admin/settings" class="nav-item" hx-get="/admin/settings" hx-target="#content" hx-push-url="true">
             <i class="fas fa-cog"></i> Site Settings
           </a>
+          <form id="logoutForm" action="/logout" method="POST" class="nav-item">
+              <button type="submit" class="btn-logout">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+          </form>
         </div>
       </nav>
 

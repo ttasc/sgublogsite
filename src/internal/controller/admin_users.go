@@ -1,13 +1,14 @@
 package controller
 
 import (
-	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"github.com/ttasc/sgublogsite/src/internal/utils"
 )
@@ -30,25 +31,38 @@ func (c *Controller) AdminUsers(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) AdminUser(w http.ResponseWriter, r *http.Request) {
     id, _ := strconv.Atoi(chi.URLParam(r, "id"))
     user, _ := c.Model.GetUserByID(int32(id))
+    data := struct {
+        User repos.GetUserByIDRow
+        Roles []string
+    } {
+        User: user,
+        Roles: model.ValidRoles,
+    }
     if r.Header.Get("HX-Request") == "true" {
-        c.templates["admin_user"].ExecuteTemplate(w, "content", user)
+        c.templates["admin_user"].ExecuteTemplate(w, "content", data)
     } else {
-        c.templates["admin_user"].Execute(w, user)
+        c.templates["admin_user"].Execute(w, data)
     }
 }
 
 func (c *Controller) AdminUserNew(w http.ResponseWriter, r *http.Request) {
+    data := struct {
+        Roles []string
+    } {
+        Roles: model.ValidRoles,
+    }
     if r.Header.Get("HX-Request") == "true" {
-        c.templates["admin_user_new"].ExecuteTemplate(w, "content", nil)
+        c.templates["admin_user_new"].ExecuteTemplate(w, "content", data)
     } else {
-        c.templates["admin_user_new"].Execute(w, nil)
+        c.templates["admin_user_new"].Execute(w, data)
     }
 }
 
 func (c *Controller) AdminUserCreate(w http.ResponseWriter, r *http.Request) {
     err := r.ParseMultipartForm(32 << 20) // 32MB max
     if err != nil {
-        sendErrorResponse(err, w, http.StatusBadRequest, map[string]string{"message": "File too large"})
+        sendErrorResponse(err, w, http.StatusBadRequest,
+            map[string]string{"message": "File too large"})
         return
     }
 
@@ -58,24 +72,17 @@ func (c *Controller) AdminUserCreate(w http.ResponseWriter, r *http.Request) {
     email := r.FormValue("email")
     password, err := utils.HashPassword(r.FormValue("password"))
     if err != nil {
-        sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Server internal error"})
+        sendErrorResponse(err, w, http.StatusInternalServerError,
+            map[string]string{"message": "Server internal error"})
         return
     }
     role := repos.UsersRole(r.FormValue("role"))
 
-    user := repos.User{
-        Firstname: firstname,
-        Lastname:  lastname,
-        Phone:     phone,
-        Email:     email,
-        Password:  password,
-        Role:      role,
-    }
-
-    userID, err := c.Model.AddUser(user)
+    userID, err := c.Model.AddUser(firstname, lastname, phone, email, password, role)
     if err != nil {
         if strings.Contains(err.Error(), "Duplicate entry") {
-            sendErrorResponse(err, w, http.StatusConflict, map[string]string{"message": "Email or phone already exists"})
+            sendErrorResponse(err, w, http.StatusConflict,
+                map[string]string{"message": "Email or phone already exists"})
             return
         }
         http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -87,24 +94,22 @@ func (c *Controller) AdminUserCreate(w http.ResponseWriter, r *http.Request) {
         defer file.Close()
         filename := handler.Filename
         fileExt := filename[strings.LastIndex(filename, ".")+1:]
-        filename = strconv.Itoa(int(userID)) + "." + fileExt
-        handler.Filename = filename
+        handler.Filename = fmt.Sprintf("%d.%s", userID, fileExt)
         avatarURL, err := utils.SaveUploadedFile(file, handler)
         if err != nil {
-            sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to upload file (save file)"})
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Failed to upload file (save file)"})
             return
         }
 
-        imgID, err := c.Model.AddImage(repos.Image{
-            Url:          avatarURL,
-            Name:         sql.NullString{String: "avatar", Valid: true},
-        })
+        imgID, err := c.Model.AddImage("avatar", avatarURL)
         if err != nil {
-            sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to upload file (save url)"})
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Failed to upload file (save url)"})
             return
         }
 
-        c.Model.UpdateUserProfilePicID(userID, imgID)
+        c.Model.UpdateUserAvatarID(userID, imgID)
     }
 
     http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
@@ -129,26 +134,31 @@ func (c *Controller) AdminUserDelete(w http.ResponseWriter, r *http.Request) {
     id, _ := strconv.Atoi(chi.URLParam(r, "id"))
     user, err := c.Model.GetUserByID(int32(id))
     if err != nil {
-        sendErrorResponse(err, w, http.StatusNotFound, map[string]string{"message": "User not found"})
+        sendErrorResponse(err, w, http.StatusNotFound,
+            map[string]string{"message": "User not found"})
         return
     }
     if user.Role == currentUser.Role && currentUser.Role == repos.UsersRoleAdmin {
-        sendErrorResponse(err, w, http.StatusForbidden, map[string]string{"message": "You can't delete yourself"})
+        sendErrorResponse(err, w, http.StatusForbidden,
+            map[string]string{"message": "You can't delete yourself"})
         return
     }
-    if user.ProfilePicID.Valid {
-        err = utils.DeleteUploadedFile(user.ProfilePic.String)
+    if user.AvatarID.Valid {
+        err = utils.DeleteUploadedFile(user.Avatar.String)
         if err != nil {
-            sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to delete image from file system"})
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Failed to delete image from file system"})
         }
-        err = c.Model.DeleteImage(user.ProfilePicID.Int32)
+        err = c.Model.DeleteImage(user.AvatarID.Int32)
         if err != nil {
-            sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to delete image from database"})
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Failed to delete image from database"})
         }
     }
     err = c.Model.DeleteUser(int32(id))
     if err != nil {
-        sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to delete user"})
+        sendErrorResponse(err, w, http.StatusInternalServerError,
+            map[string]string{"message": "Failed to delete user"})
         return
     }
 
@@ -159,7 +169,8 @@ func (c *Controller) AdminUserDelete(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) updateUser(userID int32, w http.ResponseWriter, r *http.Request) {
     err := r.ParseMultipartForm(32 << 20) // 32MB max
     if err != nil {
-        sendErrorResponse(err, w, http.StatusBadRequest, map[string]string{"message": "File too large"})
+        sendErrorResponse(err, w, http.StatusBadRequest,
+            map[string]string{"message": "File too large"})
         return
     }
 
@@ -171,60 +182,51 @@ func (c *Controller) updateUser(userID int32, w http.ResponseWriter, r *http.Req
     if password != "" {
         password, err = utils.HashPassword(password)
         if err != nil {
-            sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Server internal error"})
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Server internal error"})
             return
         }
     }
     role := repos.UsersRole(r.FormValue("role"))
 
-    imgID, err := c.Model.GetUserProfilePicID(userID)
-    if err != nil {
-        imgID.Valid = false
-    }
+    imgID, _ := c.Model.GetUserAvatarID(userID)
 
     file, handler, err := r.FormFile("avatar")
     if err == nil {
         defer file.Close()
         filename := handler.Filename
         fileExt := filename[strings.LastIndex(filename, ".")+1:]
-        filename = strconv.Itoa(int(userID)) + "." + fileExt
-        handler.Filename = filename
+        handler.Filename = fmt.Sprintf("%d.%s", userID, fileExt)
         avatarURL, err := utils.SaveUploadedFile(file, handler)
         if err != nil {
-            sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to upload file (save file)"})
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Failed to upload file (save file)"})
             return
         }
 
-        if imgID.Valid {
-            err = c.Model.UpdateImageURL(imgID.Int32, avatarURL)
+        if imgID != 0 {
+            err = c.Model.UpdateImageURL(imgID, avatarURL)
             if err != nil {
-                sendErrorResponse(err, w, http.StatusInternalServerError, map[string]string{"message": "Failed to upload file (save url)"})
+                sendErrorResponse(err, w, http.StatusInternalServerError,
+                    map[string]string{"message": "Failed to upload file (save url)"})
                 return
             }
         } else {
-            imgID.Int32, err = c.Model.AddImage(repos.Image{
-                Url:          avatarURL,
-                Name:         sql.NullString{String: "avatar", Valid: true},
-            })
+            imgID, err = c.Model.AddImage("avatar", avatarURL)
         }
     }
 
-    err = c.Model.UpdateUserInfo(repos.User{
-        UserID:         userID,
-        Firstname:      firstname,
-        Lastname:       lastname,
-        Phone:          phone,
-        Email:          email,
-    })
+    err = c.Model.UpdateUserInfo(userID, firstname, lastname, phone, email)
     if err != nil {
         if strings.Contains(err.Error(), "Duplicate entry") {
-            sendErrorResponse(err, w, http.StatusConflict, map[string]string{"message": "Email or phone already exists"})
+            sendErrorResponse(err, w, http.StatusConflict,
+                map[string]string{"message": "Email or phone already exists"})
             return
         }
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    c.Model.UpdateUserProfilePicID(userID, imgID.Int32)
+    c.Model.UpdateUserAvatarID(userID, imgID)
     c.Model.UpdateUserRole(userID, role)
     if password != "" {
         c.Model.UpdateUserPassword(userID, password)
