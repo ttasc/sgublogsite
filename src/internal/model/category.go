@@ -5,12 +5,25 @@ import (
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
+type GetCategory repos.Category
+
 func (m *Model) GetCategoryByID(id int32) (repos.Category, error) {
     return m.query.GetCategoryByID(m.ctx, id)
 }
 
 func (m *Model) GetCategories() ([]repos.Category, error) {
-    return m.query.GetAllCategories(m.ctx)
+    categories, err := m.query.GetAllCategories(m.ctx)
+    if err != nil {
+        return nil, err
+    }
+    uncategorized := repos.Category{
+        CategoryID: -1,
+        ParentCategoryID: sql.NullInt32{Int32: 0, Valid: false},
+        Name: "Uncategorized",
+        Slug: "uncategorized",
+    }
+    categories = append(categories, uncategorized)
+    return categories, nil
 }
 
 func (m *Model) GetChildCategories(id int32) ([]repos.Category, error) {

@@ -10,6 +10,12 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 )
 
+var ValidRoles = []string{
+    string(repos.UsersRoleAdmin),
+    // string(repos.UsersRoleAuthor),
+    string(repos.UsersRoleSubscriber),
+}
+
 func (c *Controller) Post(w http.ResponseWriter, r *http.Request) {
     // id := strings.TrimPrefix(r.URL.Path, "/post/")
     id, _ := strconv.Atoi(chi.URLParam(r, "id"))

@@ -8,7 +8,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
-	// "github.com/ttasc/sgublogsite/src/internal/utils"
+	"github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
 var (
@@ -29,14 +29,14 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
     }
 
     emailorphone := r.FormValue("emailorphone")
-    // password := r.FormValue("password")
+    password := r.FormValue("password")
 
     user, err := c.Model.GetUserByEmailOrPhone(emailorphone)
 
-    // if err != nil || !utils.CheckPasswordHash(password, user.Password) {
-    //     http.Redirect(w, r, "/login?error=auth_failed", http.StatusFound)
-    //     return
-    // }
+    if err != nil || !utils.CheckPasswordHash(password, user.Password) {
+        http.Redirect(w, r, "/login?error=auth_failed", http.StatusFound)
+        return
+    }
 
     _, tokenString, err := c.TokenAuth.Encode(map[string]any{
         "ID":    user.UserID,

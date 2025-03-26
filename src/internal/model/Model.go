@@ -20,9 +20,3 @@ func New(db *sql.DB) *Model {
         query: repos.New(db),
     }
 }
-
-var ValidRoles = []string{
-    string(repos.UsersRoleAdmin),
-    // string(repos.UsersRoleAuthor),
-    string(repos.UsersRoleSubscriber),
-}

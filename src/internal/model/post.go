@@ -5,6 +5,8 @@ import (
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
+type GetPost repos.GetPostByIDRow
+
 func (m *Model) GetPostByID(id int32) (repos.GetPostByIDRow, error) {
     return m.query.GetPostByID(m.ctx, id)
 }

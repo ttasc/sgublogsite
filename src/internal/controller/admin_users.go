@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/ttasc/sgublogsite/src/internal/model"
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"github.com/ttasc/sgublogsite/src/internal/utils"
 )
@@ -36,7 +35,7 @@ func (c *Controller) AdminUser(w http.ResponseWriter, r *http.Request) {
         Roles []string
     } {
         User: user,
-        Roles: model.ValidRoles,
+        Roles: ValidRoles,
     }
     if r.Header.Get("HX-Request") == "true" {
         c.templates["admin_user"].ExecuteTemplate(w, "content", data)
@@ -49,7 +48,7 @@ func (c *Controller) AdminUserNew(w http.ResponseWriter, r *http.Request) {
     data := struct {
         Roles []string
     } {
-        Roles: model.ValidRoles,
+        Roles: ValidRoles,
     }
     if r.Header.Get("HX-Request") == "true" {
         c.templates["admin_user_new"].ExecuteTemplate(w, "content", data)

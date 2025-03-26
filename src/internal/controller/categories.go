@@ -2,17 +2,20 @@ package controller
 
 import (
 	"net/http"
-	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 	"strconv"
+	"unsafe"
+
+	"github.com/ttasc/sgublogsite/src/internal/model"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 )
 
 type category struct {
-    ID       int
+    ID       int32
     Name     string
-    ParentID int
+    ParentID int32
     Children []category
     Level    int
 }
@@ -39,13 +42,13 @@ func (c *Controller) Categories(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-func buildCategoryTree(categories []repos.Category, parentID int, level int) []category {
+func buildCategoryTree(categories []repos.Category, parentID int32, level int) []category {
     var result []category
     for _, cat := range categories {
         tmpcat := category{
-            ID      : int(cat.CategoryID),
+            ID      : cat.CategoryID,
             Name    : cat.Name,
-            ParentID: int(cat.ParentCategoryID.Int32),
+            ParentID: cat.ParentCategoryID.Int32,
         }
         if tmpcat.ParentID == parentID {
             tmpcat.Level = level
@@ -71,16 +74,28 @@ func (c *Controller) CategoryPosts(w http.ResponseWriter, r *http.Request) {
     }
     offset := int32 (page - 1) * postsLimitPerPage
 
-    posts, _ := c.Model.GetPostsByCategoryID(
-        int32(categoryID),
-        postsLimitPerPage,
-        offset,
-        string(repos.PostsStatusPublished),
-        isAuthenticated,
-    )
+    var posts []model.GetPost
+    if categoryID == -1 {
+        getPosts, _ := c.Model.GetUncategorizedPosts(
+            postsLimitPerPage,
+            offset,
+            string(repos.PostsStatusPublished),
+            isAuthenticated,
+        )
+        posts = *(*[]model.GetPost)(unsafe.Pointer(&getPosts))
+    } else {
+        getPosts, _ := c.Model.GetPostsByCategoryID(
+            int32(categoryID),
+            postsLimitPerPage,
+            offset,
+            string(repos.PostsStatusPublished),
+            isAuthenticated,
+        )
+        posts = *(*[]model.GetPost)(unsafe.Pointer(&getPosts))
+    }
     data := struct {
         isAuthenticated bool
-        Posts       []repos.GetPostsByCategoryIDRow
+        Posts       []model.GetPost
         Pagination  []paginationItem
     }{
         Posts:      posts,
