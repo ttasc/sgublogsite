@@ -76,7 +76,14 @@ func adminRoutes(s *Server) chi.Router {
         r.Delete("/{id}",   s.ctrlr.AdminUserDelete)
     })
 
-    // r.Get("/categories",    s.ctrlr.AdminCategories)
+    r.Route("/categories", func(r chi.Router) {
+        r.Get("/",          s.ctrlr.AdminCategories)
+        // r.Get("/{id}",      s.ctrlr.AdminCategory)
+        // r.Get("/new",       s.ctrlr.AdminCategoryNew)
+        r.Post("/",         s.ctrlr.AdminCategoryCreate)
+        r.Put("/{id}",      s.ctrlr.AdminCategoryUpdate)
+        // r.Delete("/{id}",   s.ctrlr.AdminCategoryDelete)
+    })
     // r.Get("/tags",          s.ctrlr.AdminTags)
     // r.Get("/posts",         s.ctrlr.AdminPosts)
     // r.Get("/images",        s.ctrlr.AdminImages)

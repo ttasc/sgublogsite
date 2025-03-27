@@ -56,7 +56,7 @@ func (m *Model) AddCategory(pid int32, name, slug string) error {
     return tx.Commit()
 }
 
-func (m *Model) UpdateCategory(id, pid int32, name, slug string) error {
+func (m *Model) UpdateCategory(id int32, name, slug string) error {
     tx, err := m.DB.Begin()
     if err != nil {
         return err
@@ -67,9 +67,29 @@ func (m *Model) UpdateCategory(id, pid int32, name, slug string) error {
 
     _, err = qtx.UpdateCategory(m.ctx, repos.UpdateCategoryParams{
         CategoryID:         id,
-        ParentCategoryID:   sql.NullInt32{Int32: pid, Valid: pid > 0},
         Name:               name,
         Slug:               slug,
+    })
+
+    if err != nil {
+        return err
+    }
+
+    return tx.Commit()
+}
+
+func (m *Model) UpdateCategoryParent(id, pid int32) error {
+    tx, err := m.DB.Begin()
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    qtx := m.query.WithTx(tx)
+
+    _, err = qtx.UpdateCategoryParent(m.ctx, repos.UpdateCategoryParentParams{
+        CategoryID:         id,
+        ParentCategoryID:   sql.NullInt32{Int32: pid, Valid: pid > 0},
     })
 
     if err != nil {

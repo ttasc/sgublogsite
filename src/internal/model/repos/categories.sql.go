@@ -19,9 +19,9 @@ INSERT INTO categories (
 `
 
 type AddCategoryParams struct {
-	ParentCategoryID sql.NullInt32
-	Name             string
-	Slug             string
+	ParentCategoryID sql.NullInt32 `json:"parent_category_id"`
+	Name             string        `json:"name"`
+	Slug             string        `json:"slug"`
 }
 
 func (q *Queries) AddCategory(ctx context.Context, arg AddCategoryParams) (sql.Result, error) {
@@ -157,25 +157,32 @@ func (q *Queries) GetRootCategories(ctx context.Context) ([]Category, error) {
 
 const updateCategory = `-- name: UpdateCategory :execresult
 UPDATE categories
-SET
-    parent_category_id = ?,
-    name = ?,
+SET name = ?,
     slug = ?
 WHERE category_id = ?
 `
 
 type UpdateCategoryParams struct {
-	ParentCategoryID sql.NullInt32
-	Name             string
-	Slug             string
-	CategoryID       int32
+	Name       string `json:"name"`
+	Slug       string `json:"slug"`
+	CategoryID int32  `json:"category_id"`
 }
 
 func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (sql.Result, error) {
-	return q.exec(ctx, q.updateCategoryStmt, updateCategory,
-		arg.ParentCategoryID,
-		arg.Name,
-		arg.Slug,
-		arg.CategoryID,
-	)
+	return q.exec(ctx, q.updateCategoryStmt, updateCategory, arg.Name, arg.Slug, arg.CategoryID)
+}
+
+const updateCategoryParent = `-- name: UpdateCategoryParent :execresult
+UPDATE categories
+SET parent_category_id = ?
+WHERE category_id = ?
+`
+
+type UpdateCategoryParentParams struct {
+	ParentCategoryID sql.NullInt32 `json:"parent_category_id"`
+	CategoryID       int32         `json:"category_id"`
+}
+
+func (q *Queries) UpdateCategoryParent(ctx context.Context, arg UpdateCategoryParentParams) (sql.Result, error) {
+	return q.exec(ctx, q.updateCategoryParentStmt, updateCategoryParent, arg.ParentCategoryID, arg.CategoryID)
 }

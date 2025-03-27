@@ -16,8 +16,8 @@ VALUES (?, ?)
 `
 
 type AddImageParams struct {
-	Url  string
-	Name sql.NullString
+	Url  string         `json:"url"`
+	Name sql.NullString `json:"name"`
 }
 
 func (q *Queries) AddImage(ctx context.Context, arg AddImageParams) (sql.Result, error) {
@@ -91,8 +91,8 @@ WHERE image_id = ?
 `
 
 type UpdateImageURLParams struct {
-	Url     string
-	ImageID int32
+	Url     string `json:"url"`
+	ImageID int32  `json:"image_id"`
 }
 
 func (q *Queries) UpdateImageURL(ctx context.Context, arg UpdateImageURLParams) (sql.Result, error) {

@@ -31,8 +31,8 @@ func (e *PostsStatus) Scan(src interface{}) error {
 }
 
 type NullPostsStatus struct {
-	PostsStatus PostsStatus
-	Valid       bool // Valid is true if PostsStatus is not NULL
+	PostsStatus PostsStatus `json:"posts_status"`
+	Valid       bool        `json:"valid"` // Valid is true if PostsStatus is not NULL
 }
 
 // Scan implements the Scanner interface.
@@ -74,8 +74,8 @@ func (e *UsersRole) Scan(src interface{}) error {
 }
 
 type NullUsersRole struct {
-	UsersRole UsersRole
-	Valid     bool // Valid is true if UsersRole is not NULL
+	UsersRole UsersRole `json:"users_role"`
+	Valid     bool      `json:"valid"` // Valid is true if UsersRole is not NULL
 }
 
 // Scan implements the Scanner interface.
@@ -97,68 +97,68 @@ func (ns NullUsersRole) Value() (driver.Value, error) {
 }
 
 type Category struct {
-	CategoryID       int32
-	ParentCategoryID sql.NullInt32
-	Name             string
-	Slug             string
+	CategoryID       int32         `json:"category_id"`
+	ParentCategoryID sql.NullInt32 `json:"parent_category_id"`
+	Name             string        `json:"name"`
+	Slug             string        `json:"slug"`
 }
 
 type Image struct {
-	ImageID int32
-	Url     string
-	Name    sql.NullString
+	ImageID int32          `json:"image_id"`
+	Url     string         `json:"url"`
+	Name    sql.NullString `json:"name"`
 }
 
 type Post struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	PostID      int32         `json:"post_id"`
+	UserID      sql.NullInt32 `json:"user_id"`
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	ThumbnailID sql.NullInt32 `json:"thumbnail_id"`
+	Body        string        `json:"body"`
+	Status      PostsStatus   `json:"status"`
+	Private     bool          `json:"private"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 type PostCategory struct {
-	PostID     int32
-	CategoryID int32
+	PostID     int32 `json:"post_id"`
+	CategoryID int32 `json:"category_id"`
 }
 
 type PostTag struct {
-	PostID int32
-	TagID  int32
+	PostID int32 `json:"post_id"`
+	TagID  int32 `json:"tag_id"`
 }
 
 type Siteinfo struct {
-	SiteID         bool
-	SiteTitle      sql.NullString
-	SiteName       sql.NullString
-	SiteLogoID     sql.NullInt32
-	SiteAbout      sql.NullString
-	SiteCopyright  sql.NullString
-	ContactAddress sql.NullString
-	ContactEmail   sql.NullString
-	ContactPhone   sql.NullString
+	SiteID         bool           `json:"site_id"`
+	SiteTitle      sql.NullString `json:"site_title"`
+	SiteName       sql.NullString `json:"site_name"`
+	SiteLogoID     sql.NullInt32  `json:"site_logo_id"`
+	SiteAbout      sql.NullString `json:"site_about"`
+	SiteCopyright  sql.NullString `json:"site_copyright"`
+	ContactAddress sql.NullString `json:"contact_address"`
+	ContactEmail   sql.NullString `json:"contact_email"`
+	ContactPhone   sql.NullString `json:"contact_phone"`
 }
 
 type Tag struct {
-	TagID int32
-	Name  string
-	Slug  string
+	TagID int32  `json:"tag_id"`
+	Name  string `json:"name"`
+	Slug  string `json:"slug"`
 }
 
 type User struct {
-	UserID    int32
-	Firstname string
-	Lastname  string
-	Phone     string
-	Email     string
-	Password  string
-	AvatarID  sql.NullInt32
-	Role      UsersRole
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	UserID    int32         `json:"user_id"`
+	Firstname string        `json:"firstname"`
+	Lastname  string        `json:"lastname"`
+	Phone     string        `json:"phone"`
+	Email     string        `json:"email"`
+	Password  string        `json:"password"`
+	AvatarID  sql.NullInt32 `json:"avatar_id"`
+	Role      UsersRole     `json:"role"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
 }

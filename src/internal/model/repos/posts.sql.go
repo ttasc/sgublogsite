@@ -19,8 +19,8 @@ INSERT INTO post_categories (
 `
 
 type AddPostToCategoryParams struct {
-	PostID     int32
-	CategoryID int32
+	PostID     int32 `json:"post_id"`
+	CategoryID int32 `json:"category_id"`
 }
 
 func (q *Queries) AddPostToCategory(ctx context.Context, arg AddPostToCategoryParams) (sql.Result, error) {
@@ -35,8 +35,8 @@ INSERT INTO post_tags (
 `
 
 type AddTagToPostParams struct {
-	PostID int32
-	TagID  int32
+	PostID int32 `json:"post_id"`
+	TagID  int32 `json:"tag_id"`
 }
 
 func (q *Queries) AddTagToPost(ctx context.Context, arg AddTagToPostParams) (sql.Result, error) {
@@ -54,11 +54,11 @@ INSERT INTO posts (
 `
 
 type CreatePostParams struct {
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
+	UserID      sql.NullInt32 `json:"user_id"`
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	ThumbnailID sql.NullInt32 `json:"thumbnail_id"`
+	Body        string        `json:"body"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (sql.Result, error) {
@@ -90,25 +90,25 @@ LIMIT ? OFFSET ?
 `
 
 type FindPostsParams struct {
-	Text    string
-	Private bool
-	Status  PostsStatus
-	Limit   int32
-	Offset  int32
+	Text    string      `json:"text"`
+	Private bool        `json:"private"`
+	Status  PostsStatus `json:"status"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 type FindPostsRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 // WHERE MATCH(title, body) AGAINST (sqlc.arg(text));
@@ -162,23 +162,23 @@ LIMIT ? OFFSET ?
 `
 
 type GetAllPostsParams struct {
-	Status PostsStatus
-	Limit  int32
-	Offset int32
+	Status PostsStatus `json:"status"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
 }
 
 type GetAllPostsRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetAllPosts(ctx context.Context, arg GetAllPostsParams) ([]GetAllPostsRow, error) {
@@ -223,17 +223,17 @@ WHERE post_id = ?
 `
 
 type GetPostByIDRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostByID(ctx context.Context, postID int32) (GetPostByIDRow, error) {
@@ -270,25 +270,25 @@ LIMIT ? OFFSET ?
 `
 
 type GetPostsByCategoryIDParams struct {
-	CategoryID int32
-	Private    bool
-	Status     PostsStatus
-	Limit      int32
-	Offset     int32
+	CategoryID int32       `json:"category_id"`
+	Private    bool        `json:"private"`
+	Status     PostsStatus `json:"status"`
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
 }
 
 type GetPostsByCategoryIDRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostsByCategoryID(ctx context.Context, arg GetPostsByCategoryIDParams) ([]GetPostsByCategoryIDRow, error) {
@@ -351,25 +351,25 @@ LIMIT ? OFFSET ?
 `
 
 type GetPostsByCategorySlugParams struct {
-	Slug    string
-	Private bool
-	Status  PostsStatus
-	Limit   int32
-	Offset  int32
+	Slug    string      `json:"slug"`
+	Private bool        `json:"private"`
+	Status  PostsStatus `json:"status"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 type GetPostsByCategorySlugRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostsByCategorySlug(ctx context.Context, arg GetPostsByCategorySlugParams) ([]GetPostsByCategorySlugRow, error) {
@@ -422,23 +422,23 @@ LIMIT ? OFFSET ?
 `
 
 type GetPostsByStatusParams struct {
-	Status PostsStatus
-	Limit  int32
-	Offset int32
+	Status PostsStatus `json:"status"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
 }
 
 type GetPostsByStatusRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostsByStatus(ctx context.Context, arg GetPostsByStatusParams) ([]GetPostsByStatusRow, error) {
@@ -491,25 +491,25 @@ LIMIT ? OFFSET ?
 `
 
 type GetPostsByTagIDParams struct {
-	TagID   int32
-	Private bool
-	Status  PostsStatus
-	Limit   int32
-	Offset  int32
+	TagID   int32       `json:"tag_id"`
+	Private bool        `json:"private"`
+	Status  PostsStatus `json:"status"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 type GetPostsByTagIDRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostsByTagID(ctx context.Context, arg GetPostsByTagIDParams) ([]GetPostsByTagIDRow, error) {
@@ -572,25 +572,25 @@ LIMIT ? OFFSET ?
 `
 
 type GetPostsByTagSlugParams struct {
-	Slug    string
-	Private bool
-	Status  PostsStatus
-	Limit   int32
-	Offset  int32
+	Slug    string      `json:"slug"`
+	Private bool        `json:"private"`
+	Status  PostsStatus `json:"status"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 type GetPostsByTagSlugRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostsByTagSlug(ctx context.Context, arg GetPostsByTagSlugParams) ([]GetPostsByTagSlugRow, error) {
@@ -644,24 +644,24 @@ LIMIT ? OFFSET ?
 `
 
 type GetPostsByUserIDParams struct {
-	UserID sql.NullInt32
-	Status PostsStatus
-	Limit  int32
-	Offset int32
+	UserID sql.NullInt32 `json:"user_id"`
+	Status PostsStatus   `json:"status"`
+	Limit  int32         `json:"limit"`
+	Offset int32         `json:"offset"`
 }
 
 type GetPostsByUserIDRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetPostsByUserID(ctx context.Context, arg GetPostsByUserIDParams) ([]GetPostsByUserIDRow, error) {
@@ -718,24 +718,24 @@ LIMIT ? OFFSET ?
 `
 
 type GetUncategorizedPostsParams struct {
-	Private bool
-	Status  PostsStatus
-	Limit   int32
-	Offset  int32
+	Private bool        `json:"private"`
+	Status  PostsStatus `json:"status"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 type GetUncategorizedPostsRow struct {
-	PostID      int32
-	UserID      sql.NullInt32
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	Body        string
-	Status      PostsStatus
-	Private     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Thumbnail   sql.NullString
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
 }
 
 func (q *Queries) GetUncategorizedPosts(ctx context.Context, arg GetUncategorizedPostsParams) ([]GetUncategorizedPostsRow, error) {
@@ -785,8 +785,8 @@ WHERE post_id = ?
 `
 
 type UpdatePostBodyParams struct {
-	Body   string
-	PostID int32
+	Body   string `json:"body"`
+	PostID int32  `json:"post_id"`
 }
 
 func (q *Queries) UpdatePostBody(ctx context.Context, arg UpdatePostBodyParams) (sql.Result, error) {
@@ -802,10 +802,10 @@ WHERE post_id = ?
 `
 
 type UpdatePostMetadataParams struct {
-	Title       string
-	Slug        string
-	ThumbnailID sql.NullInt32
-	PostID      int32
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	ThumbnailID sql.NullInt32 `json:"thumbnail_id"`
+	PostID      int32         `json:"post_id"`
 }
 
 func (q *Queries) UpdatePostMetadata(ctx context.Context, arg UpdatePostMetadataParams) (sql.Result, error) {
@@ -824,8 +824,8 @@ WHERE post_id = ?
 `
 
 type UpdatePostPrivateParams struct {
-	Private bool
-	PostID  int32
+	Private bool  `json:"private"`
+	PostID  int32 `json:"post_id"`
 }
 
 func (q *Queries) UpdatePostPrivate(ctx context.Context, arg UpdatePostPrivateParams) (sql.Result, error) {
@@ -839,8 +839,8 @@ WHERE post_id = ?
 `
 
 type UpdatePostStatusParams struct {
-	Status PostsStatus
-	PostID int32
+	Status PostsStatus `json:"status"`
+	PostID int32       `json:"post_id"`
 }
 
 func (q *Queries) UpdatePostStatus(ctx context.Context, arg UpdatePostStatusParams) (sql.Result, error) {

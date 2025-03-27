@@ -18,8 +18,8 @@ INSERT INTO tags (
 `
 
 type AddTagParams struct {
-	Name string
-	Slug string
+	Name string `json:"name"`
+	Slug string `json:"slug"`
 }
 
 func (q *Queries) AddTag(ctx context.Context, arg AddTagParams) (sql.Result, error) {

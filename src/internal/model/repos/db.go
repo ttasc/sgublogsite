@@ -156,6 +156,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateCategoryStmt, err = db.PrepareContext(ctx, updateCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCategory: %w", err)
 	}
+	if q.updateCategoryParentStmt, err = db.PrepareContext(ctx, updateCategoryParent); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateCategoryParent: %w", err)
+	}
 	if q.updateImageURLStmt, err = db.PrepareContext(ctx, updateImageURL); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateImageURL: %w", err)
 	}
@@ -411,6 +414,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateCategoryStmt: %w", cerr)
 		}
 	}
+	if q.updateCategoryParentStmt != nil {
+		if cerr := q.updateCategoryParentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateCategoryParentStmt: %w", cerr)
+		}
+	}
 	if q.updateImageURLStmt != nil {
 		if cerr := q.updateImageURLStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateImageURLStmt: %w", cerr)
@@ -544,6 +552,7 @@ type Queries struct {
 	getUserByEmailOrPhoneStmt  *sql.Stmt
 	getUserByIDStmt            *sql.Stmt
 	updateCategoryStmt         *sql.Stmt
+	updateCategoryParentStmt   *sql.Stmt
 	updateImageURLStmt         *sql.Stmt
 	updatePostBodyStmt         *sql.Stmt
 	updatePostMetadataStmt     *sql.Stmt
@@ -604,6 +613,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getUserByEmailOrPhoneStmt:  q.getUserByEmailOrPhoneStmt,
 		getUserByIDStmt:            q.getUserByIDStmt,
 		updateCategoryStmt:         q.updateCategoryStmt,
+		updateCategoryParentStmt:   q.updateCategoryParentStmt,
 		updateImageURLStmt:         q.updateImageURLStmt,
 		updatePostBodyStmt:         q.updatePostBodyStmt,
 		updatePostMetadataStmt:     q.updatePostMetadataStmt,

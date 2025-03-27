@@ -13,11 +13,12 @@ import (
 )
 
 type category struct {
-    ID       int32
-    Name     string
-    ParentID int32
-    Children []category
-    Level    int
+    ID       int32      `json:"id"`
+    Name     string     `json:"name"`
+    Slug     string     `json:"slug"`
+    ParentID int32      `json:"parent_id"`
+    Children []category `json:"children"`
+    Level    int        `json:"level"`
 }
 
 func (c *Controller) Categories(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +49,7 @@ func buildCategoryTree(categories []repos.Category, parentID int32, level int) [
         tmpcat := category{
             ID      : cat.CategoryID,
             Name    : cat.Name,
+            Slug    : cat.Slug,
             ParentID: cat.ParentCategoryID.Int32,
         }
         if tmpcat.ParentID == parentID {

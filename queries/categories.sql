@@ -2,6 +2,7 @@
 SELECT *
 FROM categories
 WHERE category_id = ?;
+
 -- name: GetAllCategories :many
 SELECT * FROM categories;
 
@@ -24,10 +25,13 @@ INSERT INTO categories (
 
 -- name: UpdateCategory :execresult
 UPDATE categories
-SET
-    parent_category_id = ?,
-    name = ?,
+SET name = ?,
     slug = ?
+WHERE category_id = ?;
+
+-- name: UpdateCategoryParent :execresult
+UPDATE categories
+SET parent_category_id = ?
 WHERE category_id = ?;
 
 -- name: DeleteCategory :execresult
