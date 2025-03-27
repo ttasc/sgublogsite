@@ -458,3 +458,47 @@ button {
 .collapsed .fa-chevron-down {
     transform: rotate(-90deg);
 }
+
+.drag-handle {
+    cursor: move;
+    color: #666;
+    padding: 0 8px;
+    margin-right: 5px;
+}
+
+.dragging-ghost {
+    opacity: 0.5;
+    background: #f8f9fa;
+    border: 2px dashed #007bff;
+    /* position: fixed !important; */
+    /* z-index: 9999; */
+    /* pointer-events: none; */
+}
+
+.dragging-chosen {
+    background: #e9ecef;
+    /* transform: rotate(2deg); */
+}
+
+.category-children {
+    margin-left: 30px;
+    padding-left: 15px;
+    border-left: 2px solid #dee2e6;
+    min-height: 20px; /* Tạo không gian để kéo thả */
+}
+
+.category-list:empty {
+    min-height: 20px; /* Cho phép kéo vào danh sách rỗng */
+    background-color: rgba(0, 123, 255, 0.05); /* Visual feedback */
+}
+
+/* Ngăn các phần tử khác di chuyển khi kéo */
+.sortable-chosen:not(.dragging-ghost) {
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Vô hiệu hóa hiệu ứng hover khi kéo */
+.sortable-drag .category-header:hover {
+    background: inherit !important;
+}

@@ -30,8 +30,12 @@ func (m *Model) GetChildCategories(id int32) ([]repos.Category, error) {
     return m.query.GetChildCategories(m.ctx, sql.NullInt32{Int32: id, Valid: id > 0})
 }
 
-func (m *Model) GetRootCategories() ([]repos.Category, error) {
-    return m.query.GetRootCategories(m.ctx)
+func (m *Model) GetParentCategoryID(id int32) (int32, error) {
+    res, err := m.query.GetParentCategoryID(m.ctx, id)
+    if !res.Valid {
+        return 0, err
+    }
+    return res.Int32, nil
 }
 
 func (m *Model) AddCategory(pid int32, name, slug string) error {

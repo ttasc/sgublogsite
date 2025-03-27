@@ -62,10 +62,13 @@
 {{ define "category_item" }}
 <ul class="category-list">
   {{ range . }}
-  <li class="category-item">
+  <li class="category-item" data-id="{{ .ID }}" data-parent-id="{{ .ParentID }}">
     <div class="category-header">
+      <span class="drag-handle">
+        <i class="fas fa-grip-vertical"></i>
+      </span>
       <span class="toggle" onclick="toggleChildren(this)">
-        {{ if .Children }}<i class="fas fa-chevron-down toggle-icon"></i>{{ end }}
+        {{ if .Children }}<i class="fas fa-chevron-down toggle-icon"></i>{{ else }}<i class="fas fa-chevron-right toggle-icon"></i>{{ end }}
       </span>
       <span class="category-name">{{ .Name }}</span>
       <div class="category-actions">
@@ -80,11 +83,13 @@
         </button>
       </div>
     </div>
-    {{ if .Children }}
     <div class="category-children">
-      {{ template "category_item" .Children }}
+        <ul class="category-list">
+            {{ if .Children }}
+            {{ template "category_item" .Children }}
+            {{ end }}
+        </ul>
     </div>
-    {{ end }}
   </li>
   {{ end }}
 </ul>

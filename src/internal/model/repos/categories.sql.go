@@ -121,38 +121,17 @@ func (q *Queries) GetChildCategories(ctx context.Context, parentCategoryID sql.N
 	return items, nil
 }
 
-const getRootCategories = `-- name: GetRootCategories :many
-SELECT category_id, parent_category_id, name, slug
+const getParentCategoryID = `-- name: GetParentCategoryID :one
+SELECT parent_category_id
 FROM categories
-WHERE parent_category_id IS NULL
+WHERE category_id = ?
 `
 
-func (q *Queries) GetRootCategories(ctx context.Context) ([]Category, error) {
-	rows, err := q.query(ctx, q.getRootCategoriesStmt, getRootCategories)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Category
-	for rows.Next() {
-		var i Category
-		if err := rows.Scan(
-			&i.CategoryID,
-			&i.ParentCategoryID,
-			&i.Name,
-			&i.Slug,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetParentCategoryID(ctx context.Context, categoryID int32) (sql.NullInt32, error) {
+	row := q.queryRow(ctx, q.getParentCategoryIDStmt, getParentCategoryID, categoryID)
+	var parent_category_id sql.NullInt32
+	err := row.Scan(&parent_category_id)
+	return parent_category_id, err
 }
 
 const updateCategory = `-- name: UpdateCategory :execresult

@@ -82,6 +82,7 @@ func adminRoutes(s *Server) chi.Router {
         // r.Get("/new",       s.ctrlr.AdminCategoryNew)
         r.Post("/",         s.ctrlr.AdminCategoryCreate)
         r.Put("/{id}",      s.ctrlr.AdminCategoryUpdate)
+        r.Put("/{id}/move", s.ctrlr.AdminCategoryMove)
         // r.Delete("/{id}",   s.ctrlr.AdminCategoryDelete)
     })
     // r.Get("/tags",          s.ctrlr.AdminTags)

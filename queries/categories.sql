@@ -11,10 +11,10 @@ SELECT *
 FROM categories
 WHERE parent_category_id = ?;
 
--- name: GetRootCategories :many
-SELECT *
+-- name: GetParentCategoryID :one
+SELECT parent_category_id
 FROM categories
-WHERE parent_category_id IS NULL;
+WHERE category_id = ?;
 
 -- name: AddCategory :execresult
 INSERT INTO categories (

@@ -102,6 +102,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getImageByURLStmt, err = db.PrepareContext(ctx, getImageByURL); err != nil {
 		return nil, fmt.Errorf("error preparing query GetImageByURL: %w", err)
 	}
+	if q.getParentCategoryIDStmt, err = db.PrepareContext(ctx, getParentCategoryID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetParentCategoryID: %w", err)
+	}
 	if q.getPostByIDStmt, err = db.PrepareContext(ctx, getPostByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostByID: %w", err)
 	}
@@ -122,9 +125,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getPostsByUserIDStmt, err = db.PrepareContext(ctx, getPostsByUserID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostsByUserID: %w", err)
-	}
-	if q.getRootCategoriesStmt, err = db.PrepareContext(ctx, getRootCategories); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRootCategories: %w", err)
 	}
 	if q.getSiteAboutStmt, err = db.PrepareContext(ctx, getSiteAbout); err != nil {
 		return nil, fmt.Errorf("error preparing query GetSiteAbout: %w", err)
@@ -324,6 +324,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getImageByURLStmt: %w", cerr)
 		}
 	}
+	if q.getParentCategoryIDStmt != nil {
+		if cerr := q.getParentCategoryIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getParentCategoryIDStmt: %w", cerr)
+		}
+	}
 	if q.getPostByIDStmt != nil {
 		if cerr := q.getPostByIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPostByIDStmt: %w", cerr)
@@ -357,11 +362,6 @@ func (q *Queries) Close() error {
 	if q.getPostsByUserIDStmt != nil {
 		if cerr := q.getPostsByUserIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPostsByUserIDStmt: %w", cerr)
-		}
-	}
-	if q.getRootCategoriesStmt != nil {
-		if cerr := q.getRootCategoriesStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRootCategoriesStmt: %w", cerr)
 		}
 	}
 	if q.getSiteAboutStmt != nil {
@@ -534,6 +534,7 @@ type Queries struct {
 	getContactInfoStmt         *sql.Stmt
 	getImageByIDStmt           *sql.Stmt
 	getImageByURLStmt          *sql.Stmt
+	getParentCategoryIDStmt    *sql.Stmt
 	getPostByIDStmt            *sql.Stmt
 	getPostsByCategoryIDStmt   *sql.Stmt
 	getPostsByCategorySlugStmt *sql.Stmt
@@ -541,7 +542,6 @@ type Queries struct {
 	getPostsByTagIDStmt        *sql.Stmt
 	getPostsByTagSlugStmt      *sql.Stmt
 	getPostsByUserIDStmt       *sql.Stmt
-	getRootCategoriesStmt      *sql.Stmt
 	getSiteAboutStmt           *sql.Stmt
 	getSiteInfoStmt            *sql.Stmt
 	getSiteMetaStmt            *sql.Stmt
@@ -595,6 +595,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getContactInfoStmt:         q.getContactInfoStmt,
 		getImageByIDStmt:           q.getImageByIDStmt,
 		getImageByURLStmt:          q.getImageByURLStmt,
+		getParentCategoryIDStmt:    q.getParentCategoryIDStmt,
 		getPostByIDStmt:            q.getPostByIDStmt,
 		getPostsByCategoryIDStmt:   q.getPostsByCategoryIDStmt,
 		getPostsByCategorySlugStmt: q.getPostsByCategorySlugStmt,
@@ -602,7 +603,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPostsByTagIDStmt:        q.getPostsByTagIDStmt,
 		getPostsByTagSlugStmt:      q.getPostsByTagSlugStmt,
 		getPostsByUserIDStmt:       q.getPostsByUserIDStmt,
-		getRootCategoriesStmt:      q.getRootCategoriesStmt,
 		getSiteAboutStmt:           q.getSiteAboutStmt,
 		getSiteInfoStmt:            q.getSiteInfoStmt,
 		getSiteMetaStmt:            q.getSiteMetaStmt,

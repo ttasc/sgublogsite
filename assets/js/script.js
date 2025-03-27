@@ -218,3 +218,62 @@ document.getElementById('categoryName').addEventListener('input', function(e) {
 document.getElementById('categorySlug').addEventListener('input', function() {
     isAutoSlug = false;
 });
+
+function initSortable() {
+    document.querySelectorAll('.category-list').forEach((list) => {
+        if (list.sortableInstance) return;
+
+        list.sortableInstance = Sortable.create(list, {
+            group: "categories",
+            animation: 150,
+            handle: ".drag-handle",
+            draggable: ".category-item",
+            ghostClass: "dragging-ghost",
+            chosenClass: "dragging-chosen",
+            swapThreshold: 0.65, // Giảm độ nhạy khi di chuyển các phần tử khác
+            invertSwap: true,     // Chỉ hoán đổi khi kéo qua 50% phần tử
+            onStart: (evt) => {   // Cố định chiều cao khi bắt đầu kéo
+                evt.item.style.height = `${evt.item.offsetHeight}px`;
+            },
+            onEnd: async (evt) => {
+                evt.item.style.height = 'auto'; // Reset chiều cao
+                const categoryId = evt.item.dataset.id;
+                const newParentId = getNewParentId(evt.to);
+
+                try {
+                    const response = await fetch(`/admin/categories/${categoryId}/move`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            new_parent_id: newParentId
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        showError(error.message);
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    showError('Network error. Please try again.');
+                    window.location.reload();
+                }
+            }
+        });
+    });
+}
+
+// Cập nhật hàm getNewParentId
+function getNewParentId(targetList) {
+    // Tìm phần tử cha gần nhất có class 'category-item'
+    const parentItem = targetList.closest('.category-item');
+    return parentItem ? parseInt(parentItem.dataset.id) : null;
+}
+
+// Khởi tạo khi trang tải
+document.addEventListener('DOMContentLoaded', initSortable);
+
+// Khởi tạo lại khi HTMX tải nội dung mới
+document.body.addEventListener('htmx:afterSwap', initSortable);
