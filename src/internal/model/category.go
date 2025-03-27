@@ -12,18 +12,7 @@ func (m *Model) GetCategoryByID(id int32) (repos.Category, error) {
 }
 
 func (m *Model) GetCategories() ([]repos.Category, error) {
-    categories, err := m.query.GetAllCategories(m.ctx)
-    if err != nil {
-        return nil, err
-    }
-    uncategorized := repos.Category{
-        CategoryID: -1,
-        ParentCategoryID: sql.NullInt32{Int32: 0, Valid: false},
-        Name: "Uncategorized",
-        Slug: "uncategorized",
-    }
-    categories = append(categories, uncategorized)
-    return categories, nil
+    return m.query.GetAllCategories(m.ctx)
 }
 
 func (m *Model) GetChildCategories(id int32) ([]repos.Category, error) {

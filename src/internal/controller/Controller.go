@@ -8,7 +8,14 @@ import (
 
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/ttasc/sgublogsite/src/internal/model"
+	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
+
+var ValidRoles = []string{
+    string(repos.UsersRoleAdmin),
+    // string(repos.UsersRoleAuthor),
+    string(repos.UsersRoleSubscriber),
+}
 
 type Controller struct {
     templates map[string]*template.Template

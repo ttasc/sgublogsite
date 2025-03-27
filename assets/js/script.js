@@ -51,9 +51,9 @@ function showCategoryModal(parentId) {
 
 function showEditModal(category) {
     currentCategory = category;
-    document.getElementById('categoryId').value = category.ID;
-    document.getElementById('categoryName').value = category.Name;
-    document.getElementById('categorySlug').value = category.Slug;
+    document.getElementById('categoryId').value = category.id;
+    document.getElementById('categoryName').value = category.name;
+    document.getElementById('categorySlug').value = category.slug;
     document.getElementById('modalTitle').textContent = 'Edit Category';
     document.getElementById('categoryModal').style.display = 'block';
     isAutoSlug = false;
@@ -254,8 +254,8 @@ function initSortable() {
                     if (!response.ok) {
                         const error = await response.json();
                         showError(error.message);
-                        window.location.reload();
                     }
+                    window.location.reload();
                 } catch (error) {
                     showError('Network error. Please try again.');
                     window.location.reload();
