@@ -1,7 +1,7 @@
 # Simple Makefile for a Go project
 
 # Build the application
-all: build test
+all: build docker-run
 
 build:
 	@echo "Building..."
@@ -14,7 +14,7 @@ run:
 
 	@go run src/cmd/main.go
 
-# Create DB container
+# Create container
 docker-run:
 	@if docker compose up --build -d; then \
 		: ; \
@@ -23,7 +23,7 @@ docker-run:
 		docker-compose up --build -d; \
 	fi
 
-# Shutdown DB container
+# Shutdown container
 docker-down:
 	@if docker compose down; then \
 		: ; \

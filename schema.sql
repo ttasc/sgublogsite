@@ -121,8 +121,8 @@ VALUES
 -- Chèn dữ liệu mẫu cho bảng users
 INSERT INTO users (firstname, lastname, phone, email, password, role) VALUES
 ('TT', 'ASC', '0000', 'ad@ad.ad', '$2a$10$EqoYIVoqP6FeOYbaa2GD7.OtEdyBGUCsue/gvmi5gjxlqL8yi2cg.', 'admin'),
-('Jane', 'Smith', '0123456789', 'author@example.com', 'hashed_password_456', NULL, 'author'),
-('Bob', 'Johnson', '0369852147', 'subscriber@example.com', 'hashed_password_789', NULL, 'subscriber');
+('Jane', 'Smith', '0123456789', 'author@example.com', 'hashed_password_456', 'author'),
+('Bob', 'Johnson', '0369852147', 'subscriber@example.com', 'hashed_password_789', 'subscriber');
 
 -- Chèn dữ liệu mẫu cho bảng categories (có phân cấp)
 INSERT INTO categories (parent_category_id, name, slug) VALUES

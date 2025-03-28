@@ -1,4 +1,17 @@
 services:
+  sgublogsite_web:
+    restart: unless-stopped
+    build: .
+    ports:
+      - "8080:${PORT}"
+    depends_on:
+      sgublogsite_db:
+        condition: service_healthy
+    links:
+      - sgublogsite_db:mysql
+    networks:
+      - sgublogsite_net
+
   sgublogsite_db:
     image: mysql:latest
     restart: unless-stopped
@@ -12,6 +25,17 @@ services:
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - sgublogsite_db_volume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      start_period: 10s
+      retries: 3
+      interval: 5s
+      timeout: 5s
+    networks:
+      - sgublogsite_net
 
 volumes:
   sgublogsite_db_volume:
+
+networks:
+  sgublogsite_net:
