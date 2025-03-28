@@ -8,7 +8,7 @@
     <h1>Category Management</h1>
   </div>
 
-  <button class="btn btn-primary" onclick="showCategoryModal(null)">
+  <button class="btn btn-primary" id="addRootCategoryBtn">
     <i class="fas fa-plus"></i> Add Root Category
   </button>
 
@@ -18,9 +18,9 @@
 </div>
 
 <!-- Category Modal -->
-<div class="category-modal" id="categoryModal">
-  <div class="modal-content">
-    <span class="close" onclick="closeCategoryModal()">&times;</span>
+<div class="dialog" id="categoryModal">
+  <div class="confirmation-dialog">
+    <span class="close" id="closeModal" >&times;</span>
     <h3 id="modalTitle">New Category</h3>
     <form id="categoryForm">
       <input type="hidden" id="categoryId">
@@ -35,14 +35,14 @@
         <label>Slug</label>
         <div class="slug-input-group">
           <input type="text" id="categorySlug" class="form-control" required>
-          <button type="button" class="btn-slug-refresh" onclick="refreshSlug()">
+          <button type="button" class="btn-slug-refresh" id="slugRefreshBtn">
             <i class="fas fa-sync-alt"></i>
           </button>
         </div>
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+        <button type="button" class="btn btn-secondary" id="closeModal">Cancel</button>
         <button type="submit" class="btn btn-primary">Save</button>
       </div>
     </form>
@@ -50,11 +50,23 @@
 </div>
 
 <!-- Delete Confirmation Dialog -->
-<div id="deleteDialog" class="confirmation-dialog" style="display: none;">
-  <p>Are you sure you want to delete this category?</p>
-  <div style="margin-top: 15px; text-align: right;">
-    <button class="btn btn-secondary" onclick="closeDialog()">Cancel</button>
-    <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+<div id="dialog" class="dialog">
+  <div class="confirmation-dialog">
+    <p>Are you sure you want to delete this category?</p>
+    <div style="margin-top: 15px; text-align: right;">
+      <button class="btn btn-secondary" id="closeDialog">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+<!-- Move Confirmation Dialog -->
+<div id="moveDialog" class="dialog">
+  <div class="confirmation-dialog">
+    <p>Are you sure you want to move this category?</p>
+    <div style="margin-top: 15px; text-align: right;">
+      <button class="btn btn-secondary" id="closeMoveDialog">Cancel</button>
+      <button class="btn btn-primary" id="confirmMoveBtn">Confirm</button>
+    </div>
   </div>
 </div>
 {{ end }}
@@ -67,28 +79,28 @@
       <span class="drag-handle">
         <i class="fas fa-grip-vertical"></i>
       </span>
-      <span class="toggle" onclick="toggleChildren(this)">
+      <span class="toggle" id="toggleChildren">
         <i class="fas fa-chevron-down toggle-icon"></i>
       </span>
       <span class="category-name">{{ .Name }}</span>
       <div class="category-actions">
-        <button class="btn-icon" onclick="showCategoryModal('{{ .ID }}')">
+        <button class="btn" id="addSubCategoryBtn" data-parent-id="{{ .ID }}">
           <i class="fas fa-plus"></i>
         </button>
-        <button class="btn-icon" onclick="showEditModal({{ . }})">
+        <button class="btn" id="editCategoryBtn" data-category="{{ toJson . }}">
           <i class="fas fa-edit"></i>
         </button>
-        <button class="btn-icon btn-delete" onclick="confirmDelete({{ .ID }})">
+        <button class="btn btn-danger" id="deleteBtn" data-id="{{ .ID }}">
           <i class="fas fa-trash"></i>
         </button>
       </div>
     </div>
     <div class="category-children">
-        <ul class="category-list">
-            {{ if .Children }}
-            {{ template "category_item" .Children }}
-            {{ end }}
-        </ul>
+      <ul class="category-list">
+        {{ if .Children }}
+        {{ template "category_item" .Children }}
+        {{ end }}
+      </ul>
     </div>
   </li>
   {{ end }}

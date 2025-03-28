@@ -37,10 +37,10 @@
         <td>{{ .Email }}</td>
         <td>
           <div class="action-buttons">
-            <button class="btn btn-danger btn-icon" onclick="confirmDelete({{ .UserID }})">
+            <button class="btn btn-danger" id="deleteBtn" data-id="{{ .UserID }}">
               <i class="fas fa-trash"></i>
             </button>
-            <button class="btn btn-secondary btn-icon"
+            <button class="btn btn-secondary"
                     onclick="window.location.href='/admin/users/{{ .UserID }}'">
               <i class="fas fa-cog"></i>
             </button>
@@ -53,11 +53,13 @@
 </div>
 
 <!-- Delete Confirmation Dialog -->
-<div id="deleteDialog" class="confirmation-dialog" style="display: none;">
-  <p>Are you sure you want to delete this user?</p>
-  <div style="margin-top: 15px; text-align: right;">
-    <button class="btn btn-secondary" onclick="closeDialog()">Cancel</button>
-    <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+<div id="dialog" class="dialog">
+  <div class="confirmation-dialog">
+    <p>Are you sure you want to delete this user?</p>
+    <div style="margin-top: 15px; text-align: right;">
+      <button class="btn btn-secondary" id="closeDialog">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
   </div>
 </div>
 {{ end }}

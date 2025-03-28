@@ -8,10 +8,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SGU</title>
-    <link rel="stylesheet" href="/assets/css/index.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="/assets/logo.png" rel="shortcut icon" type="image/x-icon" />
-    <script src="/assets/js/htmx.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/libs/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <script src="/assets/js/libs/htmx.min.js"></script>
   </head>
   <body>
     <header class="header">
@@ -34,7 +34,7 @@
     </header>
 
     <nav class="navbar">
-      <button class="menu-toggle" onclick="toggleMenu()">
+      <button class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
       </button>
 
@@ -110,7 +110,7 @@
       <p>&copy; SGU 2025 - Bản quyền thuộc về ttasc</p>
     </footer>
 
-    <script src="/assets/js/script.js"></script>
+    <script src="/assets/js/script.js" type="module"></script>
   </body>
 </html>
 {{end}}

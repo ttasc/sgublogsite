@@ -1,5 +1,4 @@
 package server
-
 import (
 	"net/http"
 
@@ -78,12 +77,10 @@ func adminRoutes(s *Server) chi.Router {
 
     r.Route("/categories", func(r chi.Router) {
         r.Get("/",          s.ctrlr.AdminCategories)
-        // r.Get("/{id}",      s.ctrlr.AdminCategory)
-        // r.Get("/new",       s.ctrlr.AdminCategoryNew)
         r.Post("/",         s.ctrlr.AdminCategoryCreate)
         r.Put("/{id}",      s.ctrlr.AdminCategoryUpdate)
         r.Put("/{id}/move", s.ctrlr.AdminCategoryMove)
-        // r.Delete("/{id}",   s.ctrlr.AdminCategoryDelete)
+        r.Delete("/{id}",   s.ctrlr.AdminCategoryDelete)
     })
     // r.Get("/tags",          s.ctrlr.AdminTags)
     // r.Get("/posts",         s.ctrlr.AdminPosts)

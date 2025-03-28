@@ -8,11 +8,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <script src="/assets/js/htmx.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/admin/admin.css">
     <link href="/assets/logo.png" rel="shortcut icon" type="image/x-icon" />
+
+    <link rel="stylesheet" href="/assets/css/libs/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/admin/admin.css">
+
+    <script src="/assets/js/libs/htmx.min.js"></script>
   </head>
   <body>
     <div class="admin-container">
@@ -44,8 +45,8 @@
           <a href="/admin/settings" class="nav-item" hx-get="/admin/settings" hx-target="#content" hx-push-url="true">
             <i class="fas fa-cog"></i> Site Settings
           </a>
-          <form id="logoutForm" action="/logout" method="POST" class="nav-item">
-              <button type="submit" class="btn-logout">
+          <form id="logoutForm" action="/logout" method="POST">
+              <button type="submit" class="nav-item">
                   <i class="fas fa-sign-out-alt"></i> Logout
               </button>
           </form>
@@ -59,13 +60,14 @@
           <div class="error-content">
             <p id="errorMessage"></p>
           </div>
-          <span class="close-error" onclick="closeError()">&times;</span>
+          <span class="close-error" id="closeError ">&times;</span>
         </div>
         {{block "content" .}}{{end}}
       </main>
     </div>
 
-    <script src="/assets/js/script.js"></script>
+    <script src="/assets/js/libs/sortablejs/Sortable.min.js"></script>
+    <script src="/assets/js/script.js" type="module"></script>
   </body>
 </html>
 {{end}}

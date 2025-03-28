@@ -137,7 +137,7 @@ func (c *Controller) AdminUserDelete(w http.ResponseWriter, r *http.Request) {
             map[string]string{"message": "User not found"})
         return
     }
-    if user.Role == currentUser.Role && currentUser.Role == repos.UsersRoleAdmin {
+    if user.UserID == currentUser.UserID && user.Role == repos.UsersRoleAdmin {
         sendErrorResponse(err, w, http.StatusForbidden,
             map[string]string{"message": "You can't delete yourself"})
         return

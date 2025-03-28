@@ -10,11 +10,12 @@ import (
 )
 
 func (c *Controller) AdminCategories(w http.ResponseWriter, r *http.Request) {
-    categories, _ := c.Model.GetCategories()
+    rawCategories, _ := c.Model.GetCategories()
+    categories := buildCategoryTree(rawCategories, 0, 0)
     data := struct {
         Categories []category
     }{
-        Categories: buildCategoryTree(categories, 0, 0),
+        Categories: categories,
     }
 
     if r.Header.Get("HX-Request") == "true" {
@@ -102,6 +103,21 @@ func (c *Controller) AdminCategoryMove(w http.ResponseWriter, r *http.Request) {
         newpid = int32(*mvReq.NewPID)
     }
     err = c.Model.UpdateCategoryParent(int32(id), newpid)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.WriteHeader(http.StatusOK)
+}
+
+func (c *Controller) AdminCategoryDelete(w http.ResponseWriter, r *http.Request) {
+    id, err := strconv.Atoi(chi.URLParam(r, "id"))
+    if err != nil {
+        sendErrorResponse(err, w, http.StatusBadRequest,
+            map[string]string{"message": "Bad request"})
+        return
+    }
+    err = c.Model.DeleteCategory(int32(id))
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return

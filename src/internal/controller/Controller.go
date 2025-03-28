@@ -32,8 +32,18 @@ func New(model *model.Model) Controller {
 }
 
 func initTemplates() map[string]*template.Template {
+    funcMap := template.FuncMap{
+        "toJson": func(v any) (template.JS, error) {
+            b, err := json.Marshal(v)
+            if err != nil {
+                return "", err
+            }
+            return template.JS(b), nil
+        },
+    }
+
     base  := template.Must(template.New("base").ParseFiles("templates/base.tmpl"))
-    admin := template.Must(template.New("admin").ParseFiles("templates/admin/admin.tmpl"))
+    admin := template.Must(template.New("admin").Funcs(funcMap).ParseFiles("templates/admin/admin.tmpl"))
     return map[string]*template.Template{
         "profile":          template.Must(template.ParseFiles("templates/profile.tmpl")),
 
