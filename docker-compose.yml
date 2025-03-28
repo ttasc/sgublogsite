@@ -4,6 +4,8 @@ services:
     build: .
     ports:
       - "8080:${PORT}"
+    volumes:
+      - ./app.log:/app/app.log
     depends_on:
       sgublogsite_db:
         condition: service_healthy

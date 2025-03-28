@@ -1,12 +1,14 @@
 # Simple Makefile for a Go project
 
 # Build the application
-all: build docker-run
+all: build
 
 build:
 	@echo "Building..."
 
 	@go build -o bin/main src/cmd/main.go
+
+	@echo "Done! Binary now is in bin/main"
 
 # Run the application
 run:
@@ -15,7 +17,7 @@ run:
 	@go run src/cmd/main.go
 
 # Create container
-docker-run:
+up:
 	@if docker compose up --build -d; then \
 		: ; \
 	else \
@@ -24,7 +26,7 @@ docker-run:
 	fi
 
 # Shutdown container
-docker-down:
+down:
 	@if docker compose down; then \
 		: ; \
 	else \
@@ -65,4 +67,4 @@ watch:
 		fi; \
 	fi
 
-.PHONY: all build run test clean watch docker-run docker-down itest
+.PHONY: all build run test clean watch up down itest
