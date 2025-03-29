@@ -1,0 +1,17 @@
+services:
+  sgublogsite_db:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${SGUBLOGSITE_DB_DATABASE}
+      MYSQL_USER: ${SGUBLOGSITE_DB_USERNAME}
+      MYSQL_PASSWORD: ${SGUBLOGSITE_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${SGUBLOGSITE_DB_ROOT_PASSWORD}
+    ports:
+      - "${SGUBLOGSITE_DB_PORT}:3306"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - sgublogsite_db_volume:/var/lib/mysql
+
+volumes:
+  sgublogsite_db_volume:

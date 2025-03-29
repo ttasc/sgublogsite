@@ -19,29 +19,39 @@ export default function initCategories() {
     document.getElementById('slugRefreshBtn').addEventListener('click', refreshSlug);
 
     document.getElementById('confirmMoveBtn').addEventListener('click', confirmMove);
-
     document.getElementById('closeMoveDialog').addEventListener('click', closeMoveDialog);
 
     document.getElementById('addRootCategoryBtn').addEventListener('click', () => showCategoryModal(null));
 
-    document.querySelectorAll('#addSubCategoryBtn').forEach(button => {
-        button.addEventListener('click', (e) => showCategoryModal(e.currentTarget.dataset.parentId));
-    })
-
-    document.querySelectorAll('#editCategoryBtn').forEach(button => {
-        button.addEventListener('click', (e) => showEditModal(JSON.parse(e.currentTarget.dataset.category)));
-    })
-    document.querySelectorAll('#closeModal').forEach(button => {
-        button.addEventListener('click', closeCategoryModal);
-    })
-
-    document.querySelectorAll('#toggleChildren').forEach(button  => {
-        button.addEventListener('click', (e) => toggleChildren(e.currentTarget));
-    })
-
     // Form submission
     document.getElementById('categoryForm').addEventListener('submit', async (e) => {
         handleCategoryFormSubmit(e);
+    });
+
+    document.addEventListener('click', (e) => {
+        const addSubBtn = e.target.closest('#addSubCategoryBtn');
+        if (addSubBtn) {
+            showCategoryModal(addSubBtn.dataset.parentId);
+            return;
+        }
+
+        const editBtn = e.target.closest('#editCategoryBtn');
+        if (editBtn) {
+            showEditModal(JSON.parse(editBtn.dataset.category));
+            return;
+        }
+
+        const closeBtn = e.target.closest('#closeModal');
+        if (closeBtn) {
+            closeCategoryModal();
+            return;
+        }
+
+        const toggleBtn = e.target.closest('#toggleChildren');
+        if (toggleBtn) {
+            toggleChildren(toggleBtn);
+            return;
+        }
     });
 }
 

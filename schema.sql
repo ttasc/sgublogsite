@@ -72,7 +72,7 @@ CREATE TABLE categories (
     slug                VARCHAR(255) NOT NULL UNIQUE,
 
     INDEX idx_parent_category_id (parent_category_id ASC),
-    FOREIGN KEY (parent_category_id) REFERENCES categories(category_id) ON DELETE CASCADE
+    FOREIGN KEY (parent_category_id) REFERENCES categories(category_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 DROP TABLE IF EXISTS post_categories;

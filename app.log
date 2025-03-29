@@ -1,8 +1,0 @@
-2025/03/28 09:50:21 db down: dial tcp 172.18.0.2:3306: connect: connection refused
-2025/03/28 09:50:22 db down: dial tcp 172.18.0.2:3306: connect: connection refused
-2025/03/28 09:50:22 db down: dial tcp 172.18.0.2:3306: connect: connection refused
-2025/03/28 09:50:22 db down: dial tcp 172.18.0.2:3306: connect: connection refused
-2025/03/28 09:50:54 Error 1062 (23000): Duplicate entry '0000' for key 'users.phone'
-2025/03/28 09:53:39 shutting down gracefully, press Ctrl+C again to force
-2025/03/28 09:53:39 Server exiting
-2025/03/28 09:53:39 Graceful shutdown complete.

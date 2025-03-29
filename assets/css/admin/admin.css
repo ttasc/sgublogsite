@@ -325,7 +325,7 @@ button {
 }
 
 .category-item {
-    margin: 2px 0; /* Giảm khoảng cách giữa các item */
+    margin: 2px 0;
 }
 
 .category-header {
@@ -338,6 +338,11 @@ button {
 
 .category-header:hover {
     background: #e9ecef;
+}
+
+.category-header:hover .category-actions {
+    opacity: 1;
+    visibility: visible;
 }
 
 .toggle {
@@ -356,7 +361,8 @@ button {
 }
 
 .category-actions {
-    display: flex;
+    opacity: 0;
+    visibility: hidden;
     gap: 5px;
 }
 
