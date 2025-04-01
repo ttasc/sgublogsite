@@ -1,0 +1,105 @@
+<!--
+  vim: filetype=html
+-->
+{{template "admin" .}}
+{{define "content"}}
+<div class="management">
+  <!-- Header -->
+  <div class="management-header">
+    <h1>Tag Management</h1>
+    <div class="action-toolbar">
+      <div class="search-box">
+        <input type="text" id="tagSearch" placeholder="Search tags..." class="form-control">
+        <i class="fas fa-search"></i>
+      </div>
+      <button class="btn btn-primary" id="addTagBtn">
+        <i class="fas fa-plus-circle"></i> New Tag
+      </button>
+      <button class="btn btn-danger" id="bulkDeleteBtn">
+        <i class="fas fa-trash-alt"></i> Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <!-- Tags Table -->
+  <div class="table-responsive">
+    <table class="management-table">
+      <thead>
+        <tr>
+          <th class="check-col">
+            <input type="checkbox" id="selectAll">
+          </th>
+          <th>Tag Name</th>
+          <th>Slug</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tagsContainer">
+        {{ range .Tags }}
+        <tr>
+          <td><input type="checkbox" class="row-checkbox" data-id="{{ .TagID }}"></td>
+          <td>{{ .Name }}</td>
+          <td>{{ .Slug }}</td>
+          <td>
+            <button class="btn edit-btn" data-tag="{{ toJson . }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn delete-btn" id="deleteBtn" data-id="{{ .TagID }}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" id="emptyState">
+    <i class="fas fa-tag fa-3x"></i>
+    <p>No tags found. Start by creating a new tag!</p>
+  </div>
+</div>
+
+<!-- Tag Modal -->
+<div class="dialog" id="tagModal">
+  <div class="confirmation-dialog">
+    <span class="close" id="closeModal" >&times;</span>
+    <h3 id="modalTitle">New Tag</h3>
+    <form id="tagForm">
+      <input type="hidden" id="tagId">
+      <div class="form-group">
+        <label for="tag_Name">Tag Name</label>
+        <input type="text" id="tag_Name" class="form-control" required
+                                        placeholder="Enter tag name">
+      </div>
+      <div class="form-group">
+        <label>Slug</label>
+        <div class="slug-input-group">
+          <input type="text" id="tagSlug" class="form-control" required>
+          <button type="button" class="btn-slug-refresh" id="slugRefreshBtn">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="closeModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<div class="dialog" id="dialog">
+  <div class="confirmation-dialog">
+    <p>Are you sure you want to delete selected tags?</p>
+    <div style="margin-top: 15px; text-align: right;">
+      <button class="btn btn-secondary" id="closeDialog">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+{{ end }}

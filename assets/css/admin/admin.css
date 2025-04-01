@@ -433,3 +433,63 @@ button {
 .sortable-drag .category-header:hover {
     background: inherit !important;
 }
+
+/* Tag Management */
+.action-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-box {
+    position: relative;
+    max-width: 400px;
+}
+
+.search-box i {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.management-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.management-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.management-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.check-col {
+    width: 40px;
+}
+
+.actions-col {
+    width: 120px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: #666;
+    display: none;
+}
+
+.empty-state i {
+    margin-bottom: 1rem;
+    color: #ced4da;
+}

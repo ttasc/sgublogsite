@@ -133,3 +133,20 @@ func (q *Queries) GetTagsByPostID(ctx context.Context, postID int32) ([]Tag, err
 	}
 	return items, nil
 }
+
+const updateTag = `-- name: UpdateTag :execresult
+UPDATE tags
+SET name = ?,
+    slug = ?
+WHERE tag_id = ?
+`
+
+type UpdateTagParams struct {
+	Name  string `json:"name"`
+	Slug  string `json:"slug"`
+	TagID int32  `json:"tag_id"`
+}
+
+func (q *Queries) UpdateTag(ctx context.Context, arg UpdateTagParams) (sql.Result, error) {
+	return q.exec(ctx, q.updateTagStmt, updateTag, arg.Name, arg.Slug, arg.TagID)
+}

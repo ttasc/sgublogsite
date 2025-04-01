@@ -14,11 +14,14 @@ if (currentPath.includes('/admin')) {
         if (detail.target.id === 'content') {
             const path = window.location.pathname;
 
-            if (path.includes('/categories')) {
+            if (path.includes('/users')) {
+                import('./admin/users.js').then(module => module.default());
+            }
+            else if (path.includes('/categories')) {
                 import('./admin/categories.js').then(module => module.default());
             }
-            else if (path.includes('/users')) {
-                import('./admin/users.js').then(module => module.default());
+            else if (path.includes('/tags')) {
+                import('./admin/tags.js').then(module => module.default());
             }
 
             initAdminCommon();
@@ -26,11 +29,14 @@ if (currentPath.includes('/admin')) {
     });
 
     // Initial page load handling
-    if (currentPath.includes('/categories')) {
+    if (currentPath.includes('/users')) {
+        import('./admin/users.js').then(module => module.default());
+    }
+    else if (currentPath.includes('/categories')) {
         import('./admin/categories.js').then(module => module.default());
     }
-    else if (currentPath.includes('/users')) {
-        import('./admin/users.js').then(module => module.default());
+    else if (currentPath.includes('/tags')) {
+        import('./admin/tags.js').then(module => module.default());
     }
 }
 else {

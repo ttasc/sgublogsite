@@ -14,7 +14,6 @@ func (s *Server) registerHandlers() http.Handler {
     s.registerRoutes(r)
     return r
 }
-
 func (s *Server) useMiddleware(r *chi.Mux) {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
@@ -78,11 +77,18 @@ func adminRoutes(s *Server) chi.Router {
     r.Route("/categories", func(r chi.Router) {
         r.Get("/",          s.ctrlr.AdminCategories)
         r.Post("/",         s.ctrlr.AdminCategoryCreate)
-        r.Put("/{id}",      s.ctrlr.AdminCategoryUpdate)
+        r.Put("/",          s.ctrlr.AdminCategoryUpdate)
         r.Put("/{id}/move", s.ctrlr.AdminCategoryMove)
         r.Delete("/{id}",   s.ctrlr.AdminCategoryDelete)
     })
-    // r.Get("/tags",          s.ctrlr.AdminTags)
+
+    r.Route("/tags", func(r chi.Router) {
+        r.Get("/",          s.ctrlr.AdminTags)
+        r.Post("/",         s.ctrlr.AdminTagCreate)
+        r.Put("/",          s.ctrlr.AdminTagUpdate)
+        r.Delete("/{id}",   s.ctrlr.AdminTagDelete)
+        r.Delete("/bulk",   s.ctrlr.AdminTagBulkDelete)
+    })
     // r.Get("/posts",         s.ctrlr.AdminPosts)
     // r.Get("/images",        s.ctrlr.AdminImages)
     // r.Get("/settings",      s.ctrlr.AdminSettings)

@@ -177,6 +177,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateSiteInfoStmt, err = db.PrepareContext(ctx, updateSiteInfo); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateSiteInfo: %w", err)
 	}
+	if q.updateTagStmt, err = db.PrepareContext(ctx, updateTag); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTag: %w", err)
+	}
 	if q.updateUserAvatarStmt, err = db.PrepareContext(ctx, updateUserAvatar); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUserAvatar: %w", err)
 	}
@@ -449,6 +452,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateSiteInfoStmt: %w", cerr)
 		}
 	}
+	if q.updateTagStmt != nil {
+		if cerr := q.updateTagStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTagStmt: %w", cerr)
+		}
+	}
 	if q.updateUserAvatarStmt != nil {
 		if cerr := q.updateUserAvatarStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateUserAvatarStmt: %w", cerr)
@@ -559,6 +567,7 @@ type Queries struct {
 	updatePostPrivateStmt      *sql.Stmt
 	updatePostStatusStmt       *sql.Stmt
 	updateSiteInfoStmt         *sql.Stmt
+	updateTagStmt              *sql.Stmt
 	updateUserAvatarStmt       *sql.Stmt
 	updateUserInfoStmt         *sql.Stmt
 	updateUserPasswordStmt     *sql.Stmt
@@ -620,6 +629,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updatePostPrivateStmt:      q.updatePostPrivateStmt,
 		updatePostStatusStmt:       q.updatePostStatusStmt,
 		updateSiteInfoStmt:         q.updateSiteInfoStmt,
+		updateTagStmt:              q.updateTagStmt,
 		updateUserAvatarStmt:       q.updateUserAvatarStmt,
 		updateUserInfoStmt:         q.updateUserInfoStmt,
 		updateUserPasswordStmt:     q.updateUserPasswordStmt,

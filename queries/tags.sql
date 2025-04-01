@@ -23,6 +23,12 @@ INSERT INTO tags (
     slug
 ) VALUES (?, ?);
 
+-- name: UpdateTag :execresult
+UPDATE tags
+SET name = ?,
+    slug = ?
+WHERE tag_id = ?;
+
 -- name: DeleteTag :execresult
 DELETE FROM tags
 WHERE tag_id = ?;

@@ -39,6 +39,28 @@ func (m *Model) AddTag(name, slug string) error {
     return tx.Commit()
 }
 
+func (m *Model) UpdateTag(id int32, name, slug string) error {
+    tx, err := m.DB.Begin()
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    qtx := m.query.WithTx(tx)
+
+    _, err = qtx.UpdateTag(m.ctx, repos.UpdateTagParams{
+        TagID:          id,
+        Name:           name,
+        Slug:           slug,
+    })
+
+    if err != nil {
+        return err
+    }
+
+    return tx.Commit()
+}
+
 func (m *Model) DeleteTag(id int32) error {
     tx, err := m.DB.Begin()
     if err != nil {

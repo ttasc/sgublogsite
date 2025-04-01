@@ -63,6 +63,7 @@ func initTemplates() map[string]*template.Template {
         "admin_user":       parseBase(admin, "templates/admin/user.tmpl"),
         "admin_user_new":   parseBase(admin, "templates/admin/user_new.tmpl"),
         "admin_categories": parseBase(admin, "templates/admin/categories.tmpl"),
+        "admin_tags":       parseBase(admin, "templates/admin/tags.tmpl"),
     }
 }
 

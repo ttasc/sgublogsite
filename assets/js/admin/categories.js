@@ -2,7 +2,6 @@ import { slugify, showError, showDialog, closeDialog } from '../utils.js';
 
 let pendingMove = null;
 let isAutoSlug = true;
-let currentCategory = null;
 
 export default function initCategories() {
     // Initialize Sortable
@@ -85,14 +84,12 @@ function toggleChildren(element) {
 }
 
 function showCategoryModal(parentId) {
-    currentCategory = null;
     document.getElementById('parentId').value = parentId || '';
     document.getElementById('modalTitle').textContent = parentId ? 'Add Subcategory' : 'New Category';
     document.getElementById('categoryModal').style.display = 'block';
 }
 
 function showEditModal(category) {
-    currentCategory = category;
     document.getElementById('categoryId').value = category.id;
     document.getElementById('categoryName').value = category.name;
     document.getElementById('categorySlug').value = category.slug;
@@ -124,7 +121,7 @@ async function handleCategoryFormSubmit(e) {
     };
 
     try {
-        const url = categoryData.id ? `/admin/categories/${categoryData.id}` : '/admin/categories';
+        const url = '/admin/categories';
         const method = categoryData.id ? 'PUT' : 'POST';
 
         const response = await fetch(url, {

@@ -15,7 +15,7 @@ export function initAdminCommon() {
         handleDelete(window.location.href);
     });
 
-    document.getElementById('closeDialog')?.addEventListener('click', closeDialog);
+    document.getElementById('closeDialog')?.addEventListener('click', () => closeDialog());
 }
 
 async function handleDelete(urlPrefix) {

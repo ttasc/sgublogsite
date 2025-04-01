@@ -10,12 +10,11 @@ import (
 )
 
 func (c *Controller) AdminCategories(w http.ResponseWriter, r *http.Request) {
-    rawCategories, _ := c.Model.GetCategories()
-    categories := buildCategoryTree(rawCategories, 0, 0)
+    categories, _ :=  c.Model.GetCategories()
     data := struct {
         Categories []category
     }{
-        Categories: categories,
+        Categories: buildCategoryTree(categories, 0, 0),
     }
 
     if r.Header.Get("HX-Request") == "true" {
@@ -119,7 +118,8 @@ func (c *Controller) AdminCategoryDelete(w http.ResponseWriter, r *http.Request)
     }
     err = c.Model.DeleteCategory(int32(id))
     if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+        sendErrorResponse(err, w, http.StatusInternalServerError,
+            map[string]string{"message": "Can't delete category"})
         return
     }
     w.WriteHeader(http.StatusOK)
