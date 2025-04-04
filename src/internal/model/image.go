@@ -6,6 +6,10 @@ import (
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
+func (m *Model) CountImages() (int64, error) {
+    return m.query.CountImages(m.ctx)
+}
+
 func (m *Model) GetImageByID(id int32) (repos.Image, error) {
     return m.query.GetImageByID(m.ctx, id)
 }
@@ -14,8 +18,11 @@ func (m *Model) GetImageByURL(url string) (repos.Image, error) {
     return m.query.GetImageByURL(m.ctx, url)
 }
 
-func (m *Model) GetImages() ([]repos.Image, error) {
-    return m.query.GetAllImages(m.ctx)
+func (m *Model) GetImages(limit, offset int32) ([]repos.Image, error) {
+    return m.query.GetAllImages(m.ctx, repos.GetAllImagesParams{
+        Limit:          limit,
+        Offset:         offset,
+    })
 }
 
 func (m *Model) AddImage(name, url string) (int32, error) {

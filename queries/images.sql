@@ -1,3 +1,6 @@
+-- name: CountImages :one
+SELECT COUNT(*) FROM images;
+
 -- name: GetImageByID :one
 SELECT * FROM images
 WHERE image_id = ?;
@@ -7,7 +10,8 @@ SELECT * FROM images
 WHERE url = ?;
 
 -- name: GetAllImages :many
-SELECT * FROM images;
+SELECT * FROM images
+LIMIT ? OFFSET ?;
 
 -- name: AddImage :execresult
 INSERT INTO images (url, name)

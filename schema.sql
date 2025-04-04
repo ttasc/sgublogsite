@@ -107,11 +107,11 @@ CREATE TABLE post_tags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- Chèn dữ liệu mẫu cho bảng images
-INSERT INTO images (url, name) VALUES
-('https://example.com/logo.png', 'Site Logo'),
-('https://example.com/avatar1.jpg', 'Admin Avatar'),
-('https://example.com/post1-thumb.jpg', 'Post 1 Thumbnail'),
-('https://example.com/post2-thumb.jpg', 'Post 2 Thumbnail');
+-- INSERT INTO images (url, name) VALUES
+-- ('https://example.com/logo.png', 'Site Logo'),
+-- ('https://example.com/avatar1.jpg', 'Admin Avatar'),
+-- ('https://example.com/post1-thumb.jpg', 'Post 1 Thumbnail'),
+-- ('https://example.com/post2-thumb.jpg', 'Post 2 Thumbnail');
 
 -- Chèn dữ liệu mẫu cho bảng siteinfo (chỉ 1 bản ghi)
 INSERT INTO siteinfo (site_title, site_name, site_logo_id, site_about, site_copyright, contact_address, contact_email, contact_phone)

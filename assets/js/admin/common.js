@@ -1,9 +1,8 @@
-import { showError, showDialog, closeDialog } from '../utils.js';
+import { showDialog, closeDialog, showError } from '../utils.js';
 
 let deleteId = null;
 
 export function initAdminCommon() {
-    // Delete handling
     document.addEventListener('click', (e) => {
         const element = e.target.closest('#deleteBtn');
         if (element) {
@@ -11,6 +10,7 @@ export function initAdminCommon() {
             showDialog();
         }
     });
+
     document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
         handleDelete(window.location.href);
     });

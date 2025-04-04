@@ -22,12 +22,12 @@
   </div>
 
   <!-- Tags Table -->
-  <div class="table-responsive">
-    <table class="management-table">
+  <div>
+    <table class="tag-table">
       <thead>
         <tr>
-          <th class="check-col">
-            <input type="checkbox" id="selectAll">
+          <th>
+            <input type="checkbox" id="select-all-tags">
           </th>
           <th>Tag Name</th>
           <th>Slug</th>
@@ -37,7 +37,7 @@
       <tbody id="tagsContainer">
         {{ range .Tags }}
         <tr>
-          <td><input type="checkbox" class="row-checkbox" data-id="{{ .TagID }}"></td>
+          <td><input type="checkbox" class="tag-checkbox" data-id="{{ .TagID }}"></td>
           <td>{{ .Name }}</td>
           <td>{{ .Slug }}</td>
           <td>

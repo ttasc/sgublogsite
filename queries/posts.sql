@@ -3,7 +3,26 @@ SELECT posts.*, images.url AS thumbnail
 FROM posts LEFT JOIN images ON posts.thumbnail_id = images.image_id
 WHERE post_id = ?;
 
+-- name: CountPosts :one
+SELECT COUNT(*) FROM posts;
+
 -- name: GetAllPosts :many
+SELECT
+    p.post_id,
+    p.title,
+    CONCAT(u.firstname, ' ', u.lastname) AS author_name,
+    GROUP_CONCAT(c.name SEPARATOR ', ') AS categories,
+    p.created_at,
+    p.status
+FROM posts p
+LEFT JOIN users u ON p.user_id = u.user_id
+LEFT JOIN post_categories pc ON p.post_id = pc.post_id
+LEFT JOIN categories c ON pc.category_id = c.category_id
+GROUP BY p.post_id, p.title, author_name, p.created_at, p.status
+ORDER BY p.created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: GetPosts :many
 SELECT posts.*, images.url AS thumbnail
 FROM posts LEFT JOIN images ON posts.thumbnail_id = images.image_id
 WHERE status = ?

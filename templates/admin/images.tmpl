@@ -1,0 +1,90 @@
+<!--
+  vim: filetype=html
+-->
+{{template "admin" .}}
+{{define "content"}}
+<div class="management">
+  <div class="management-header">
+    <h1>Image Management</h1>
+    <div>
+      <button class="btn btn-primary" id="uploadImageBtn">
+        <i class="fas fa-upload"></i> Upload New Image
+      </button>
+      <button class="btn btn-danger" id="bulkDeleteImagesBtn">
+        <i class="fas fa-trash"></i> Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <!-- Image Grid -->
+  <div class="image-grid-container">
+    <div class="image-grid" id="imageGrid">
+      {{ range .Images }}
+      <div class="image-card">
+        <div class="image-checkbox">
+          <input type="checkbox"
+                 class="image-checkbox-input"
+                 data-id="{{.ImageID}}">
+        </div>
+        <a href="{{.Url}}" target="_blank" rel="noopener noreferrer" class="image-link">
+          <img src="{{.Url}}" onerror="this.src='/assets/placeholder.png'" class="image-preview">
+        </a>
+        <div class="image-name">{{.Name.String}}</div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" hx-boost="true">
+    {{ if .Pagination.HasPrev }}
+    <a href="/admin/images?page={{.Pagination.PrevPage}}"
+       class="page-link"
+       hx-get="/admin/images?page={{.Pagination.PrevPage}}"
+       hx-target="#admin-content"
+       hx-push-url="true">
+      <i class="fas fa-chevron-left"></i>
+    </a>
+    {{ end }}
+
+    <span class="current-page">Page {{.Pagination.CurrentPage}} of {{.Pagination.TotalPages}}</span>
+
+    {{ if .Pagination.HasNext }}
+    <a href="/admin/images?page={{.Pagination.NextPage}}"
+       class="page-link"
+       hx-get="/admin/images?page={{.Pagination.NextPage}}"
+       hx-target="#admin-content"
+       hx-push-url="true">
+      <i class="fas fa-chevron-right"></i>
+    </a>
+    {{ end }}
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="dialog" id="uploadDialog">
+    <div class="confirmation-dialog" style="width:500px">
+      <h3>Upload New Image</h3>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <input type="file" id="imageInput" name="image" accept="image/*" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="closeUploadDialog">Cancel</button>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Dialog -->
+  <div id="dialog" class="dialog">
+    <div class="confirmation-dialog">
+      <p>Are you sure you want to delete selected images?</p>
+      <div style="margin-top: 15px; text-align: right;">
+        <button class="btn btn-secondary" id="closeDialog">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

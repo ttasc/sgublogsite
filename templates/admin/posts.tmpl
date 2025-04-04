@@ -1,0 +1,168 @@
+<!--
+  vim: filetype=html
+-->
+{{template "admin" .}}
+{{define "content"}}
+<div class="management">
+  <div class="management-header">
+    <h1>Post Management</h1>
+    <button class="btn btn-primary" hx-get="/admin/posts/new" hx-target="#content">
+      <i class="fas fa-plus"></i> Create New Post
+    </button>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="post-controls">
+    <div class="search-box">
+      <input type="text"
+             class="search-input"
+             placeholder="Search posts..."
+             hx-get="/admin/posts"
+             hx-trigger="keyup changed delay:500ms"
+             hx-target="#postTable"
+             name="q">
+    </div>
+
+    <div class="filters">
+        <label>From:</label>
+        <input type="date"
+               id="startDate"
+               name="start_date"
+               hx-get="/admin/posts"
+               hx-trigger="change"
+               hx-include="#endDate">
+
+        <label>To:</label>
+        <input type="date"
+               id="endDate"
+               name="end_date"
+               hx-get="/admin/posts"
+               hx-trigger="change"
+               hx-include="#startDate">
+
+        <select name="status"
+                hx-get="/admin/posts"
+                hx-trigger="change"
+                hx-target="#postTable"
+                class="filter-select">
+          <option value="all">Status</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+
+        <select name="private"
+                hx-get="/admin/posts"
+                hx-trigger="change"
+                hx-target="#postTable"
+                class="filter-select">
+          <option value="all">Privacy</option>
+          <option value="1">Private</option>
+          <option value="0">Public</option>
+        </select>
+    </div>
+  </div>
+
+  <!-- Posts Table -->
+  <div>
+    <div class="table-actions">
+      <button type="submit" class="btn btn-danger" id="bulkDeletePostsBtn">
+        <i class="fas fa-trash"></i> Delete Selected
+      </button>
+    </div>
+
+    <table class="post-table">
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" id="select-all-posts">
+          </th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Categories</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th class="actions-column">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="postTable">
+        {{ template "posts_table" . }}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" hx-boost="true">
+    {{ if .Pagination.HasPrev }}
+    <a href="/admin/posts?page={{.Pagination.PrevPage}}"
+       class="page-link"
+       hx-get="/admin/posts?page={{.Pagination.PrevPage}}"
+       hx-target="#admin-content"
+       hx-push-url="true"
+       hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>
+      <i class="fas fa-chevron-left"></i>
+    </a>
+    {{ end }}
+
+    <span class="current-page">Page {{.Pagination.CurrentPage}} of {{.Pagination.TotalPages}}</span>
+
+    {{ if .Pagination.HasNext }}
+    <a href="/admin/posts?page={{.Pagination.NextPage}}"
+       class="page-link"
+       hx-get="/admin/posts?page={{.Pagination.NextPage}}"
+       hx-target="#admin-content"
+       hx-push-url="true"
+       hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>
+      <i class="fas fa-chevron-right"></i>
+    </a>
+    {{ end }}
+  </div>
+
+<!-- Confirmation Dialog -->
+<div class="dialog" id="dialog">
+  <div class="confirmation-dialog">
+    <p>Are you sure you want to delete selected posts?</p>
+    <div style="margin-top: 15px; text-align: right;">
+      <button class="btn btn-secondary" id="closeDialog">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{ define "posts_table" }}
+  {{ range .Posts }}
+  <tr>
+    <td>
+      <input type="checkbox"
+             class="post-checkbox"
+             data-id="{{.PostID}}">
+    </td>
+    <td>{{.Title}}</td>
+    <td>{{.AuthorName}}</td>
+    <td>
+      {{ range .GetCategories }}
+      <span class="category-badge">{{.}}</span>
+      {{ end }}
+    </td>
+    <td>{{.CreatedAt.Format "2006-01-02"}}</td>
+    <td>
+      <span class="status-badge {{.Status}}">
+        {{.Status}}
+      </span>
+    </td>
+    <td class="actions-column">
+      <button class="btn-icon"
+         hx-get="/admin/posts/{{.PostID}}/edit"
+         hx-target="#content">
+        <i class="fas fa-edit"></i>
+      </button>
+      <button class="btn-icon btn-delete"
+              id="deleteBtn"
+              data-id="{{ .PostID }}"
+              hx-target="#postTable">
+        <i class="fas fa-trash"></i>
+      </button>
+    </td>
+  </tr>
+  {{ end }}
+{{ end }}

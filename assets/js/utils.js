@@ -28,6 +28,22 @@ export function debounce(func, timeout = 300) {
     };
 }
 
+export function showDialog(id = 'dialog') {
+    document.getElementById(id).style.display = 'block';
+}
+
+export function closeDialog(id = 'dialog') {
+    document.getElementById(id).style.display = 'none';
+}
+
+export function toggleSelectAll(targetClass) {
+    return function(e) {
+        const checkboxes = document.querySelectorAll(targetClass);
+        checkboxes.forEach(checkbox => (checkbox.checked = e.target.checked));
+    };
+}
+
+
 export function togglePassword() {
     const passwordInput = document.getElementById('passwordInput');
     const toggleIcon = document.querySelector('.password-toggle i');
@@ -48,15 +64,5 @@ export function showError(message) {
 
 export function closeError() {
     document.getElementById('errorPopup').classList.remove('show');
-}
-
-export function showDialog(id) {
-    if (!id) id = 'dialog';
-    document.getElementById(id).style.display = 'block';
-}
-
-export function closeDialog(id) {
-    if (!id) id = 'dialog';
-    document.getElementById(id).style.display = 'none';
 }
 

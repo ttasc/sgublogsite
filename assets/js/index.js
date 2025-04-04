@@ -1,4 +1,4 @@
-import { closeError } from './utils.js';
+import { closeError } from "./utils.js";
 
 export function initCommon() {
     document.getElementById("closeError")?.addEventListener("click", () => {

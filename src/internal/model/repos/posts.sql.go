@@ -43,6 +43,17 @@ func (q *Queries) AddTagToPost(ctx context.Context, arg AddTagToPostParams) (sql
 	return q.exec(ctx, q.addTagToPostStmt, addTagToPost, arg.PostID, arg.TagID)
 }
 
+const countPosts = `-- name: CountPosts :one
+SELECT COUNT(*) FROM posts
+`
+
+func (q *Queries) CountPosts(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countPostsStmt, countPosts)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createPost = `-- name: CreatePost :execresult
 INSERT INTO posts (
     user_id,
@@ -154,35 +165,38 @@ func (q *Queries) FindPosts(ctx context.Context, arg FindPostsParams) ([]FindPos
 }
 
 const getAllPosts = `-- name: GetAllPosts :many
-SELECT posts.post_id, posts.user_id, posts.title, posts.slug, posts.thumbnail_id, posts.body, posts.status, posts.private, posts.created_at, posts.updated_at, images.url AS thumbnail
-FROM posts LEFT JOIN images ON posts.thumbnail_id = images.image_id
-WHERE status = ?
-ORDER BY created_at DESC
+SELECT
+    p.post_id,
+    p.title,
+    CONCAT(u.firstname, ' ', u.lastname) AS author_name,
+    GROUP_CONCAT(c.name SEPARATOR ', ') AS categories,
+    p.created_at,
+    p.status
+FROM posts p
+LEFT JOIN users u ON p.user_id = u.user_id
+LEFT JOIN post_categories pc ON p.post_id = pc.post_id
+LEFT JOIN categories c ON pc.category_id = c.category_id
+GROUP BY p.post_id, p.title, author_name, p.created_at, p.status
+ORDER BY p.created_at DESC
 LIMIT ? OFFSET ?
 `
 
 type GetAllPostsParams struct {
-	Status PostsStatus `json:"status"`
-	Limit  int32       `json:"limit"`
-	Offset int32       `json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 type GetAllPostsRow struct {
-	PostID      int32          `json:"post_id"`
-	UserID      sql.NullInt32  `json:"user_id"`
-	Title       string         `json:"title"`
-	Slug        string         `json:"slug"`
-	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
-	Body        string         `json:"body"`
-	Status      PostsStatus    `json:"status"`
-	Private     bool           `json:"private"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	Thumbnail   sql.NullString `json:"thumbnail"`
+	PostID     int32          `json:"post_id"`
+	Title      string         `json:"title"`
+	AuthorName string         `json:"author_name"`
+	Categories sql.NullString `json:"categories"`
+	CreatedAt  time.Time      `json:"created_at"`
+	Status     PostsStatus    `json:"status"`
 }
 
 func (q *Queries) GetAllPosts(ctx context.Context, arg GetAllPostsParams) ([]GetAllPostsRow, error) {
-	rows, err := q.query(ctx, q.getAllPostsStmt, getAllPosts, arg.Status, arg.Limit, arg.Offset)
+	rows, err := q.query(ctx, q.getAllPostsStmt, getAllPosts, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -192,16 +206,11 @@ func (q *Queries) GetAllPosts(ctx context.Context, arg GetAllPostsParams) ([]Get
 		var i GetAllPostsRow
 		if err := rows.Scan(
 			&i.PostID,
-			&i.UserID,
 			&i.Title,
-			&i.Slug,
-			&i.ThumbnailID,
-			&i.Body,
-			&i.Status,
-			&i.Private,
+			&i.AuthorName,
+			&i.Categories,
 			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Thumbnail,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -253,6 +262,69 @@ func (q *Queries) GetPostByID(ctx context.Context, postID int32) (GetPostByIDRow
 		&i.Thumbnail,
 	)
 	return i, err
+}
+
+const getPosts = `-- name: GetPosts :many
+SELECT posts.post_id, posts.user_id, posts.title, posts.slug, posts.thumbnail_id, posts.body, posts.status, posts.private, posts.created_at, posts.updated_at, images.url AS thumbnail
+FROM posts LEFT JOIN images ON posts.thumbnail_id = images.image_id
+WHERE status = ?
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?
+`
+
+type GetPostsParams struct {
+	Status PostsStatus `json:"status"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
+}
+
+type GetPostsRow struct {
+	PostID      int32          `json:"post_id"`
+	UserID      sql.NullInt32  `json:"user_id"`
+	Title       string         `json:"title"`
+	Slug        string         `json:"slug"`
+	ThumbnailID sql.NullInt32  `json:"thumbnail_id"`
+	Body        string         `json:"body"`
+	Status      PostsStatus    `json:"status"`
+	Private     bool           `json:"private"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Thumbnail   sql.NullString `json:"thumbnail"`
+}
+
+func (q *Queries) GetPosts(ctx context.Context, arg GetPostsParams) ([]GetPostsRow, error) {
+	rows, err := q.query(ctx, q.getPostsStmt, getPosts, arg.Status, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPostsRow
+	for rows.Next() {
+		var i GetPostsRow
+		if err := rows.Scan(
+			&i.PostID,
+			&i.UserID,
+			&i.Title,
+			&i.Slug,
+			&i.ThumbnailID,
+			&i.Body,
+			&i.Status,
+			&i.Private,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Thumbnail,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPostsByCategoryID = `-- name: GetPostsByCategoryID :many

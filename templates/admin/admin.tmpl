@@ -24,25 +24,25 @@
         </div>
 
         <div class="nav-links">
-          <a href="/admin/users" class="nav-item" hx-get="/admin/users" hx-target="#content" hx-push-url="true">
+          <a href="/admin/users" class="nav-item" hx-get="/admin/users" hx-target="#admin-content" hx-push-url="true">
             <i class="fas fa-user"></i> Users
           </a>
-          <a href="/admin/categories" class="nav-item" hx-get="/admin/categories" hx-target="#content" hx-push-url="true">
+          <a href="/admin/categories" class="nav-item" hx-get="/admin/categories" hx-target="#admin-content" hx-push-url="true">
             <i class="fas fa-list"></i> Categories
           </a>
-          <a href="/admin/tags" class="nav-item" hx-get="/admin/tags" hx-target="#content" hx-push-url="true">
+          <a href="/admin/tags" class="nav-item" hx-get="/admin/tags" hx-target="#admin-content" hx-push-url="true">
             <i class="fas fa-tag"></i> Tags
           </a>
-          <a href="/admin/posts" class="nav-item" hx-get="/admin/posts" hx-target="#content" hx-push-url="true">
+          <a href="/admin/posts" class="nav-item" hx-get="/admin/posts" hx-target="#admin-content" hx-push-url="true">
             <i class="fas fa-file-alt"></i> Posts
           </a>
-          <a href="/admin/images" class="nav-item" hx-get="/admin/images" hx-target="#content" hx-push-url="true">
+          <a href="/admin/images" class="nav-item" hx-get="/admin/images" hx-target="#admin-content" hx-push-url="true">
             <i class="fas fa-image"></i> Images
           </a>
         </div>
 
         <div class="sidebar-footer">
-          <a href="/admin/settings" class="nav-item" hx-get="/admin/settings" hx-target="#content" hx-push-url="true">
+          <a href="/admin/settings" class="nav-item" hx-get="/admin/settings" hx-target="#admin-content" hx-push-url="true">
             <i class="fas fa-cog"></i> Site Settings
           </a>
           <form id="logoutForm" action="/logout" method="POST">
@@ -54,13 +54,13 @@
       </nav>
 
       <!-- Main Content -->
-      <main class="admin-main" id="content">
+      <main class="admin-content" id="admin-content">
         <div id="errorPopup" class="error-popup">
           <i class="fas fa-exclamation-circle error-icon"></i>
           <div class="error-content">
             <p id="errorMessage"></p>
           </div>
-          <span class="close-error" id="closeError ">&times;</span>
+          <span class="close-error" id="closeError">&times;</span>
         </div>
         {{block "content" .}}{{end}}
       </main>

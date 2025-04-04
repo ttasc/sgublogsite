@@ -11,8 +11,19 @@ func (m *Model) GetPostByID(id int32) (repos.GetPostByIDRow, error) {
     return m.query.GetPostByID(m.ctx, id)
 }
 
-func (m *Model) GetPosts(limit, offset int32, status string) ([]repos.GetAllPostsRow, error) {
+func (m *Model) CountPosts() (int64, error) {
+    return m.query.CountPosts(m.ctx)
+}
+
+func (m *Model) GetAllPosts(limit, offset int32) ([]repos.GetAllPostsRow, error) {
     return m.query.GetAllPosts(m.ctx, repos.GetAllPostsParams{
+        Limit:          limit,
+        Offset:         offset,
+    })
+}
+
+func (m *Model) GetPosts(limit, offset int32, status string) ([]repos.GetPostsRow, error) {
+    return m.query.GetPosts(m.ctx, repos.GetPostsParams{
         Limit:          limit,
         Offset:         offset,
         Status:         repos.PostsStatus(status),

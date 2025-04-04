@@ -10,22 +10,27 @@ if (currentPath.includes('/admin')) {
     document.addEventListener('DOMContentLoaded', initAdminCommon);
 
     // Dynamic module loading for HTMX
-    document.body.addEventListener('htmx:afterSwap', ({ detail }) => {
-        if (detail.target.id === 'content') {
-            const path = window.location.pathname;
+    document.body.addEventListener('htmx:afterSwap', () => {
+        const path = window.location.pathname;
 
-            if (path.includes('/users')) {
-                import('./admin/users.js').then(module => module.default());
-            }
-            else if (path.includes('/categories')) {
-                import('./admin/categories.js').then(module => module.default());
-            }
-            else if (path.includes('/tags')) {
-                import('./admin/tags.js').then(module => module.default());
-            }
-
-            initAdminCommon();
+        if (path.includes('/users')) {
+            import('./admin/users.js').then(module => module.default());
         }
+        else if (path.includes('/categories')) {
+            import('./admin/categories.js').then(module => module.default());
+        }
+        else if (path.includes('/tags')) {
+            import('./admin/tags.js').then(module => module.default());
+        }
+        else if (path.includes('/posts')) {
+            import('./admin/posts.js').then(module => module.default());
+        }
+        else if (path.includes('/images')) {
+            import('./admin/images.js').then(module => module.default());
+        }
+
+        initCommon();
+        initAdminCommon();
     });
 
     // Initial page load handling
@@ -37,6 +42,12 @@ if (currentPath.includes('/admin')) {
     }
     else if (currentPath.includes('/tags')) {
         import('./admin/tags.js').then(module => module.default());
+    }
+    else if (currentPath.includes('/posts')) {
+        import('./admin/posts.js').then(module => module.default());
+    }
+    else if (currentPath.includes('/images')) {
+        import('./admin/images.js').then(module => module.default());
     }
 }
 else {

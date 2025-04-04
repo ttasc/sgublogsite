@@ -93,7 +93,7 @@ func (c *Controller) AdminUserCreate(w http.ResponseWriter, r *http.Request) {
         defer file.Close()
         filename := handler.Filename
         fileExt := filename[strings.LastIndex(filename, ".")+1:]
-        handler.Filename = fmt.Sprintf("%d.%s", userID, fileExt)
+        handler.Filename = fmt.Sprintf("avatar-user%d.%s", userID, fileExt)
         avatarURL, err := utils.SaveUploadedFile(file, handler)
         if err != nil {
             sendErrorResponse(err, w, http.StatusInternalServerError,
@@ -101,7 +101,7 @@ func (c *Controller) AdminUserCreate(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        imgID, err := c.Model.AddImage("avatar", avatarURL)
+        imgID, err := c.Model.AddImage(handler.Filename, avatarURL)
         if err != nil {
             sendErrorResponse(err, w, http.StatusInternalServerError,
                 map[string]string{"message": "Failed to upload file (save url)"})
@@ -195,7 +195,7 @@ func (c *Controller) updateUser(userID int32, w http.ResponseWriter, r *http.Req
         defer file.Close()
         filename := handler.Filename
         fileExt := filename[strings.LastIndex(filename, ".")+1:]
-        handler.Filename = fmt.Sprintf("%d.%s", userID, fileExt)
+        handler.Filename = fmt.Sprintf("avatar-user%d.%s", userID, fileExt)
         avatarURL, err := utils.SaveUploadedFile(file, handler)
         if err != nil {
             sendErrorResponse(err, w, http.StatusInternalServerError,
@@ -211,7 +211,7 @@ func (c *Controller) updateUser(userID int32, w http.ResponseWriter, r *http.Req
                 return
             }
         } else {
-            imgID, err = c.Model.AddImage("avatar", avatarURL)
+            imgID, err = c.Model.AddImage(handler.Filename, avatarURL)
         }
     }
 

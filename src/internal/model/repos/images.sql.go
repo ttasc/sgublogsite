@@ -24,6 +24,17 @@ func (q *Queries) AddImage(ctx context.Context, arg AddImageParams) (sql.Result,
 	return q.exec(ctx, q.addImageStmt, addImage, arg.Url, arg.Name)
 }
 
+const countImages = `-- name: CountImages :one
+SELECT COUNT(*) FROM images
+`
+
+func (q *Queries) CountImages(ctx context.Context) (int64, error) {
+	row := q.queryRow(ctx, q.countImagesStmt, countImages)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const deleteImage = `-- name: DeleteImage :execresult
 DELETE FROM images
 WHERE image_id = ?
@@ -35,10 +46,16 @@ func (q *Queries) DeleteImage(ctx context.Context, imageID int32) (sql.Result, e
 
 const getAllImages = `-- name: GetAllImages :many
 SELECT image_id, url, name FROM images
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetAllImages(ctx context.Context) ([]Image, error) {
-	rows, err := q.query(ctx, q.getAllImagesStmt, getAllImages)
+type GetAllImagesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllImages(ctx context.Context, arg GetAllImagesParams) ([]Image, error) {
+	rows, err := q.query(ctx, q.getAllImagesStmt, getAllImages, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

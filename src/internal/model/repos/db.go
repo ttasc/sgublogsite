@@ -42,6 +42,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.addUserStmt, err = db.PrepareContext(ctx, addUser); err != nil {
 		return nil, fmt.Errorf("error preparing query AddUser: %w", err)
 	}
+	if q.countImagesStmt, err = db.PrepareContext(ctx, countImages); err != nil {
+		return nil, fmt.Errorf("error preparing query CountImages: %w", err)
+	}
+	if q.countPostsStmt, err = db.PrepareContext(ctx, countPosts); err != nil {
+		return nil, fmt.Errorf("error preparing query CountPosts: %w", err)
+	}
 	if q.createPostStmt, err = db.PrepareContext(ctx, createPost); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePost: %w", err)
 	}
@@ -107,6 +113,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getPostByIDStmt, err = db.PrepareContext(ctx, getPostByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostByID: %w", err)
+	}
+	if q.getPostsStmt, err = db.PrepareContext(ctx, getPosts); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPosts: %w", err)
 	}
 	if q.getPostsByCategoryIDStmt, err = db.PrepareContext(ctx, getPostsByCategoryID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostsByCategoryID: %w", err)
@@ -227,6 +236,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing addUserStmt: %w", cerr)
 		}
 	}
+	if q.countImagesStmt != nil {
+		if cerr := q.countImagesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countImagesStmt: %w", cerr)
+		}
+	}
+	if q.countPostsStmt != nil {
+		if cerr := q.countPostsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countPostsStmt: %w", cerr)
+		}
+	}
 	if q.createPostStmt != nil {
 		if cerr := q.createPostStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPostStmt: %w", cerr)
@@ -335,6 +354,11 @@ func (q *Queries) Close() error {
 	if q.getPostByIDStmt != nil {
 		if cerr := q.getPostByIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPostByIDStmt: %w", cerr)
+		}
+	}
+	if q.getPostsStmt != nil {
+		if cerr := q.getPostsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPostsStmt: %w", cerr)
 		}
 	}
 	if q.getPostsByCategoryIDStmt != nil {
@@ -522,6 +546,8 @@ type Queries struct {
 	addTagStmt                 *sql.Stmt
 	addTagToPostStmt           *sql.Stmt
 	addUserStmt                *sql.Stmt
+	countImagesStmt            *sql.Stmt
+	countPostsStmt             *sql.Stmt
 	createPostStmt             *sql.Stmt
 	createSiteInfoStmt         *sql.Stmt
 	deleteCategoryStmt         *sql.Stmt
@@ -544,6 +570,7 @@ type Queries struct {
 	getImageByURLStmt          *sql.Stmt
 	getParentCategoryIDStmt    *sql.Stmt
 	getPostByIDStmt            *sql.Stmt
+	getPostsStmt               *sql.Stmt
 	getPostsByCategoryIDStmt   *sql.Stmt
 	getPostsByCategorySlugStmt *sql.Stmt
 	getPostsByStatusStmt       *sql.Stmt
@@ -584,6 +611,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		addTagStmt:                 q.addTagStmt,
 		addTagToPostStmt:           q.addTagToPostStmt,
 		addUserStmt:                q.addUserStmt,
+		countImagesStmt:            q.countImagesStmt,
+		countPostsStmt:             q.countPostsStmt,
 		createPostStmt:             q.createPostStmt,
 		createSiteInfoStmt:         q.createSiteInfoStmt,
 		deleteCategoryStmt:         q.deleteCategoryStmt,
@@ -606,6 +635,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getImageByURLStmt:          q.getImageByURLStmt,
 		getParentCategoryIDStmt:    q.getParentCategoryIDStmt,
 		getPostByIDStmt:            q.getPostByIDStmt,
+		getPostsStmt:               q.getPostsStmt,
 		getPostsByCategoryIDStmt:   q.getPostsByCategoryIDStmt,
 		getPostsByCategorySlugStmt: q.getPostsByCategorySlugStmt,
 		getPostsByStatusStmt:       q.getPostsByStatusStmt,

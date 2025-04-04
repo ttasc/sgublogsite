@@ -1,11 +1,11 @@
-import { slugify, showError, showDialog, debounce } from '../utils.js';
+import { slugify, debounce, showError, showDialog, closeDialog, toggleSelectAll } from '../utils.js';
 
 let isAutoSlug = true;
 
 export default function initTags() {
-    // Event Listeners
+
     document.getElementById('tagSearch').addEventListener('input', debounce(searchTags, 300));
-    document.getElementById('selectAll').addEventListener('change', toggleSelectAll);
+    document.getElementById('select-all-tags').addEventListener('change', toggleSelectAll('.tag-checkbox'));
     document.getElementById('bulkDeleteBtn').addEventListener('click', handleBulkDelete);
     document.getElementById('tagForm').addEventListener('submit', handleFormSubmit);
     document.getElementById('slugRefreshBtn').addEventListener('click', refreshSlug);
@@ -52,11 +52,6 @@ function searchTags(e) {
         const slug = row.children[2].textContent.toLowerCase();
         row.style.display = (name.includes(query) || slug.includes(query)) ? '' : 'none';
     });
-}
-
-function toggleSelectAll(e) {
-    const checkboxes = document.querySelectorAll('.row-checkbox');
-    checkboxes.forEach(checkbox => checkbox.checked = e.target.checked);
 }
 
 async function openEditModal(tag) {
@@ -112,12 +107,14 @@ async function handleFormSubmit(e) {
 }
 function handleBulkDelete() {
     const tagIds = Array.from(
-        document.querySelectorAll('.row-checkbox')
-    ).filter(
-        checkbox => checkbox.checked
-    ).map(
-        checkbox => parseInt(checkbox.dataset.id)
-    );
+        document.querySelectorAll('.tag-checkbox:checked')
+    ).map(checkbox => parseInt(checkbox.dataset.id));
+
+    if (tagIds.length === 0) {
+        showError("Please select at least one tag.");
+        return;
+    }
+
     showDialog();
     document.getElementById('confirmDeleteBtn').onclick = async () => {
         try {
@@ -129,13 +126,15 @@ function handleBulkDelete() {
 
             if (!response.ok) {
                 const error = await response.json();
-                showError(error.message);
+                showError(error.message || "Failed to delete tags.");
             } else{
                 window.location.reload();
             }
         } catch (error) {
             console.error(error);
             showError('Network error. Please try again.');
+        } finally {
+            closeDialog();
         }
     };
 }
@@ -145,3 +144,4 @@ function refreshSlug() {
     document.getElementById('tagSlug').value = slugify(name);
     isAutoSlug = true;
 }
+
