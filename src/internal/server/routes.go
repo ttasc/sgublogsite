@@ -100,10 +100,9 @@ func adminRoutes(s *Server) chi.Router {
 
     r.Route("/images", func(r chi.Router) {
         r.Get("/",          s.ctrlr.AdminImages)
-        // r.Get("/new",       s.ctrlr.AdminImageNew)
-        // r.Post("/",         s.ctrlr.AdminImageCreate)
+        r.Post("/",         s.ctrlr.AdminImageUpload)
+        r.Delete("/bulk",   s.ctrlr.AdminImageBulkDelete)
         // r.Put("/{id}",      s.ctrlr.AdminImageUpdate)
-        // r.Delete("/{id}",   s.ctrlr.AdminImageDelete)
     })
 
     // r.Get("/settings",      s.ctrlr.AdminSettings)

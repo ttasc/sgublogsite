@@ -12,6 +12,8 @@ import (
 	"github.com/ttasc/sgublogsite/src/internal/utils"
 )
 
+const avatarsFilePath = "/assets/uploads/avatars/"
+
 func (c *Controller) AdminUsers(w http.ResponseWriter, r *http.Request) {
     users, _ := c.Model.GetUsers()
     data := struct {
@@ -94,7 +96,7 @@ func (c *Controller) AdminUserCreate(w http.ResponseWriter, r *http.Request) {
         filename := handler.Filename
         fileExt := filename[strings.LastIndex(filename, ".")+1:]
         handler.Filename = fmt.Sprintf("avatar-user%d.%s", userID, fileExt)
-        avatarURL, err := utils.SaveUploadedFile(file, handler)
+        avatarURL, err := utils.SaveUploadedFile(file, handler, avatarsFilePath)
         if err != nil {
             sendErrorResponse(err, w, http.StatusInternalServerError,
                 map[string]string{"message": "Failed to upload file (save file)"})
@@ -196,7 +198,7 @@ func (c *Controller) updateUser(userID int32, w http.ResponseWriter, r *http.Req
         filename := handler.Filename
         fileExt := filename[strings.LastIndex(filename, ".")+1:]
         handler.Filename = fmt.Sprintf("avatar-user%d.%s", userID, fileExt)
-        avatarURL, err := utils.SaveUploadedFile(file, handler)
+        avatarURL, err := utils.SaveUploadedFile(file, handler, avatarsFilePath)
         if err != nil {
             sendErrorResponse(err, w, http.StatusInternalServerError,
                 map[string]string{"message": "Failed to upload file (save file)"})

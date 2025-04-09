@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -32,13 +33,13 @@ func GenerateToken(length int) string {
     return base64.URLEncoding.EncodeToString(bytes)
 }
 
-func SaveUploadedFile(file multipart.File, handler *multipart.FileHeader) (string, error) {
+func SaveUploadedFile(file multipart.File, handler *multipart.FileHeader, prefix_path string) (string, error) {
     defer file.Close()
 
-    // Create upload directory if it doesn't exist
-    const uploadREDIR = "./assets/uploads/avatars/"
-    const uploadABDir = "/assets/uploads/avatars/"
+    var uploadABDir = prefix_path
+    var uploadREDIR = fmt.Sprintf(".%s", uploadABDir)
 
+    // Create upload directory if it doesn't exist
     if err := os.MkdirAll(uploadREDIR, 0755); err != nil {
         return "", err
     }
@@ -73,4 +74,23 @@ func DeleteUploadedFile(url string) error {
     }
 
     return nil
+}
+
+func GenerateUniqueFilename(basePath, originalName string) string {
+    ext := path.Ext(originalName)
+    name := strings.TrimSuffix(originalName, ext)
+    counter := 0
+
+    for {
+        newName := originalName
+        if counter > 0 {
+            newName = fmt.Sprintf("%s(%d)%s", name, counter, ext)
+        }
+
+        fullPath := path.Join(basePath, newName)
+        if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+            return newName
+        }
+        counter++
+    }
 }

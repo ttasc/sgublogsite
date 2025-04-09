@@ -20,7 +20,7 @@ async function handleFormUpload(e) {
     const formData = new FormData(e.target);
 
     try {
-        const response = await fetch('/admin/images/upload', {
+        const response = await fetch('/admin/images', {
             method: 'POST',
             body: formData
         });
@@ -42,7 +42,7 @@ async function handleFormUpload(e) {
 async function handleBulkDelete() {
     const selectedImages = Array.from(
         document.querySelectorAll('.image-checkbox-input:checked')
-    ).map(checkbox => checkbox.dataset.id);
+    ).map(checkbox => parseInt(checkbox.dataset.id));
 
     if (selectedImages.length === 0) {
         showError("Please select at least one image to delete.");
@@ -63,6 +63,9 @@ async function handleBulkDelete() {
                 const error = await response.json();
                 showError(error.message || "Failed to delete images.");
             } else {
+                document.querySelectorAll('.image-checkbox-input').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
                 window.location.reload();
             }
         } catch (error) {
