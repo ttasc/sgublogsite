@@ -97,7 +97,7 @@ func (c *Controller) AdminTagBulkDelete(w http.ResponseWriter, r *http.Request) 
         err = c.Model.DeleteTag(int32(id))
         if err != nil {
             sendErrorResponse(err, w, http.StatusInternalServerError,
-                map[string]string{"message": "Can't delete tag"})
+                map[string]string{"message": "Can't delete selected tags"})
             return
         }
     }

@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+
 	"github.com/ttasc/sgublogsite/src/internal/model/repos"
 )
 
@@ -15,10 +16,19 @@ func (m *Model) CountPosts() (int64, error) {
     return m.query.CountPosts(m.ctx)
 }
 
-func (m *Model) GetAllPosts(limit, offset int32) ([]repos.GetAllPostsRow, error) {
-    return m.query.GetAllPosts(m.ctx, repos.GetAllPostsParams{
+func (m *Model) GetFilteredPosts(
+    limit, offset int32,
+    title string,
+    status repos.PostsStatus,
+    isPrivate bool) ([]repos.GetFilteredPostsRow, error) {
+    wildcard := "%" + title + "%"
+    return m.query.GetFilteredPosts(m.ctx, repos.GetFilteredPostsParams{
         Limit:          limit,
         Offset:         offset,
+
+        Title:          wildcard,
+        Status:         repos.PostsStatus(status),
+        Private:        isPrivate,
     })
 }
 

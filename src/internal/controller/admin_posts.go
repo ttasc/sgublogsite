@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"math"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 )
 
 type showPost struct {
-    repos.GetAllPostsRow
+    repos.GetFilteredPostsRow
 }
 
 func (p *showPost) GetCategories() []string {
@@ -22,47 +23,29 @@ func (p *showPost) GetCategories() []string {
 }
 
 func (c *Controller) AdminPosts(w http.ResponseWriter, r *http.Request) {
-    // Handle filters
-    // query := r.URL.Query()
     page, err := strconv.Atoi(r.URL.Query().Get("page"))
     if err != nil || page < 1 {
         page = 1
     }
 
-    // search := query.Get("q")
-    // startDate := query.Get("start_date")
-    // endDate := query.Get("end_date")
-    // statusFilter := query.Get("status")
-    // privateFilter := query.Get("private")
+    query := r.URL.Query()
+    search := query.Get("q")
+    statusFilter := query.Get("status")
+    privateFilter := query.Get("private")
 
-    // // Build database query
-    // dbQuery := db.Model(&Post{})
-    //
-    // if search != "" {
-    //     dbQuery = dbQuery.Where("title LIKE ?", "%"+search+"%")
-    // }
-    //
-    // if startDate != "" {
-    //     dbQuery = dbQuery.Where("created_at >= ?", startDate)
-    // }
-    //
-    // if endDate != "" {
-    //     dbQuery = dbQuery.Where("created_at <= ?", endDate)
-    // }
-    //
-    // if statusFilter != "" && statusFilter != "all" {
-    //     dbQuery = dbQuery.Where("status = ?", statusFilter)
-    // }
-    //
-    // if privateFilter != "" && privateFilter != "all" {
-    //     isPrivate, _ := strconv.ParseBool(privateFilter)
-    //     dbQuery = dbQuery.Where("private = ?", isPrivate)
-    // }
+    var getStatus repos.PostsStatus
+    var isPrivate bool
+    switch {
+    case statusFilter != "" && statusFilter != "all":
+        getStatus = repos.PostsStatus(statusFilter)
+    case privateFilter != "" && privateFilter != "all":
+        isPrivate, _ = strconv.ParseBool(privateFilter)
+    }
 
     // Pagination
     offset := int32 (page - 1) * postsLimitPerPage
 
-    getPosts, err := c.Model.GetAllPosts(postsLimitPerPage, offset)
+    getPosts, err := c.Model.GetFilteredPosts(postsLimitPerPage, offset, search, getStatus, isPrivate)
     posts := *(*[]showPost)(unsafe.Pointer(&getPosts))
     if err != nil {
         sendErrorResponse(err, w, http.StatusInternalServerError,
@@ -89,8 +72,33 @@ func (c *Controller) AdminPosts(w http.ResponseWriter, r *http.Request) {
     }
 
     if r.Header.Get("HX-Request") == "true" {
-        c.templates["admin_posts"].ExecuteTemplate(w, "content", data)
+        if r.Header.Get("HX-Target") == "postTable" {
+            c.templates["admin_posts"].ExecuteTemplate(w, "posts_table", data)
+        } else {
+            c.templates["admin_posts"].ExecuteTemplate(w, "content", data)
+        }
     } else {
         c.templates["admin_posts"].Execute(w, data)
     }
+}
+
+func (c *Controller) AdminPostBulkDelete(w http.ResponseWriter, r *http.Request) {
+    var postIDs struct {
+        IDs []int `json:"ids"`
+    }
+    err := json.NewDecoder(r.Body).Decode(&postIDs)
+    if err != nil {
+        sendErrorResponse(err, w, http.StatusBadRequest,
+            map[string]string{"message": "Bad request"})
+        return
+    }
+    for _, id := range postIDs.IDs {
+        err = c.Model.DeletePost(int32(id))
+        if err != nil {
+            sendErrorResponse(err, w, http.StatusInternalServerError,
+                map[string]string{"message": "Can't delete selected posts"})
+            return
+        }
+    }
+    w.WriteHeader(http.StatusOK)
 }

@@ -15,47 +15,37 @@
   <div class="post-controls">
     <div class="search-box">
       <input type="text"
+             id="searchInput"
              class="search-input"
-             placeholder="Search posts..."
+             placeholder="Search posts by title..."
              hx-get="/admin/posts"
-             hx-trigger="keyup changed delay:500ms"
+             hx-trigger="keyup changed delay:750ms"
              hx-target="#postTable"
+             hx-include="#statusFilter, #privateFilter"
              name="q">
     </div>
 
     <div class="filters">
-        <label>From:</label>
-        <input type="date"
-               id="startDate"
-               name="start_date"
-               hx-get="/admin/posts"
-               hx-trigger="change"
-               hx-include="#endDate">
-
-        <label>To:</label>
-        <input type="date"
-               id="endDate"
-               name="end_date"
-               hx-get="/admin/posts"
-               hx-trigger="change"
-               hx-include="#startDate">
-
         <select name="status"
+                id="statusFilter"
                 hx-get="/admin/posts"
                 hx-trigger="change"
                 hx-target="#postTable"
+                hx-include="#privateFilter, #searchInput"
                 class="filter-select">
-          <option value="all">Status</option>
+          <option value="all">Status:All</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
         </select>
 
         <select name="private"
+                id="privateFilter"
                 hx-get="/admin/posts"
                 hx-trigger="change"
                 hx-target="#postTable"
+                hx-include="#statusFilter, #searchInput"
                 class="filter-select">
-          <option value="all">Privacy</option>
+          <option value="all">Privacy:All</option>
           <option value="1">Private</option>
           <option value="0">Public</option>
         </select>
@@ -155,12 +145,6 @@
          hx-get="/admin/posts/{{.PostID}}/edit"
          hx-target="#content">
         <i class="fas fa-edit"></i>
-      </button>
-      <button class="btn-icon btn-delete"
-              id="deleteBtn"
-              data-id="{{ .PostID }}"
-              hx-target="#postTable">
-        <i class="fas fa-trash"></i>
       </button>
     </td>
   </tr>

@@ -6,7 +6,7 @@ WHERE post_id = ?;
 -- name: CountPosts :one
 SELECT COUNT(*) FROM posts;
 
--- name: GetAllPosts :many
+-- name: GetFilteredPosts :many
 SELECT
     p.post_id,
     p.title,
@@ -18,6 +18,10 @@ FROM posts p
 LEFT JOIN users u ON p.user_id = u.user_id
 LEFT JOIN post_categories pc ON p.post_id = pc.post_id
 LEFT JOIN categories c ON pc.category_id = c.category_id
+WHERE
+    (CASE WHEN sqlc.arg(title)      != ''       THEN lower(p.title) LIKE lower(sqlc.arg(title)) ELSE TRUE END) AND
+    (CASE WHEN sqlc.arg(status)     != ''       THEN p.status       =  sqlc.arg(status) ELSE TRUE END) AND
+    (CASE WHEN sqlc.arg(private)    IS NOT NULL THEN p.private      =  sqlc.arg(private) ELSE TRUE END)
 GROUP BY p.post_id, p.title, author_name, p.created_at, p.status
 ORDER BY p.created_at DESC
 LIMIT ? OFFSET ?;

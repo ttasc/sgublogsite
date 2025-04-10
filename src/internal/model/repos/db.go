@@ -81,9 +81,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getAllImagesStmt, err = db.PrepareContext(ctx, getAllImages); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllImages: %w", err)
 	}
-	if q.getAllPostsStmt, err = db.PrepareContext(ctx, getAllPosts); err != nil {
-		return nil, fmt.Errorf("error preparing query GetAllPosts: %w", err)
-	}
 	if q.getAllTagNamesStmt, err = db.PrepareContext(ctx, getAllTagNames); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllTagNames: %w", err)
 	}
@@ -101,6 +98,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getContactInfoStmt, err = db.PrepareContext(ctx, getContactInfo); err != nil {
 		return nil, fmt.Errorf("error preparing query GetContactInfo: %w", err)
+	}
+	if q.getFilteredPostsStmt, err = db.PrepareContext(ctx, getFilteredPosts); err != nil {
+		return nil, fmt.Errorf("error preparing query GetFilteredPosts: %w", err)
 	}
 	if q.getImageByIDStmt, err = db.PrepareContext(ctx, getImageByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetImageByID: %w", err)
@@ -301,11 +301,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getAllImagesStmt: %w", cerr)
 		}
 	}
-	if q.getAllPostsStmt != nil {
-		if cerr := q.getAllPostsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getAllPostsStmt: %w", cerr)
-		}
-	}
 	if q.getAllTagNamesStmt != nil {
 		if cerr := q.getAllTagNamesStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getAllTagNamesStmt: %w", cerr)
@@ -334,6 +329,11 @@ func (q *Queries) Close() error {
 	if q.getContactInfoStmt != nil {
 		if cerr := q.getContactInfoStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getContactInfoStmt: %w", cerr)
+		}
+	}
+	if q.getFilteredPostsStmt != nil {
+		if cerr := q.getFilteredPostsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getFilteredPostsStmt: %w", cerr)
 		}
 	}
 	if q.getImageByIDStmt != nil {
@@ -559,13 +559,13 @@ type Queries struct {
 	findUsersStmt              *sql.Stmt
 	getAllCategoriesStmt       *sql.Stmt
 	getAllImagesStmt           *sql.Stmt
-	getAllPostsStmt            *sql.Stmt
 	getAllTagNamesStmt         *sql.Stmt
 	getAllTagsStmt             *sql.Stmt
 	getAllUsersStmt            *sql.Stmt
 	getCategoryByIDStmt        *sql.Stmt
 	getChildCategoriesStmt     *sql.Stmt
 	getContactInfoStmt         *sql.Stmt
+	getFilteredPostsStmt       *sql.Stmt
 	getImageByIDStmt           *sql.Stmt
 	getImageByURLStmt          *sql.Stmt
 	getParentCategoryIDStmt    *sql.Stmt
@@ -624,13 +624,13 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		findUsersStmt:              q.findUsersStmt,
 		getAllCategoriesStmt:       q.getAllCategoriesStmt,
 		getAllImagesStmt:           q.getAllImagesStmt,
-		getAllPostsStmt:            q.getAllPostsStmt,
 		getAllTagNamesStmt:         q.getAllTagNamesStmt,
 		getAllTagsStmt:             q.getAllTagsStmt,
 		getAllUsersStmt:            q.getAllUsersStmt,
 		getCategoryByIDStmt:        q.getCategoryByIDStmt,
 		getChildCategoriesStmt:     q.getChildCategoriesStmt,
 		getContactInfoStmt:         q.getContactInfoStmt,
+		getFilteredPostsStmt:       q.getFilteredPostsStmt,
 		getImageByIDStmt:           q.getImageByIDStmt,
 		getImageByURLStmt:          q.getImageByURLStmt,
 		getParentCategoryIDStmt:    q.getParentCategoryIDStmt,

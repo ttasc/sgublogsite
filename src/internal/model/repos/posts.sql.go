@@ -164,7 +164,7 @@ func (q *Queries) FindPosts(ctx context.Context, arg FindPostsParams) ([]FindPos
 	return items, nil
 }
 
-const getAllPosts = `-- name: GetAllPosts :many
+const getFilteredPosts = `-- name: GetFilteredPosts :many
 SELECT
     p.post_id,
     p.title,
@@ -176,17 +176,24 @@ FROM posts p
 LEFT JOIN users u ON p.user_id = u.user_id
 LEFT JOIN post_categories pc ON p.post_id = pc.post_id
 LEFT JOIN categories c ON pc.category_id = c.category_id
+WHERE
+    (CASE WHEN ?      != ''       THEN lower(p.title) LIKE lower(?) ELSE TRUE END) AND
+    (CASE WHEN ?     != ''       THEN p.status       =  ? ELSE TRUE END) AND
+    (CASE WHEN ?    IS NOT NULL THEN p.private      =  ? ELSE TRUE END)
 GROUP BY p.post_id, p.title, author_name, p.created_at, p.status
 ORDER BY p.created_at DESC
 LIMIT ? OFFSET ?
 `
 
-type GetAllPostsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+type GetFilteredPostsParams struct {
+	Title   string      `json:"title"`
+	Status  PostsStatus `json:"status"`
+	Private bool        `json:"private"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
-type GetAllPostsRow struct {
+type GetFilteredPostsRow struct {
 	PostID     int32          `json:"post_id"`
 	Title      string         `json:"title"`
 	AuthorName string         `json:"author_name"`
@@ -195,15 +202,24 @@ type GetAllPostsRow struct {
 	Status     PostsStatus    `json:"status"`
 }
 
-func (q *Queries) GetAllPosts(ctx context.Context, arg GetAllPostsParams) ([]GetAllPostsRow, error) {
-	rows, err := q.query(ctx, q.getAllPostsStmt, getAllPosts, arg.Limit, arg.Offset)
+func (q *Queries) GetFilteredPosts(ctx context.Context, arg GetFilteredPostsParams) ([]GetFilteredPostsRow, error) {
+	rows, err := q.query(ctx, q.getFilteredPostsStmt, getFilteredPosts,
+		arg.Title,
+		arg.Title,
+		arg.Status,
+		arg.Status,
+		arg.Private,
+		arg.Private,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetAllPostsRow
+	var items []GetFilteredPostsRow
 	for rows.Next() {
-		var i GetAllPostsRow
+		var i GetFilteredPostsRow
 		if err := rows.Scan(
 			&i.PostID,
 			&i.Title,
