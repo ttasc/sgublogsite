@@ -35,10 +35,10 @@ func (c *Controller) AdminPosts(w http.ResponseWriter, r *http.Request) {
 
     var getStatus repos.PostsStatus
     var isPrivate bool
-    switch {
-    case statusFilter != "" && statusFilter != "all":
+    if statusFilter != "" && statusFilter != "all" {
         getStatus = repos.PostsStatus(statusFilter)
-    case privateFilter != "" && privateFilter != "all":
+    }
+    if privateFilter != "" && privateFilter != "all" {
         isPrivate, _ = strconv.ParseBool(privateFilter)
     }
 

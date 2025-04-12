@@ -61,7 +61,7 @@ func (s *Server) registerRoutes(r *chi.Mux) http.Handler {
 func adminRoutes(s *Server) chi.Router {
     r := chi.NewRouter()
 
-    r.Use(jwtauth.Authenticator(s.ctrlr.TokenAuth))
+    r.Use(Authenticator())
 
     r.Get("/",              s.ctrlr.AdminDashboard)
 
@@ -107,4 +107,26 @@ func adminRoutes(s *Server) chi.Router {
     // r.Get("/info",      s.ctrlr.AdminInfo)
 
     return r
+}
+
+func Authenticator() func(http.Handler) http.Handler {
+    return func(next http.Handler) http.Handler {
+        hfn := func(w http.ResponseWriter, r *http.Request) {
+            token, _, err := jwtauth.FromContext(r.Context())
+
+            if err != nil {
+                http.Redirect(w, r, "/login", http.StatusSeeOther)
+                return
+            }
+
+            if token == nil {
+                http.Redirect(w, r, "/login", http.StatusSeeOther)
+                return
+            }
+
+            // Token is authenticated, pass it through
+            next.ServeHTTP(w, r)
+        }
+        return http.HandlerFunc(hfn)
+    }
 }

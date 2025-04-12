@@ -55,15 +55,16 @@
 
       <!-- Main Content -->
       <main class="admin-content" id="admin-content">
-        <div id="errorPopup" class="error-popup">
-          <i class="fas fa-exclamation-circle error-icon"></i>
-          <div class="error-content">
-            <p id="errorMessage"></p>
-          </div>
-          <span class="close-error" id="closeError">&times;</span>
-        </div>
         {{block "content" .}}{{end}}
       </main>
+
+      <div id="errorPopup" class="error-popup">
+        <i class="fas fa-exclamation-circle error-icon"></i>
+        <div class="error-content">
+          <p id="errorMessage"></p>
+        </div>
+        <span class="close-error" id="closeError">&times;</span>
+      </div>
     </div>
 
     <script src="/assets/js/libs/sortablejs/Sortable.min.js"></script>
