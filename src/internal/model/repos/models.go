@@ -96,6 +96,48 @@ func (ns NullUsersRole) Value() (driver.Value, error) {
 	return string(ns.UsersRole), nil
 }
 
+type UsersStatus string
+
+const (
+	UsersStatusActive   UsersStatus = "active"
+	UsersStatusInactive UsersStatus = "inactive"
+)
+
+func (e *UsersStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = UsersStatus(s)
+	case string:
+		*e = UsersStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for UsersStatus: %T", src)
+	}
+	return nil
+}
+
+type NullUsersStatus struct {
+	UsersStatus UsersStatus `json:"users_status"`
+	Valid       bool        `json:"valid"` // Valid is true if UsersStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullUsersStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.UsersStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.UsersStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullUsersStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.UsersStatus), nil
+}
+
 type Category struct {
 	CategoryID       int32         `json:"category_id"`
 	ParentCategoryID sql.NullInt32 `json:"parent_category_id"`
@@ -152,6 +194,7 @@ type Tag struct {
 
 type User struct {
 	UserID    int32         `json:"user_id"`
+	Status    UsersStatus   `json:"status"`
 	Firstname string        `json:"firstname"`
 	Lastname  string        `json:"lastname"`
 	Phone     string        `json:"phone"`

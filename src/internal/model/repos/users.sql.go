@@ -43,7 +43,8 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (sql.Result, e
 }
 
 const deleteUser = `-- name: DeleteUser :execresult
-DELETE FROM users
+UPDATE users
+SET status = 'inactive'
 WHERE user_id = ?
 `
 
@@ -52,13 +53,15 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int32) (sql.Result, err
 }
 
 const findUsers = `-- name: FindUsers :many
-SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
+SELECT users.user_id, users.status, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
 WHERE lower(concat(firstname, ' ', lastname, ' ', phone, ' ', email)) LIKE lower(?)
+AND status = 'active'
 `
 
 type FindUsersRow struct {
 	UserID    int32          `json:"user_id"`
+	Status    UsersStatus    `json:"status"`
 	Firstname string         `json:"firstname"`
 	Lastname  string         `json:"lastname"`
 	Phone     string         `json:"phone"`
@@ -82,6 +85,7 @@ func (q *Queries) FindUsers(ctx context.Context, text string) ([]FindUsersRow, e
 		var i FindUsersRow
 		if err := rows.Scan(
 			&i.UserID,
+			&i.Status,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Phone,
@@ -108,13 +112,15 @@ func (q *Queries) FindUsers(ctx context.Context, text string) ([]FindUsersRow, e
 
 const getAllUsers = `-- name: GetAllUsers :many
 
-SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
+SELECT users.user_id, users.status, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
+WHERE status = 'active'
 ORDER BY lastname
 `
 
 type GetAllUsersRow struct {
 	UserID    int32          `json:"user_id"`
+	Status    UsersStatus    `json:"status"`
 	Firstname string         `json:"firstname"`
 	Lastname  string         `json:"lastname"`
 	Phone     string         `json:"phone"`
@@ -139,6 +145,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 		var i GetAllUsersRow
 		if err := rows.Scan(
 			&i.UserID,
+			&i.Status,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Phone,
@@ -166,7 +173,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 const getUserAvatarID = `-- name: GetUserAvatarID :one
 SELECT avatar_id
 FROM users
-WHERE user_id = ?
+WHERE user_id = ? AND status = 'active'
 `
 
 func (q *Queries) GetUserAvatarID(ctx context.Context, userID int32) (sql.NullInt32, error) {
@@ -177,9 +184,9 @@ func (q *Queries) GetUserAvatarID(ctx context.Context, userID int32) (sql.NullIn
 }
 
 const getUserByEmailOrPhone = `-- name: GetUserByEmailOrPhone :one
-SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
+SELECT users.user_id, users.status, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
-WHERE email = ? OR phone = ?
+WHERE email = ? OR phone = ? AND status = 'active'
 `
 
 type GetUserByEmailOrPhoneParams struct {
@@ -189,6 +196,7 @@ type GetUserByEmailOrPhoneParams struct {
 
 type GetUserByEmailOrPhoneRow struct {
 	UserID    int32          `json:"user_id"`
+	Status    UsersStatus    `json:"status"`
 	Firstname string         `json:"firstname"`
 	Lastname  string         `json:"lastname"`
 	Phone     string         `json:"phone"`
@@ -206,6 +214,7 @@ func (q *Queries) GetUserByEmailOrPhone(ctx context.Context, arg GetUserByEmailO
 	var i GetUserByEmailOrPhoneRow
 	err := row.Scan(
 		&i.UserID,
+		&i.Status,
 		&i.Firstname,
 		&i.Lastname,
 		&i.Phone,
@@ -221,13 +230,14 @@ func (q *Queries) GetUserByEmailOrPhone(ctx context.Context, arg GetUserByEmailO
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT users.user_id, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
+SELECT users.user_id, users.status, users.firstname, users.lastname, users.phone, users.email, users.password, users.avatar_id, users.role, users.created_at, users.updated_at, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
-WHERE user_id = ?
+WHERE user_id = ? AND status = 'active'
 `
 
 type GetUserByIDRow struct {
 	UserID    int32          `json:"user_id"`
+	Status    UsersStatus    `json:"status"`
 	Firstname string         `json:"firstname"`
 	Lastname  string         `json:"lastname"`
 	Phone     string         `json:"phone"`
@@ -245,6 +255,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow
 	var i GetUserByIDRow
 	err := row.Scan(
 		&i.UserID,
+		&i.Status,
 		&i.Firstname,
 		&i.Lastname,
 		&i.Phone,
