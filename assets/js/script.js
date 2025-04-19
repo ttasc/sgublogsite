@@ -51,5 +51,8 @@ if (currentPath.includes('/admin')) {
     }
 }
 else {
+    if (currentPath.includes('/profile')) {
+        import('./admin/users.js').then(module => module.default());
+    }
     import('./index.js').then(module => module.default());
 }

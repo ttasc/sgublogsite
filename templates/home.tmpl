@@ -10,7 +10,7 @@
            hx-target="#main-content"
            hx-push-url="true"
            hx-headers='{"HX-Request": "true", "HX-History-Restore-Request": "true"}'>
-    <img src="{{.Thumbnail}}" class="post-thumbnail">
+    <img src="{{.Thumbnail}}" onerror="this.src='/assets/placeholder.png'" class="post-thumbnail">
     <div class="post-content">
       <h2>{{.Title}}</h2>
       <p class="post-date">

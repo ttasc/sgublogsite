@@ -1,0 +1,61 @@
+2025/04/15 08:39:51 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:39:51 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:39:51 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:39:52 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:39:53 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:39:54 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:39:58 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:04 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:26 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:26 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:26 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:27 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:28 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:40:30 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:41:44 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:41:44 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:41:45 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:41:45 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:43:23 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:43:24 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:43:24 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:43:24 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:43:25 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:45:57 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:45:57 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:45:57 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:45:58 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:27 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:28 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:28 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:28 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:29 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:31 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:34 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/15 08:46:41 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:47 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:47 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:48 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:49 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:50 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:52 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:49:55 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:01 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:24 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:24 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:24 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:25 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:26 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:27 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:31 db down: dial tcp: lookup mysql on 127.0.0.11:53: no such host
+2025/04/19 06:50:38 db down: dial tcp: lookup mysql: i/o timeout
+2025/04/19 06:53:13 db down: dial tcp 172.18.0.2:3306: connect: connection refused
+2025/04/19 06:53:13 db down: dial tcp 172.18.0.2:3306: connect: connection refused
+2025/04/19 06:53:14 db down: dial tcp 172.18.0.2:3306: connect: connection refused
+2025/04/19 06:53:14 db down: dial tcp 172.18.0.2:3306: connect: connection refused
+2025/04/19 06:53:47 shutting down gracefully, press Ctrl+C again to force
+2025/04/19 06:53:47 Server exiting
+2025/04/19 06:53:47 Graceful shutdown complete.
+2025/04/19 06:57:35 shutting down gracefully, press Ctrl+C again to force
+2025/04/19 06:57:35 Server exiting
+2025/04/19 06:57:35 Graceful shutdown complete.

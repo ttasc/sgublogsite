@@ -1,28 +1,30 @@
 -- name: GetUserByID :one
 SELECT users.*, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
-WHERE user_id = ?;
+WHERE user_id = ? AND status = 'active';
 
 -- name: GetUserByEmailOrPhone :one
 SELECT users.*, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
-WHERE email = ? OR phone = ?;
+WHERE email = ? OR phone = ? AND status = 'active';
 
 -- name: FindUsers :many
 SELECT users.*, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
-WHERE lower(concat(firstname, ' ', lastname, ' ', phone, ' ', email)) LIKE lower(sqlc.arg(text));
+WHERE lower(concat(firstname, ' ', lastname, ' ', phone, ' ', email)) LIKE lower(sqlc.arg(text))
+AND status = 'active';
 -- WHERE MATCH(firstname, lastname, phone, email)) AGAINST (sqlc.arg(text));
 
 -- name: GetAllUsers :many
 SELECT users.*, images.url AS avatar
 FROM users LEFT JOIN images ON users.avatar_id = images.image_id
+WHERE status = 'active'
 ORDER BY lastname;
 
 -- name: GetUserAvatarID :one
 SELECT avatar_id
 FROM users
-WHERE user_id = ?;
+WHERE user_id = ? AND status = 'active';
 
 -- name: AddUser :execresult
 INSERT INTO users (
@@ -59,5 +61,6 @@ SET role = ?
 WHERE user_id = ?;
 
 -- name: DeleteUser :execresult
-DELETE FROM users
+UPDATE users
+SET status = 'inactive'
 WHERE user_id = ?;

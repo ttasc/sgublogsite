@@ -7,7 +7,7 @@
   <div class="news-grid">
     {{range .Posts}}
     <article class="post-card" onclick="window.location.href='/post/{{.PostID}}'">
-      <img src="{{.Thumbnail}}" class="post-thumbnail">
+      <img src="{{.Thumbnail}}" onerror="this.src='/assets/placeholder.png'" class="post-thumbnail">
       <div class="post-content">
         <h3>{{.Title}}</h3>
         <p class="post-date">{{.CreatedAt.Format "02/01/2006"}}</p>
